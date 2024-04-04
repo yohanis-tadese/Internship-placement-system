@@ -1,6 +1,7 @@
+import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
-import { useMoveBack } from "../hooks/useMoveBack";
 import Heading from "../ui/Heading";
 import Button from "../ui/Button";
 
@@ -36,7 +37,12 @@ const headingStyle = {
 };
 
 function Unauthorized() {
-  const moveBack = useMoveBack();
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  const handleGoBack = () => {
+    // Navigate back
+    navigate("/login");
+  };
 
   return (
     <StyledPageNotFound>
@@ -46,8 +52,8 @@ function Unauthorized() {
           Sorry, you don't have the authorization to access the requested page.
         </Heading>
         <br />
-        <Button onClick={moveBack} size="medium">
-          &larr; Go back
+        <Button onClick={handleGoBack} size="medium">
+          &larr; Go login
         </Button>
       </Box>
     </StyledPageNotFound>

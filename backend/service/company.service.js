@@ -56,8 +56,101 @@ async function createCompany(company) {
   }
 }
 
+// Function to get all companies
+async function getAllCompanies() {
+  try {
+    const sql = "SELECT * FROM companies";
+    const companies = await query(sql);
+    return companies;
+  } catch (error) {
+    console.error("Error getting all companies:", error.message);
+    throw new Error("Failed to get all companies");
+  }
+}
+
+// Function to update an existing company
+async function updateCompany(companyId, companyData) {
+  try {
+    const {
+      company_name,
+      phone_number,
+      contact_email,
+      location,
+      industry_sector,
+      password,
+    } = companyData;
+
+    // Fetch the existing company data including the password
+    const fetchSql = `SELECT password FROM companies WHERE company_id = ?`;
+    const [existingCompany] = await query(fetchSql, [companyId]);
+
+    if (!existingCompany) {
+      throw new Error("Company not found");
+    }
+
+    // Compare the provided password with the stored hashed password
+    const passwordMatch = await bcrypt.compare(
+      password,
+      existingCompany.password
+    );
+
+    if (!passwordMatch) {
+      throw new Error("Invalid password");
+    }
+
+    // Hash the new password before updating
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the company data including the password
+    const updateSql = `
+      UPDATE companies
+      SET company_name = ?,
+          phone_number = ?,
+          contact_email = ?,
+          location = ?,
+          industry_sector = ?,
+          password = ?
+      WHERE company_id = ?
+    `;
+    const result = await query(updateSql, [
+      company_name,
+      phone_number,
+      contact_email,
+      location,
+      industry_sector,
+      hashedPassword, // Update with hashed password
+      companyId,
+    ]);
+
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error updating company:", error.message);
+    throw new Error("Failed to update company");
+  }
+}
+
+// Function to delete an existing company
+async function deleteCompany(companyId) {
+  try {
+    // Check if companyId is undefined
+    if (companyId === undefined) {
+      throw new Error("Company ID is undefined");
+    }
+
+    const deleteSql = "DELETE FROM companies WHERE company_id = ?";
+    const result = await query(deleteSql, [companyId]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error deleting company:", error.message);
+    throw new Error("Failed to delete company");
+  }
+}
+
 // Export the functions
 module.exports = {
   checkIfCompanyExists,
   createCompany,
+  updateCompany,
+  deleteCompany,
+  getAllCompanies,
 };

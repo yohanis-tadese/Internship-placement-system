@@ -1,8 +1,11 @@
+import React from "react";
 import styled from "styled-components";
 import ButtonIcon from "./ButtonIcon";
-import { HiOutlineUser, HiArrowRightOnRectangle } from "react-icons/hi2";
+import { LuLogOut } from "react-icons/lu";
+import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import DarkModeToggle from "./DarkModeToggle";
+import { useAuth } from "../context/AuthContext";
 
 const StyledHeaderMenu = styled.div`
   display: flex;
@@ -13,17 +16,37 @@ const StyledHeaderMenu = styled.div`
   padding: 0;
 `;
 
+const WelcomeMessage = styled.span`
+  font-weight: bold;
+`;
+
 function HeaderMenu() {
   const navigate = useNavigate();
+  const { isLogged, isDepartment } = useAuth();
+
+  const handleLogout = () => {
+    // Clear user token from local storage
+    localStorage.removeItem("user_token");
+
+    // Navigate to the login page
+    navigate("/login");
+  };
 
   return (
     <StyledHeaderMenu>
-      <ButtonIcon>
-        <HiOutlineUser />
-      </ButtonIcon>
+      {isLogged && (
+        <>
+          <WelcomeMessage>Welcome</WelcomeMessage>
+
+          <ButtonIcon>
+            <FaUser />
+          </ButtonIcon>
+        </>
+      )}
       <DarkModeToggle />
-      <ButtonIcon onClick={() => navigate("/login")}>
-        <HiArrowRightOnRectangle />
+
+      <ButtonIcon onClick={handleLogout}>
+        <LuLogOut />
       </ButtonIcon>
     </StyledHeaderMenu>
   );

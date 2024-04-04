@@ -8,6 +8,7 @@ async function logIn(req, res, next) {
 
     let user;
     let role;
+    let userIdKey;
 
     if (username.startsWith("stud_")) {
       user = await loginservice.loginStudent(username, password);
@@ -30,8 +31,18 @@ async function logIn(req, res, next) {
       });
     }
 
+    // Add additional check for incorrect password
+    if (user.invalidPassword) {
+      return res.status(403).json({
+        status: "fail",
+        message: "Invalid username or password",
+      });
+    }
+
+    userIdKey = user.key; // Get the userIdKey from the user object returned by the login service
+
     const payload = {
-      user_id: user.id,
+      [userIdKey]: user.id,
       user_role: role,
       username: username,
     };
@@ -41,8 +52,10 @@ async function logIn(req, res, next) {
 
     res.status(200).json({
       status: "success",
-      message: "User logged in successfully",
-      data: { user_token: token },
+      data: {
+        message: "User logged in successfully",
+        user_token: token,
+      },
     });
   } catch (error) {
     console.error("Error during login:", error.message);

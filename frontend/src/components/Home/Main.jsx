@@ -27,7 +27,12 @@ const Main = () => {
   return (
     <MainContainer>
       <SectionTitle>Welcome to Internship Placement System</SectionTitle>
-      <ContentContainer></ContentContainer>
+      <ContentContainer>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis hic
+        molestias ea inventore enim odit itaque, cumque soluta necessitatibus
+        quisquam ducimus saepe architecto odio? Esse exercitationem fugit
+        provident natus sapiente.
+      </ContentContainer>
     </MainContainer>
   );
 };

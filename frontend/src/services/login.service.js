@@ -16,13 +16,13 @@ const logIn = async (formData) => {
   }
 };
 
-const logOut = () => {
-  localStorage.removeItem("user_token");
-};
+// const logOut = () => {
+//   localStorage.removeItem("user_token");
+// };
 
 const loginService = {
   logIn,
-  logOut,
+  // logOut,
 };
 
 export default loginService;

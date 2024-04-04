@@ -12,9 +12,51 @@ const createDepartment = async (formData) => {
   return response;
 };
 
+// A function to send get request to get all departments
+const getAllDepartments = async () => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(`${api_url}/api/department`, requestOptions);
+  return response;
+};
+
+// A function to send put request to update a department
+const updateDepartment = async (departmentId, formData) => {
+  const requestOptions = {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  };
+  const response = await fetch(
+    `${api_url}/api/department/${departmentId}`,
+    requestOptions
+  );
+  return response;
+};
+
+// A function to send delete request to delete a department
+const deleteDepartment = async (departmentId) => {
+  const requestOptions = {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  };
+  const response = await fetch(
+    `${api_url}/api/department/${departmentId}`,
+    requestOptions
+  );
+  return response;
+};
+
 // Export all the functions
 const departmentService = {
   createDepartment,
+  getAllDepartments,
+  updateDepartment,
+  deleteDepartment,
 };
 
 export default departmentService;

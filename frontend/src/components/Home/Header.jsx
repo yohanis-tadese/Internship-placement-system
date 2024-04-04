@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { NavLink } from "react-router-dom"; // Import NavLink
 import DarkModeToggle from "../../ui/DarkModeToggle";
 import Heading from "../../ui/Heading";
+import { useAuth } from "../../context/AuthContext";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -72,7 +73,7 @@ const Header = () => {
       </NavLink>
       <RightContainer>
         <DarkModeToggle />
-        <StyledNavLink to="/Frequently-Asked-Questions">FAQ</StyledNavLink>
+        <StyledNavLink to="/FAQ">FAQ</StyledNavLink>
         <StyledButton>
           <StyledNavLink to="/login">Login</StyledNavLink>
         </StyledButton>

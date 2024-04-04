@@ -9,14 +9,7 @@ const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error("Error connecting to the database:", err.message);
-  } else {
-    console.log("Database connected successfully!");
-    connection.release();
-  }
-});
+// No need for getConnection, as mysql2/promise manages connections for you
 
 async function query(sql, params) {
   const [rows, fields] = await pool.execute(sql, params);

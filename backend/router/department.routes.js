@@ -4,5 +4,8 @@ const departmentController = require("../controller/department.controler");
 const router = express.Router();
 
 router.post("/api/department", departmentController.createDepartment);
+router.get("/api/department", departmentController.getAllDepartments);
+router.patch("/api/department/:id", departmentController.updateDepartment);
+router.delete("/api/department/:id", departmentController.deleteDepartment);
 
 module.exports = router;

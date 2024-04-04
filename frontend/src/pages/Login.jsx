@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import LoginForm from "../features/authentication/LoginForm";
+import LoginForm from "../components/LoginForm";
 // import Heading from "../ui/Heading";
 import Header from "../components/Home/Header";
-// import Footer from "../components/Home/Footer";
+import Footer from "../components/Home/Footer";
 
 const LoginLayout = styled.main`
   min-height: 100vh;
@@ -27,7 +27,7 @@ function Login() {
       <LoginLayout>
         <LoginForm />
       </LoginLayout>
-      {/* <Footer /> */}
+      <Footer />
     </StyledAppLayout>
   );
 }

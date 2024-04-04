@@ -1,5 +1,5 @@
 // Import necessary dependencies
-const companyService = require("../service//company.service");
+const companyService = require("../service/company.service");
 
 async function createCompany(req, res, next) {
   try {
@@ -38,6 +38,81 @@ async function createCompany(req, res, next) {
   }
 }
 
+async function getAllCompanies(req, res, next) {
+  try {
+    const companies = await companyService.getAllCompanies();
+
+    if (!companies) {
+      return res.status(404).json({
+        error: "Companies not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      companies,
+    });
+  } catch (error) {
+    console.error("Error getting companies:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+async function updateCompany(req, res, next) {
+  try {
+    const companyId = req.params.id;
+    const updatedCompany = await companyService.updateCompany(
+      companyId,
+      req.body
+    );
+
+    if (!updatedCompany) {
+      return res.status(404).json({
+        error: "Company not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Company updated successfully",
+      company: updatedCompany,
+    });
+  } catch (error) {
+    console.error("Error updating company:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+async function deleteCompany(req, res, next) {
+  try {
+    const companyId = req.params.id;
+    const deleted = await companyService.deleteCompany(companyId);
+
+    if (!deleted) {
+      return res.status(404).json({
+        error: "Company not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Company deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting company:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 module.exports = {
   createCompany,
+  getAllCompanies,
+  updateCompany,
+  deleteCompany,
 };

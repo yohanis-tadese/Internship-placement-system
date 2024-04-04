@@ -38,6 +38,81 @@ async function createDepartment(req, res, next) {
   }
 }
 
+async function getAllDepartments(req, res, next) {
+  try {
+    const department = await departmentService.getAllDepartments();
+
+    if (!department) {
+      return res.status(404).json({
+        error: "Department not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      department,
+    });
+  } catch (error) {
+    console.error("Error getting department:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+async function updateDepartment(req, res, next) {
+  try {
+    const departmentId = req.params.id;
+    const updatedDepartment = await departmentService.updateDepartment(
+      departmentId,
+      req.body
+    );
+
+    if (!updatedDepartment) {
+      return res.status(404).json({
+        error: "Department not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Department updated successfully",
+      department: updatedDepartment,
+    });
+  } catch (error) {
+    console.error("Error updating department:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+async function deleteDepartment(req, res, next) {
+  try {
+    const departmentId = req.params.id;
+    const deleted = await departmentService.deleteDepartment(departmentId);
+
+    if (!deleted) {
+      return res.status(404).json({
+        error: "Department not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Department deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting department:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 module.exports = {
   createDepartment,
+  getAllDepartments,
+  updateDepartment,
+  deleteDepartment,
 };
