@@ -5,7 +5,6 @@ import { MdBusiness, MdSchool } from "react-icons/md"; // Import organization an
 import { FaUserGraduate } from "react-icons/fa"; // Import student icon
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
-
 import departmentService from "../../services/department.service"; // Correct import
 import companyService from "../../services/company.service"; // Correct import
 import studentService from "../../services/student.service"; // Correct import

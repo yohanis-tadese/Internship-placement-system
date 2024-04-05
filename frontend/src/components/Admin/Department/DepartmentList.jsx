@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import departmentService from "../../../services/department.service";
 import { FaEdit } from "react-icons/fa";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import styled from "styled-components";
+import EditDepartment from "./EditDepartment";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const TableContainer = styled.div`
   width: 100%;
@@ -83,9 +86,97 @@ const DeleteIcon = styled(FaRegTrashAlt)`
   font-size: 18px;
 `;
 
+const ConfirmationContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 460px;
+  background-color: #ff9966;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 400px;
+`;
+
+const ConfirmationMessage = styled.p`
+  font-size: 16px;
+  color: #333333;
+  margin-bottom: 20px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+`;
+
+const ConfirmButton = styled.button`
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const CancelButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333333;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #bdbdbd;
+  }
+`;
+
+const IconWrapper = styled.span`
+  margin-right: 10px;
+`;
+
+const ConfirmIcon = styled(FaCheckCircle)`
+  color: #28a745;
+`;
+
+const CancelIcon = styled(FaTimesCircle)`
+  color: #dc3545;
+`;
+
+const ConfirmationDialog = ({ message, onConfirm, onCancel }) => {
+  return (
+    <ConfirmationContainer>
+      <ConfirmationMessage>{message}</ConfirmationMessage>
+      <ButtonWrapper>
+        <ConfirmButton onClick={onConfirm}>
+          <IconWrapper>
+            <ConfirmIcon />
+          </IconWrapper>
+          Confirm
+        </ConfirmButton>
+        <CancelButton onClick={onCancel}>
+          <IconWrapper>
+            <CancelIcon />
+          </IconWrapper>
+          Cancel
+        </CancelButton>
+      </ButtonWrapper>
+    </ConfirmationContainer>
+  );
+};
+
 const DepartmentList = () => {
   const [departments, setDepartments] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [editingDepartmentId, setEditingDepartmentId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [deletedDepartmentId, setDeletedDepartmentId] = useState(null);
 
   const fetchDepartments = async () => {
     try {
@@ -112,7 +203,7 @@ const DepartmentList = () => {
     fetchDepartments();
 
     // Set up interval to fetch departments every 10 seconds
-    const intervalId = setInterval(fetchDepartments, 5000);
+    const intervalId = setInterval(fetchDepartments, 3000);
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
@@ -120,6 +211,14 @@ const DepartmentList = () => {
 
   const handleSearchTextChange = (event) => {
     setSearchText(event.target.value);
+  };
+
+  const handleEdit = (departmentId) => {
+    setEditingDepartmentId(departmentId);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingDepartmentId(null);
   };
 
   const filteredDepartments = searchText
@@ -143,7 +242,10 @@ const DepartmentList = () => {
       width: 125,
       renderCell: (params) => (
         <ActionsWrapper>
-          <IconButton aria-label="edit">
+          <IconButton
+            aria-label="edit"
+            onClick={() => handleEdit(params.row.department_id)}
+          >
             <EditIcon />
           </IconButton>
           <IconButton
@@ -157,42 +259,71 @@ const DepartmentList = () => {
     },
   ];
 
-  const handleDelete = async (departmentId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this department?"
-    );
-    if (confirmed) {
-      try {
-        const response = await departmentService.deleteDepartment(departmentId);
-        if (response.ok) {
-          // Remove deleted department from the list
-          setDepartments(
-            departments.filter((department) => department.id !== departmentId)
-          );
-        } else {
-          console.error("Failed to delete department:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error deleting department:", error);
+  const handleDelete = (departmentId) => {
+    setDeletedDepartmentId(departmentId);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmDelete = async (departmentId) => {
+    try {
+      const response = await departmentService.deleteDepartment(
+        deletedDepartmentId
+      );
+      if (response.ok) {
+        // Remove deleted department from the list
+        setDepartments(
+          departments.filter((department) => department.id !== departmentId)
+        );
+        toast.success("Department deleted successfully.", {
+          autoClose: 1000,
+        });
+      } else {
+        console.error("Failed to delete department:", response.statusText);
       }
+    } catch (error) {
+      console.error("Error deleting department:", error);
     }
+    setShowConfirmation(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmation(false);
   };
 
   return (
-    <TableContainer>
-      <SearchInput
-        type="text"
-        value={searchText}
-        onChange={handleSearchTextChange}
-        placeholder="Search by name..."
-      />
-      <CustomDataGrid
-        rows={filteredDepartments}
-        columns={columns}
-        autoHeight
-        pagination={true}
-      />
-    </TableContainer>
+    <>
+      {showConfirmation && (
+        <ConfirmationDialog
+          message="Are you sure you want to delete this Department?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+
+      <TableContainer>
+        <SearchInput
+          type="text"
+          value={searchText}
+          onChange={handleSearchTextChange}
+          placeholder="Search by name..."
+        />
+        <CustomDataGrid
+          rows={filteredDepartments}
+          columns={columns}
+          autoHeight
+          pagination={true}
+        />
+        {editingDepartmentId && (
+          <EditDepartment
+            departmentId={editingDepartmentId}
+            initialData={departments.find(
+              (dept) => dept.id === editingDepartmentId
+            )}
+            onCancel={handleCancelEdit}
+          />
+        )}
+      </TableContainer>
+    </>
   );
 };
 

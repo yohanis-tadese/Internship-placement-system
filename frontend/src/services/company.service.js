@@ -20,22 +20,48 @@ const getAllCompanies = async () => {
       "Content-Type": "application/json",
     },
   };
-  const response = await fetch(`${api_url}/api/company`, requestOptions);
+  const response = await fetch(`${api_url}/api/company/`, requestOptions);
   return response;
 };
 
-// A function to send put request to update a company
-const updateCompany = async (companyId, formData) => {
+// A function to send get request to get all companies
+const getCompany = async (companyId) => {
   const requestOptions = {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   };
   const response = await fetch(
     `${api_url}/api/company/${companyId}`,
     requestOptions
   );
   return response;
+};
+
+const updateCompany = async (companyId, formData) => {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  };
+
+  try {
+    const response = await fetch(
+      `${api_url}/api/company/${companyId}`,
+      requestOptions
+    );
+
+    if (!response.ok) {
+      // Get error message from response body or status text
+      const errorMessage = await response.text();
+      throw new Error(`Failed to update company: ${errorMessage}`);
+    }
+
+    return response;
+  } catch (error) {
+    throw new Error(`Error updating company: ${error.message}`);
+  }
 };
 
 // A function to send delete request to delete a company
@@ -55,6 +81,7 @@ const deleteCompany = async (companyId) => {
 const companyService = {
   createCompany,
   getAllCompanies,
+  getCompany,
   updateCompany,
   deleteCompany,
 };

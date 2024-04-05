@@ -85,12 +85,12 @@ const CreateDepartment = () => {
       if (response.status === 400) {
         // If department name already exists
         const responseData = await response.json();
-        toast.error(responseData.error, { autoClose: 2000 });
+        toast.error(responseData.error, { autoClose: 1000 });
         return;
       }
 
       if (!response.ok) {
-        toast.error("Failed to create department", { autoClose: 2000 });
+        toast.error("Failed to create department", { autoClose: 1000 });
         return;
       }
 

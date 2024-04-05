@@ -38,6 +38,29 @@ async function createDepartment(req, res, next) {
   }
 }
 
+async function getDepartment(req, res, next) {
+  try {
+    const departmentId = req.params.id;
+    const department = await departmentService.getDepartment(departmentId);
+
+    if (!department) {
+      return res.status(404).json({
+        error: "Department not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      department,
+    });
+  } catch (error) {
+    console.error("Error getting department:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 async function getAllDepartments(req, res, next) {
   try {
     const department = await departmentService.getAllDepartments();
@@ -112,6 +135,7 @@ async function deleteDepartment(req, res, next) {
 
 module.exports = {
   createDepartment,
+  getDepartment,
   getAllDepartments,
   updateDepartment,
   deleteDepartment,

@@ -2,6 +2,11 @@
 const { query } = require("../config/db.config");
 const bcrypt = require("bcrypt");
 
+// Function to hash the password using bcrypt
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
 // Function to check if the department exists in the database
 async function checkIfDepartmentExists(username) {
   const sql = "SELECT * FROM departments WHERE username = ?";
@@ -16,7 +21,7 @@ async function createDepartment(department) {
     const username = `dept_${department.department_name}`;
 
     // Hash the password before storing it
-    const hashedPassword = await bcrypt.hash(department.password, 10);
+    const hashedPassword = await hashPassword(department.password);
 
     // Check if the department already exists
     const departmentExists = await checkIfDepartmentExists(username);
@@ -52,6 +57,63 @@ async function createDepartment(department) {
   }
 }
 
+// Function to update department details
+async function updateDepartment(departmentId, departmentData) {
+  try {
+    const {
+      department_name,
+      phone_number,
+      contact_email,
+      office_location,
+      password,
+    } = departmentData;
+
+    // Hash the password before updating
+    const hashedPassword = await hashPassword(password);
+
+    const username = `dept_${department_name}`;
+
+    // Update the department data including the hashed password
+    const updateSql = `
+      UPDATE departments
+      SET department_name = ?,
+          username = ?,
+          phone_number = ?,
+          contact_email = ?,
+          office_location = ?,
+          password = ?
+      WHERE department_id = ?
+    `;
+    const result = await query(updateSql, [
+      department_name,
+      username,
+      phone_number,
+      contact_email,
+      office_location,
+      hashedPassword, // Update with hashed password
+      departmentId,
+    ]);
+
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw new Error(`Error updating department: ${error.message}`);
+  }
+}
+
+async function getDepartment(departmentId) {
+  try {
+    const sql = `
+      SELECT * 
+      FROM departments
+      WHERE department_id = ?
+    `;
+    const [department] = await query(sql, [departmentId]);
+    return department;
+  } catch (error) {
+    throw new Error(`Error getting department: ${error.message}`);
+  }
+}
+
 async function getAllDepartments() {
   try {
     const sql = `
@@ -64,62 +126,6 @@ async function getAllDepartments() {
     return rows;
   } catch (error) {
     throw new Error(`Error getting all departments: ${error.message}`);
-  }
-}
-
-async function updateDepartment(departmentId, departmentData) {
-  try {
-    const {
-      department_name,
-      phone_number,
-      contact_email,
-      office_location,
-      password,
-    } = departmentData;
-
-    // Fetch the existing department data including the password
-    const fetchSql = `SELECT password FROM departments WHERE department_id = ?`;
-    const [existingDepartment] = await query(fetchSql, [departmentId]);
-
-    if (!existingDepartment) {
-      throw new Error("Department not found");
-    }
-
-    // Compare the provided password with the stored hashed password
-    const passwordMatch = await bcrypt.compare(
-      password,
-      existingDepartment.password
-    );
-
-    if (!passwordMatch) {
-      throw new Error("Invalid password");
-    }
-
-    // Hash the new password before updating
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Update the department data including the password
-    const updateSql = `
-      UPDATE departments
-      SET department_name = ?,
-          phone_number = ?,
-          contact_email = ?,
-          office_location = ?,
-          password = ?
-      WHERE department_id = ?
-    `;
-    const result = await query(updateSql, [
-      department_name,
-      phone_number,
-      contact_email,
-      office_location,
-      hashedPassword, // Update with hashed password
-      departmentId,
-    ]);
-
-    return result.affectedRows > 0;
-  } catch (error) {
-    throw new Error(`Error updating department: ${error.message}`);
   }
 }
 
@@ -142,6 +148,7 @@ async function deleteDepartment(departmentId) {
 module.exports = {
   checkIfDepartmentExists,
   createDepartment,
+  getDepartment,
   getAllDepartments,
   updateDepartment,
   deleteDepartment,

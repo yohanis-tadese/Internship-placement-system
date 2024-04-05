@@ -24,10 +24,25 @@ const getAllStudents = async () => {
   return response;
 };
 
+// A function to send get request to get a department by ID
+const getStudent = async (studentId) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(
+    `${api_url}/api/student/${studentId}`,
+    requestOptions
+  );
+  return response;
+};
+
 // A function to send put request to update a student
 const updateStudent = async (studentId, formData) => {
   const requestOptions = {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(formData),
   };
@@ -54,6 +69,7 @@ const deleteStudent = async (studentId) => {
 // Export all the functions
 const studentService = {
   createStudent,
+  getStudent,
   getAllStudents,
   updateStudent,
   deleteStudent,

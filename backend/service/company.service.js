@@ -2,6 +2,11 @@
 const { query } = require("../config/db.config");
 const bcrypt = require("bcrypt");
 
+// Function to hash the password using bcrypt
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
 // Function to check if the company exists in the database
 async function checkIfCompanyExists(username) {
   const sql = "SELECT * FROM companies WHERE username = ?";
@@ -56,15 +61,32 @@ async function createCompany(company) {
   }
 }
 
-// Function to get all companies
+async function getCompany(companyId) {
+  try {
+    const sql = `
+      SELECT * 
+      FROM companies
+      WHERE company_id = ?
+    `;
+    const [company] = await query(sql, [companyId]);
+    return company;
+  } catch (error) {
+    throw new Error(`Error getting company: ${error.message}`);
+  }
+}
+
 async function getAllCompanies() {
   try {
-    const sql = "SELECT * FROM companies";
-    const companies = await query(sql);
-    return companies;
+    const sql = `
+      SELECT * 
+      FROM companies
+      ORDER BY company_id DESC
+      LIMIT 10
+    `;
+    const rows = await query(sql);
+    return rows;
   } catch (error) {
-    console.error("Error getting all companies:", error.message);
-    throw new Error("Failed to get all companies");
+    throw new Error(`Error getting all companies: ${error.message}`);
   }
 }
 
@@ -77,55 +99,43 @@ async function updateCompany(companyId, companyData) {
       contact_email,
       location,
       industry_sector,
+      accepted_student_limit,
       password,
     } = companyData;
 
-    // Fetch the existing company data including the password
-    const fetchSql = `SELECT password FROM companies WHERE company_id = ?`;
-    const [existingCompany] = await query(fetchSql, [companyId]);
+    // Hash the password before updating
+    const hashedPassword = await hashPassword(password);
 
-    if (!existingCompany) {
-      throw new Error("Company not found");
-    }
+    const username = `comp_${company_name}`;
 
-    // Compare the provided password with the stored hashed password
-    const passwordMatch = await bcrypt.compare(
-      password,
-      existingCompany.password
-    );
-
-    if (!passwordMatch) {
-      throw new Error("Invalid password");
-    }
-
-    // Hash the new password before updating
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Update the company data including the password
+    // Update the company data including the hashed password
     const updateSql = `
       UPDATE companies
       SET company_name = ?,
+          username = ?,
           phone_number = ?,
           contact_email = ?,
           location = ?,
           industry_sector = ?,
+          accepted_student_limit = ?,
           password = ?
       WHERE company_id = ?
     `;
     const result = await query(updateSql, [
       company_name,
+      username,
       phone_number,
       contact_email,
       location,
       industry_sector,
-      hashedPassword, // Update with hashed password
+      accepted_student_limit,
+      hashedPassword, // Use hashedPassword instead of hashPassword
       companyId,
     ]);
 
     return result.affectedRows > 0;
   } catch (error) {
-    console.error("Error updating company:", error.message);
-    throw new Error("Failed to update company");
+    throw new Error(`Error updating company: ${error.message}`);
   }
 }
 
@@ -150,6 +160,7 @@ async function deleteCompany(companyId) {
 module.exports = {
   checkIfCompanyExists,
   createCompany,
+  getCompany,
   updateCompany,
   deleteCompany,
   getAllCompanies,

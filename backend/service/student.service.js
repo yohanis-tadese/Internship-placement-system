@@ -2,6 +2,11 @@
 const { query } = require("../config/db.config");
 const bcrypt = require("bcrypt");
 
+// Function to hash the password using bcrypt
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
 // Function to check if the student exists in the database
 async function checkIfStudentExists(username) {
   const sql = "SELECT * FROM students WHERE username = ?";
@@ -54,10 +59,27 @@ async function createStudent(student) {
   }
 }
 
+async function getStudent(studentId) {
+  try {
+    const sql = `
+      SELECT * 
+      FROM students
+      WHERE student_id = ?
+    `;
+    const [student] = await query(sql, [studentId]);
+    return student;
+  } catch (error) {
+    throw new Error(`Error getting student: ${error.message}`);
+  }
+}
+
 // Function to get all students
 async function getAllStudents() {
   try {
-    const sql = "SELECT * FROM students";
+    const sql = `SELECT * FROM  students
+    ORDER BY student_id DESC
+    LIMIT 5`;
+
     const students = await query(sql);
     return students;
   } catch (error) {
@@ -72,32 +94,20 @@ async function updateStudent(studentId, studentData) {
     const { first_name, last_name, phone_number, contact_email, password } =
       studentData;
 
-    // Fetch the existing student data including the password
-    const fetchSql = `SELECT password FROM students WHERE student_id = ?`;
-    const [existingStudent] = await query(fetchSql, [studentId]);
-
-    if (!existingStudent) {
-      throw new Error("Student not found");
-    }
-
-    // Compare the provided password with the stored hashed password
-    const passwordMatch = await bcrypt.compare(
-      password,
-      existingStudent.password
-    );
-
-    if (!passwordMatch) {
-      throw new Error("Invalid password");
-    }
-
     // Hash the new password before updating
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
-    // Update the student data including the password
+    // Construct the username as "student_firstname_firstTwoLettersOfLastName"
+    const username = `stud_${first_name.toLowerCase()}_${last_name
+      .slice(0, 2)
+      .toLowerCase()}`;
+
+    // Update the student data including the hashed password
     const updateSql = `
       UPDATE students
       SET first_name = ?,
           last_name = ?,
+          username = ?,
           phone_number = ?,
           contact_email = ?,
           password = ?
@@ -106,6 +116,7 @@ async function updateStudent(studentId, studentData) {
     const result = await query(updateSql, [
       first_name,
       last_name,
+      username,
       phone_number,
       contact_email,
       hashedPassword, // Update with hashed password
@@ -114,8 +125,7 @@ async function updateStudent(studentId, studentData) {
 
     return result.affectedRows > 0;
   } catch (error) {
-    console.error("Error updating student:", error);
-    throw new Error("Failed to update student");
+    throw new Error(`Error updating student: ${error.message}`);
   }
 }
 
@@ -140,7 +150,8 @@ async function deleteStudent(studentId) {
 module.exports = {
   checkIfStudentExists,
   createStudent,
+  getStudent,
+  getAllStudents,
   updateStudent,
   deleteStudent,
-  getAllStudents,
 };

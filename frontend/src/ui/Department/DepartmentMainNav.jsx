@@ -24,7 +24,7 @@ const StyledNavLink = styled(NavLink)`
     color: var(--color-grey-600);
     font-size: 1.6rem;
     font-weight: 500;
-    padding: 1.4rem 3.4rem;
+    padding: 1.4rem 2.4rem;
     transition: all 0.3s;
   }
 
@@ -69,12 +69,6 @@ function DepMainNav() {
             <span>Student</span>
           </StyledNavLink>
         </li>
-        {/* <li>
-          <StyledNavLink to="/department/result">
-            <HiOutlineHome />
-            <span>Result</span>
-          </StyledNavLink>
-        </li> */}
       </NavList>
     </nav>
   );

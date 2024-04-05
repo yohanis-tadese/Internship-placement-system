@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import studentService from "../../../services/student.service";
-import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+import {
+  FaEdit,
+  FaRegTrashAlt,
+  FaCheckCircle,
+  FaTimesCircle,
+} from "react-icons/fa";
 import styled from "styled-components";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import EditStudent from "./EditStudent";
 
 const TableContainer = styled.div`
   width: 100%;
@@ -82,9 +90,97 @@ const DeleteIcon = styled(FaRegTrashAlt)`
   font-size: 18px;
 `;
 
+const ConfirmationContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 460px;
+  background-color: #ff9966;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 400px;
+`;
+
+const ConfirmationMessage = styled.p`
+  font-size: 16px;
+  color: #333333;
+  margin-bottom: 20px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+`;
+
+const ConfirmButton = styled.button`
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const CancelButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333333;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #bdbdbd;
+  }
+`;
+
+const IconWrapper = styled.span`
+  margin-right: 10px;
+`;
+
+const ConfirmIcon = styled(FaCheckCircle)`
+  color: #28a745;
+`;
+
+const CancelIcon = styled(FaTimesCircle)`
+  color: #dc3545;
+`;
+
+const ConfirmationDialog = ({ message, onConfirm, onCancel }) => {
+  return (
+    <ConfirmationContainer>
+      <ConfirmationMessage>{message}</ConfirmationMessage>
+      <ButtonWrapper>
+        <ConfirmButton onClick={onConfirm}>
+          <IconWrapper>
+            <ConfirmIcon />
+          </IconWrapper>
+          Confirm
+        </ConfirmButton>
+        <CancelButton onClick={onCancel}>
+          <IconWrapper>
+            <CancelIcon />
+          </IconWrapper>
+          Cancel
+        </CancelButton>
+      </ButtonWrapper>
+    </ConfirmationContainer>
+  );
+};
+
 const StudentList = () => {
   const [students, setStudents] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [editingStudentId, setEditingStudentId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [deletedStudentId, setDeletedStudentId] = useState(null);
 
   const fetchStudents = async () => {
     try {
@@ -95,6 +191,7 @@ const StudentList = () => {
           ...student,
           id: index + 1,
         }));
+        // Prepend newly fetched students to the existing list
         setStudents(studentsData);
       } else {
         console.error("Failed to fetch students:", response.statusText);
@@ -109,7 +206,7 @@ const StudentList = () => {
     fetchStudents();
 
     // Set up interval to fetch students every 10 seconds
-    const intervalId = setInterval(fetchStudents, 10000);
+    const intervalId = setInterval(fetchStudents, 3000);
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
@@ -137,7 +234,10 @@ const StudentList = () => {
       width: 140,
       renderCell: (params) => (
         <ActionsWrapper>
-          <IconButton aria-label="edit">
+          <IconButton
+            aria-label="edit"
+            onClick={() => handleEdit(params.row.student_id)}
+          >
             <EditIcon />
           </IconButton>
           <IconButton
@@ -151,40 +251,75 @@ const StudentList = () => {
     },
   ];
 
-  const handleDelete = async (studentId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this student?"
-    );
-    if (confirmed) {
-      try {
-        const response = await studentService.deleteStudent(studentId);
-        if (response.ok) {
-          // Remove deleted student from the list
-          setStudents(students.filter((student) => student.id !== studentId));
-        } else {
-          console.error("Failed to delete student:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error deleting student:", error);
+  const handleDelete = (studentId) => {
+    setDeletedStudentId(studentId);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmDelete = async (studentId) => {
+    try {
+      const response = await studentService.deleteStudent(deletedStudentId);
+      if (response.ok) {
+        // Remove deleted student from the list
+        setStudents(students.filter((students) => students.id !== studentId));
+        toast.success("Student deleted successfully.", {
+          autoClose: 1000,
+        });
+      } else {
+        console.error("Failed to delete department:", response.statusText);
       }
+    } catch (error) {
+      console.error("Error deleting department:", error);
     }
+    setShowConfirmation(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmation(false);
+  };
+
+  const handleEdit = (studentId) => {
+    setEditingStudentId(studentId);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingStudentId(null);
   };
 
   return (
-    <TableContainer>
-      <SearchInput
-        type="text"
-        value={searchText}
-        onChange={handleSearchTextChange}
-        placeholder="Search by first name..."
-      />
-      <CustomDataGrid
-        rows={filteredStudents}
-        columns={columns}
-        autoHeight
-        pagination={true}
-      />
-    </TableContainer>
+    <>
+      {showConfirmation && (
+        <ConfirmationDialog
+          message="Are you sure you want to delete this Student?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+      <TableContainer>
+        <SearchInput
+          type="text"
+          value={searchText}
+          onChange={handleSearchTextChange}
+          placeholder="Search by first name..."
+        />
+        <CustomDataGrid
+          rows={filteredStudents}
+          columns={columns}
+          autoHeight
+          pagination={true}
+          pageSize={5} // Display 5 students per page
+          rowCount={filteredStudents.length} // Total number of rows
+        />
+
+        {editingStudentId && (
+          <EditStudent
+            studentId={editingStudentId}
+            initialData={students.find((stud) => stud.id === editingStudentId)}
+            onCancel={handleCancelEdit}
+          />
+        )}
+      </TableContainer>
+    </>
   );
 };
 

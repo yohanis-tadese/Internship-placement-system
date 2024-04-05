@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import ButtonIcon from "./ButtonIcon";
 import { LuLogOut } from "react-icons/lu";
-import { FaUser } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import DarkModeToggle from "./DarkModeToggle";
 import { useAuth } from "../context/AuthContext";
@@ -37,9 +37,8 @@ function HeaderMenu() {
       {isLogged && (
         <>
           <WelcomeMessage>Welcome</WelcomeMessage>
-
           <ButtonIcon>
-            <FaUser />
+            <FaRegUser />
           </ButtonIcon>
         </>
       )}

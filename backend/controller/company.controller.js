@@ -38,6 +38,29 @@ async function createCompany(req, res, next) {
   }
 }
 
+async function getCompany(req, res, next) {
+  try {
+    const companyId = req.params.id;
+    const company = await companyService.getCompany(companyId);
+
+    if (!company) {
+      return res.status(404).json({
+        error: "Company not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      company,
+    });
+  } catch (error) {
+    console.error("Error getting company:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 async function getAllCompanies(req, res, next) {
   try {
     const companies = await companyService.getAllCompanies();
@@ -115,4 +138,5 @@ module.exports = {
   getAllCompanies,
   updateCompany,
   deleteCompany,
+  getCompany,
 };

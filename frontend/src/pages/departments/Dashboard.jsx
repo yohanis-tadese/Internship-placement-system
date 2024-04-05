@@ -4,7 +4,7 @@ import { MdBusiness } from "react-icons/md"; // Import organization icon
 import { FaUserGraduate } from "react-icons/fa"; // Import student icon
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
-
+import { Link } from "react-router-dom";
 import companyService from "../../services/company.service"; // Correct import
 import studentService from "../../services/student.service"; // Correct import
 
@@ -37,11 +37,20 @@ const Box = styled.div`
 
   h3 {
     font-size: 2.5rem;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
   p {
     font-size: 1.2rem;
   }
+`;
+
+const StyledLink = styled(Link)`
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: #0984e3;
+  text-decoration: none;
+  font-weight: bold;
 `;
 
 const IconContainer = styled.div`
@@ -86,22 +95,22 @@ function Dashboard() {
       <br /> <br />
       <DashboardContainer>
         <Box>
-          <Heading as="h2">Number of Companies</Heading>
-          <h3>{numCompanies}</h3>
-          <IconContainer>
-            <MdBusiness size={24} color="#0984e3" />{" "}
-            {/* Use organization icon */}
-          </IconContainer>
-          <p>Number of companies registered in the system</p>
-        </Box>
-        <Box>
           <Heading as="h2">Number of Students</Heading>
           <h3>{numStudents}</h3>
           <IconContainer>
             <FaUserGraduate size={24} color="#0984e3" />{" "}
             {/* Use student icon */}
           </IconContainer>
-          <p>Number of students registered in the system</p>
+          <StyledLink to="/department/student">See detail</StyledLink>
+        </Box>
+        <Box>
+          <Heading as="h2">Number of Companies</Heading>
+          <h3>{numCompanies}</h3>
+          <IconContainer>
+            <MdBusiness size={24} color="#0984e3" />{" "}
+            {/* Use organization icon */}
+          </IconContainer>
+          <StyledLink>Numbers of companys</StyledLink>
         </Box>
       </DashboardContainer>
     </>

@@ -39,6 +39,23 @@ async function createStudent(req, res, next) {
   }
 }
 
+async function getStudents(req, res, next) {
+  try {
+    const studentId = req.params.id;
+    const students = await studentService.getStudent(studentId);
+
+    return res.status(200).json({
+      status: true,
+      students,
+    });
+  } catch (error) {
+    console.error("Error getting students:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 async function getAllStudents(req, res, next) {
   try {
     const students = await studentService.getAllStudents();
@@ -107,6 +124,7 @@ async function deleteStudent(req, res, next) {
 
 module.exports = {
   createStudent,
+  getStudents,
   getAllStudents,
   updateStudent,
   deleteStudent,

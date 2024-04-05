@@ -72,10 +72,10 @@ function LoginForm() {
             redirectTo = "/";
         }
 
-        toast.success("User login successful!", { autoClose: 2000 });
+        toast.success("User login successful!", { autoClose: 1000 });
         setTimeout(() => {
           if (navigate) navigate(redirectTo);
-        }, 2000);
+        }, 1500);
       } else {
         toast.error(data.message, { autoClose: 2000 });
       }

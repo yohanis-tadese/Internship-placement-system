@@ -98,7 +98,7 @@ const CreateCompany = () => {
       if (response.status === 400) {
         // If department name already exists
         const responseData = await response.json();
-        toast.error(responseData.error, { autoClose: 2000 });
+        toast.error(responseData.error, { autoClose: 1000 });
         return;
       }
 

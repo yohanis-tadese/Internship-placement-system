@@ -103,7 +103,7 @@ const CreateStudent = () => {
           password: "",
         });
         setErrors({});
-        toast.success(responseData.message, { autoClose: 2000 });
+        toast.success("Student created successfully", { autoClose: 1000 });
       }
 
       setModalVisible(false);
@@ -111,7 +111,7 @@ const CreateStudent = () => {
       toast.error(
         "Error creating student:",
         {
-          autoClose: 2000,
+          autoClose: 1000,
         },
         error.message
       );

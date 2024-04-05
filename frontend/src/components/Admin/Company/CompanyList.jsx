@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import companyService from "../../../services/company.service";
 import { FaEdit } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
-
 import styled from "styled-components";
+import EditCompany from "./EditCompany";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TableContainer = styled.div`
   width: 100%;
@@ -84,15 +87,101 @@ const DeleteIcon = styled(FaRegTrashAlt)`
   font-size: 18px;
 `;
 
+const ConfirmationContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 460px;
+  background-color: #ff9966;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 400px;
+`;
+
+const ConfirmationMessage = styled.p`
+  font-size: 16px;
+  color: #333333;
+  margin-bottom: 20px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+`;
+
+const ConfirmButton = styled.button`
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const CancelButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333333;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #bdbdbd;
+  }
+`;
+
+const IconWrapper = styled.span`
+  margin-right: 10px;
+`;
+
+const ConfirmIcon = styled(FaCheckCircle)`
+  color: #28a745;
+`;
+
+const CancelIcon = styled(FaTimesCircle)`
+  color: #dc3545;
+`;
+
+const ConfirmationDialog = ({ message, onConfirm, onCancel }) => {
+  return (
+    <ConfirmationContainer>
+      <ConfirmationMessage>{message}</ConfirmationMessage>
+      <ButtonWrapper>
+        <ConfirmButton onClick={onConfirm}>
+          <IconWrapper>
+            <ConfirmIcon />
+          </IconWrapper>
+          Confirm
+        </ConfirmButton>
+        <CancelButton onClick={onCancel}>
+          <IconWrapper>
+            <CancelIcon />
+          </IconWrapper>
+          Cancel
+        </CancelButton>
+      </ButtonWrapper>
+    </ConfirmationContainer>
+  );
+};
+
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [editingCompanyId, setEditingCompanyId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [deletedCompanyId, setDeletedCompanyId] = useState(null);
 
   const fetchCompanies = async () => {
     try {
       const response = await companyService.getAllCompanies();
-      console.log("response", response);
-
       if (response.ok) {
         const responseData = await response.json();
         const companiesData = responseData.companies.map((company, index) => ({
@@ -123,6 +212,41 @@ const CompanyList = () => {
     setSearchText(event.target.value);
   };
 
+  const handleEdit = (companyId) => {
+    setEditingCompanyId(companyId);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCompanyId(null);
+  };
+
+  const handleDelete = (companyId) => {
+    setDeletedCompanyId(companyId);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmDelete = async (companyId) => {
+    try {
+      const response = await companyService.deleteCompany(deletedCompanyId);
+      if (response.ok) {
+        // Remove deleted company from the list
+        setCompanies(companies.filter((company) => company.id !== companyId));
+        toast.success("Company deleted successfully.", { autoClose: 1000 });
+      } else {
+        console.error("Failed to delete company:", response.statusText);
+        toast.error("Failed to delete company.");
+      }
+    } catch (error) {
+      console.error("Error deleting company:", error);
+      toast.error("Error deleting company.");
+    }
+    setShowConfirmation(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmation(false);
+  };
+
   const filteredCompanies = searchText
     ? companies.filter((company) =>
         company.company_name.toLowerCase().includes(searchText.toLowerCase())
@@ -147,7 +271,10 @@ const CompanyList = () => {
       width: 125,
       renderCell: (params) => (
         <ActionsWrapper>
-          <IconButton aria-label="edit">
+          <IconButton
+            aria-label="edit"
+            onClick={() => handleEdit(params.row.company_id)}
+          >
             <EditIcon />
           </IconButton>
           <IconButton
@@ -161,40 +288,39 @@ const CompanyList = () => {
     },
   ];
 
-  const handleDelete = async (companyId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this company?"
-    );
-    if (confirmed) {
-      try {
-        const response = await companyService.deleteCompany(companyId);
-        if (response.ok) {
-          // Remove deleted company from the list
-          setCompanies(companies.filter((company) => company.id !== companyId));
-        } else {
-          console.error("Failed to delete company:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error deleting company:", error);
-      }
-    }
-  };
-
   return (
-    <TableContainer>
-      <SearchInput
-        type="text"
-        value={searchText}
-        onChange={handleSearchTextChange}
-        placeholder="Search by name..."
-      />
-      <CustomDataGrid
-        rows={filteredCompanies}
-        columns={columns}
-        autoHeight
-        pagination={true}
-      />
-    </TableContainer>
+    <>
+      {showConfirmation && (
+        <ConfirmationDialog
+          message="Are you sure you want to delete this company?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+      <TableContainer>
+        <SearchInput
+          type="text"
+          value={searchText}
+          onChange={handleSearchTextChange}
+          placeholder="Search by name..."
+        />
+        <CustomDataGrid
+          rows={filteredCompanies}
+          columns={columns}
+          autoHeight
+          pagination={true}
+        />
+        {editingCompanyId && (
+          <EditCompany
+            companyId={editingCompanyId}
+            initialData={companies.find(
+              (company) => company.id === editingCompanyId
+            )}
+            onCancel={handleCancelEdit}
+          />
+        )}
+      </TableContainer>
+    </>
   );
 };
 
