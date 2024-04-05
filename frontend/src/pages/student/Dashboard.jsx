@@ -9,7 +9,7 @@ const studentLayout = styled.main`
   align-content: center;
   justify-content: center;
   gap: 3.2rem;
-  background-color: var(--color-grey-50);
+  background-color: var(--color-grey-0);
 `;
 
 const Dashboard = () => {

@@ -5,9 +5,7 @@ const FooterContainer = styled.footer`
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: #3b455a;
-  color: #ffffff;
-  color: var(--color-grey-600);
+  background-color: var(--color-grey-100);
   padding: 5px;
   font-weight: 500;
   text-align: center; /* Text alignment center */
@@ -20,7 +18,6 @@ const Footer = () => {
         style={{
           textAlign: "center",
           margin: "10px 0 0",
-          color: "#ffffff",
           fontSize: "14px",
         }}
       >

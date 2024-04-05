@@ -13,6 +13,7 @@ const SectionTitle = styled.h2`
   color: var(--color-grey-600);
   margin-bottom: 20px;
   text-align: center; /* Center align the text */
+  margin-top: 100px;
 `;
 
 // Styled component for the content container
