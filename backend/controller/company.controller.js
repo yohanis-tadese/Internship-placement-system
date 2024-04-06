@@ -22,6 +22,7 @@ async function createCompany(req, res, next) {
       location: req.body.location,
       industry_sector: req.body.industry_sector,
       accepted_student_limit: req.body.accepted_student_limit,
+      website: req.body.website,
       password: req.body.password,
     });
 

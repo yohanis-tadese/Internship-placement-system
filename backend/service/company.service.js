@@ -14,7 +14,6 @@ async function checkIfCompanyExists(username) {
   return rows.length > 0;
 }
 
-// Function to create a new company
 async function createCompany(company) {
   try {
     // Generate a unique username for the company
@@ -39,8 +38,9 @@ async function createCompany(company) {
           location,
           industry_sector,
           accepted_student_limit,
+          website,
           password
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
     const result = await query(insertCompanySql, [
       company.company_name,
@@ -50,6 +50,7 @@ async function createCompany(company) {
       company.location,
       company.industry_sector,
       company.accepted_student_limit,
+      company.website,
       hashedPassword,
     ]);
     const companyId = result.insertId;

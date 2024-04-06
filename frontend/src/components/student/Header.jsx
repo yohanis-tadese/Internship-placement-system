@@ -107,16 +107,16 @@ const Header = () => {
       </NavLink>
       {isLogged && (
         <RightContainer>
-          <StyledNavLink to="/company">
+          <StyledNavLink to="/student/company">
             <FaBuilding /> Company
           </StyledNavLink>
-          <StyledNavLink to="/apply">
+          <StyledNavLink to="/student/apply">
             <FaListAlt /> Apply
           </StyledNavLink>
-          <StyledNavLink to="/result">
+          <StyledNavLink to="/student/result">
             <FaListAlt /> Result
           </StyledNavLink>
-          <StyledNavLink to="/profile">
+          <StyledNavLink to="/student/profile">
             <FaUserCircle /> Profile
           </StyledNavLink>
           <DarkModeToggle />

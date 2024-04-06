@@ -18,10 +18,11 @@ import AdminCriteria from "./pages/Admin/Criteria";
 import AdminSettings from "./pages/Admin/Settings";
 
 // Student Pages
-
 import Dashboard from "./pages/student/Dashboard";
 import StudentPlacementForm from "./components/student/CriteriaForm";
-import ViewCompany from "./components/student/ViewCompany";
+import CompanyList from "./components/student/CompanyList";
+
+// import ViewCompany from "./components/student/ViewCompany";
 
 // import Profile from "./pages/student/profile";
 
@@ -46,8 +47,6 @@ function App() {
           <Route path="/FAQ" element={<FAQ />} />
           <Route path="*" element={<PageNotFound />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="/apply" element={<StudentPlacementForm />} />
-          <Route path="/company" element={<ViewCompany />} />
 
           <Route element={<AppLayout />}>
             <Route path="admin">
@@ -171,6 +170,30 @@ function App() {
               element={
                 <PrivateAuthRoute roles={["Student"]}>
                   <Dashboard />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="company"
+              element={
+                <PrivateAuthRoute roles={["Student"]}>
+                  <CompanyList />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="apply"
+              element={
+                <PrivateAuthRoute roles={["Student"]}>
+                  <StudentPlacementForm />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <PrivateAuthRoute roles={["Student"]}>
+                  <StudentPlacementForm />
                 </PrivateAuthRoute>
               }
             />

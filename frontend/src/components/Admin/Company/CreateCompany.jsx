@@ -116,6 +116,7 @@ const CreateCompany = () => {
           location: "",
           industry_sector: "",
           accepted_student_limit: "",
+          website: "",
           password: "",
         });
         setErrors({});
@@ -214,6 +215,16 @@ const CreateCompany = () => {
               />
             </FormRow>
 
+            <FormRow label="Website">
+              <Input
+                type="text"
+                id="website"
+                autoComplete="on"
+                value={formData.website}
+                onChange={handleChange}
+              />
+            </FormRow>
+
             <FormRow label="Password" error={errors.password}>
               <Input
                 type="password"
@@ -223,6 +234,7 @@ const CreateCompany = () => {
                 onChange={handleChange}
               />
             </FormRow>
+
             <div
               style={{
                 display: "flex",

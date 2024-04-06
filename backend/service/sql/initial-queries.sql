@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
   `location` varchar(255),
   `industry_sector` varchar(255),
   `accepted_student_limit` int(11),
+  `website` varchar(400),
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`company_id`),
   UNIQUE KEY (`company_name`)
