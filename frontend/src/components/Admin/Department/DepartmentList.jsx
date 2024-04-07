@@ -183,6 +183,9 @@ const DepartmentList = () => {
       const response = await departmentService.getAllDepartments();
       if (response.ok) {
         const responseData = await response.json();
+
+        console.log("Hooo", Array.isArray(responseData.department));
+
         const departmentsData = responseData.department.map(
           (department, index) => ({
             ...department,
@@ -230,11 +233,12 @@ const DepartmentList = () => {
     : departments;
 
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
-    { field: "department_name", headerName: "Name", width: 130 },
+    { field: "id", headerName: "ID", width: 60 },
+    { field: "department_name", headerName: "Name", width: 100 },
     { field: "username", headerName: "Username", width: 130 },
     { field: "phone_number", headerName: "Phone Number", width: 130 },
-    { field: "contact_email", headerName: "Contact Email", width: 190 },
+    { field: "contact_email", headerName: "Contact Email", width: 150 },
+    { field: "department_type", headerName: "Type", width: 100 },
     { field: "office_location", headerName: "Office Location", width: 130 },
     {
       field: "actions",

@@ -9,6 +9,7 @@ const getAuth = () => {
         role: decodedToken.user_role,
         userId: decodedToken[`${decodedToken.user_role.toLowerCase()}_id`],
         username: decodedToken.username,
+        departmentType: decodedToken.department_type,
       };
     } else {
       console.log("Token is not found in local storage.");

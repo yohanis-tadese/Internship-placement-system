@@ -39,8 +39,9 @@ async function createStudent(student) {
           username,
           phone_number,
           contact_email,
-          password
-        ) VALUES (?, ?, ?, ?, ?, ?)
+          password,
+          department_type
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
     const result = await query(insertStudentSql, [
       student.first_name,
@@ -49,6 +50,7 @@ async function createStudent(student) {
       student.phone_number,
       student.contact_email,
       hashedPassword,
+      student.department_type,
     ]);
     const studentId = result.insertId;
 
@@ -146,6 +148,21 @@ async function deleteStudent(studentId) {
   }
 }
 
+async function getStudentsByDepartment(departmentType) {
+  try {
+    const sql = `
+      SELECT * 
+      FROM students
+      WHERE department_type = ?
+    `;
+    const row = await query(sql, [departmentType]);
+    return row;
+  } catch (error) {
+    console.error("Error getting students by department:", error.message);
+    throw new Error("Failed to retrieve students by department");
+  }
+}
+
 // Export the functions
 module.exports = {
   checkIfStudentExists,
@@ -153,5 +170,6 @@ module.exports = {
   getStudent,
   getAllStudents,
   updateStudent,
+  getStudentsByDepartment,
   deleteStudent,
 };

@@ -5,6 +5,7 @@ import Header from "../components/Home/Header";
 import Main from "../components/Home/Main";
 
 const StyledAppLayout = styled.div`
+  border-bottom: 7px solid #cf711f;
   display: grid;
   grid-template-rows: auto 1fr auto; /* Header, Main, Footer */
   min-height: 100vh;

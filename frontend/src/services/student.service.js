@@ -66,6 +66,20 @@ const deleteStudent = async (studentId) => {
   return response;
 };
 
+const getStudentsByDepartment = async (departmentType) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(
+    `${api_url}/api/students/${departmentType}`,
+    requestOptions
+  );
+  return response;
+};
+
 // Export all the functions
 const studentService = {
   createStudent,
@@ -73,6 +87,7 @@ const studentService = {
   getAllStudents,
   updateStudent,
   deleteStudent,
+  getStudentsByDepartment,
 };
 
 export default studentService;

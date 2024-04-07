@@ -1,5 +1,6 @@
 // Import necessary dependencies
 const studentService = require("../service/student.service");
+const departmentService = require("../service/department.service");
 
 async function createStudent(req, res, next) {
   try {
@@ -129,47 +130,10 @@ async function deleteStudent(req, res, next) {
   }
 }
 
-async function getStudentTypes(req, res, next) {
-  try {
-    const studentTypes = await studentService.getStudentTypes();
-
-    return res.status(200).json({
-      status: true,
-      studentTypes,
-    });
-  } catch (error) {
-    console.error("Error getting student types:", error);
-    return res.status(500).json({
-      error: "Internal server error",
-    });
-  }
-}
-
-async function getStudentsByDepartment(req, res, next) {
-  try {
-    const departmentType = req.params.departmentType;
-    const students = await studentService.getStudentsByDepartment(
-      departmentType
-    );
-
-    return res.status(200).json({
-      status: true,
-      data: students,
-    });
-  } catch (error) {
-    console.error("Error getting students by department:", error);
-    return res.status(500).json({
-      error: "Internal server error",
-    });
-  }
-}
-
 module.exports = {
   createStudent,
   getStudents,
   getAllStudents,
   updateStudent,
   deleteStudent,
-  getStudentTypes,
-  getStudentsByDepartment,
 };

@@ -1,10 +1,12 @@
-// Import necessary dependencies
 const adminService = require("../service/admin.service");
 
 async function createAdmin(req, res, next) {
   try {
+    // Check if all required fields exist in req.body
+    const { first_name, last_name, email, password } = req.body;
+
     // Generate the username automatically
-    const username = `admin_${req.body.first_name.toLowerCase()}_${req.body.last_name
+    const username = `admin_${first_name.toLowerCase()}_${last_name
       .slice(0, 2)
       .toLowerCase()}`;
 
@@ -19,10 +21,10 @@ async function createAdmin(req, res, next) {
 
     // Create new admin
     const adminId = await adminService.createAdmin({
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      email: req.body.email,
-      password: req.body.password,
+      first_name,
+      last_name,
+      email,
+      password,
     });
 
     return res.status(200).json({
@@ -38,6 +40,22 @@ async function createAdmin(req, res, next) {
   }
 }
 
+async function getAllAdmins(req, res, next) {
+  try {
+    const admins = await adminService.getAllAdmins(); // Implement this function in your admin service
+    return res.status(200).json({
+      status: true,
+      admins,
+    });
+  } catch (error) {
+    console.error("Error getting all admins:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 module.exports = {
   createAdmin,
+  getAllAdmins,
 };

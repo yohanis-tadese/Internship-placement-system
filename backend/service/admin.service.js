@@ -1,6 +1,5 @@
 // Import necessary dependencies
 const { query } = require("../config/db.config");
-const bcrypt = require("bcrypt");
 
 // Function to check if the admin exists in the database
 async function checkIfAdminExists(username) {
@@ -52,7 +51,20 @@ async function createAdmin(admin) {
   }
 }
 
+// Function to retrieve all admins from the database
+async function getAllAdmins() {
+  try {
+    const sql = "SELECT * FROM admins";
+    const admins = await query(sql);
+    return admins;
+  } catch (error) {
+    console.error("Error retrieving admins:", error.message);
+    throw new Error("Failed to retrieve admins");
+  }
+}
+
 module.exports = {
   checkIfAdminExists,
   createAdmin,
+  getAllAdmins,
 };

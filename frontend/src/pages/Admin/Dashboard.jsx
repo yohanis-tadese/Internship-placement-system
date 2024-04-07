@@ -3,17 +3,19 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { MdBusiness, MdSchool } from "react-icons/md"; // Import organization and department icons
 import { FaUserGraduate } from "react-icons/fa"; // Import student icon
+import { MdAdminPanelSettings } from "react-icons/md";
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
 import departmentService from "../../services/department.service"; // Correct import
 import companyService from "../../services/company.service"; // Correct import
 import studentService from "../../services/student.service"; // Correct import
+import adminService from "../../services/admin.service"; // Correct import
 
 // Styled component for the dashboard container
 const DashboardContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: 4rem;
 `;
 
 // Styled component for the individual box
@@ -61,6 +63,7 @@ function Dashboard() {
   const [numDepartments, setNumDepartments] = useState(0);
   const [numCompanies, setNumCompanies] = useState(0);
   const [numStudents, setnumStudents] = useState(0);
+  const [numAdmins, setnumAdmins] = useState(0);
 
   useEffect(() => {
     // Fetch real data for the dashboard
@@ -69,8 +72,15 @@ function Dashboard() {
         const departmentResponse = await departmentService.getAllDepartments();
         const companyResponse = await companyService.getAllCompanies();
         const studentRespons = await studentService.getAllStudents();
+        const adminRespons = await adminService.getAllAdmins();
+        console.log(adminRespons);
 
-        if (departmentResponse.ok && companyResponse.ok && studentRespons.ok) {
+        if (
+          departmentResponse.ok &&
+          companyResponse.ok &&
+          studentRespons.ok &&
+          adminRespons.ok
+        ) {
           const departmentData = await departmentResponse.json();
           const department = departmentData.department;
 
@@ -80,9 +90,13 @@ function Dashboard() {
           const studentData = await studentRespons.json();
           const students = studentData.students;
 
+          const adminData = await adminRespons.json();
+          const admins = adminData.admins;
+
           setNumDepartments(department.length);
           setNumCompanies(companies.length);
           setnumStudents(students.length);
+          setnumAdmins(admins.length);
         } else {
           console.error("Failed to fetch dashboard data");
         }
@@ -101,6 +115,14 @@ function Dashboard() {
       </Row>
       <br /> <br />
       <DashboardContainer>
+        <Box>
+          <Heading as="h2">Number of Admins</Heading>
+          <h3>{numAdmins}</h3>
+          <IconContainer>
+            <MdAdminPanelSettings size={24} color="#00b494" />
+          </IconContainer>
+          <StyledLink>Admins</StyledLink>
+        </Box>
         <Box>
           <Heading as="h2">Number of Departments</Heading>
           <h3>{numDepartments}</h3>
@@ -123,7 +145,7 @@ function Dashboard() {
           <IconContainer>
             <FaUserGraduate size={24} color="#0984e3" />
           </IconContainer>
-          <StyledLink>Number of students</StyledLink>
+          <StyledLink>Students</StyledLink>
         </Box>
       </DashboardContainer>
     </>

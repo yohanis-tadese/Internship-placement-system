@@ -75,6 +75,30 @@ const deleteDepartment = async (departmentId) => {
   return response;
 };
 
+// A function to send get request to fetch department types
+const getDepartmentTypes = async () => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const response = await fetch(
+      `${api_url}/api/department-types`,
+      requestOptions
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch department types");
+    }
+    const data = await response.json();
+    return data.departmentTypes;
+  } catch (error) {
+    throw new Error(`Error fetching department types: ${error.message}`);
+  }
+};
+
 // Export all the functions
 const departmentService = {
   createDepartment,
@@ -82,6 +106,7 @@ const departmentService = {
   getAllDepartments,
   updateDepartment,
   deleteDepartment,
+  getDepartmentTypes,
 };
 
 export default departmentService;

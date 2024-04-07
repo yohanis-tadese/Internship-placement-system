@@ -14,8 +14,8 @@ import FAQ from "./components/Home/FAQ";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminDepartment from "./pages/Admin/Department";
 import AdminCompany from "./pages/Admin/Company";
-import AdminCriteria from "./pages/Admin/Criteria";
 import AdminSettings from "./pages/Admin/Settings";
+import AdminUser from "./pages/Admin/AdminUser";
 
 // Student Pages
 import Dashboard from "./pages/student/Dashboard";
@@ -67,6 +67,14 @@ function App() {
                 }
               />
               <Route
+                path="user"
+                element={
+                  <PrivateAuthRoute roles={["Admin"]}>
+                    <AdminUser />
+                  </PrivateAuthRoute>
+                }
+              />
+              <Route
                 path="department"
                 element={
                   <PrivateAuthRoute roles={["Admin"]}>
@@ -82,16 +90,9 @@ function App() {
                   </PrivateAuthRoute>
                 }
               />
+
               <Route
                 path="criteria"
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <AdminCriteria />
-                  </PrivateAuthRoute>
-                }
-              />
-              <Route
-                path="settings"
                 element={
                   <PrivateAuthRoute roles={["Admin"]}>
                     <AdminSettings />

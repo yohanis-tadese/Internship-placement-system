@@ -75,16 +75,18 @@ function MainNav() {
             <span>Company</span>
           </StyledNavLink>
         </li>
+
         <li>
-          <StyledNavLink to="/admin/criteria">
+          <StyledNavLink to="/admin/user">
             <HiOutlineUsers />
-            <span>Criteria</span>
+            <span>Admin</span>
           </StyledNavLink>
         </li>
+
         <li>
-          <StyledNavLink to="/admin/settings">
+          <StyledNavLink to="/admin/Criteria">
             <HiOutlineCog />
-            <span>Settings</span>
+            <span>Criteria</span>
           </StyledNavLink>
         </li>
       </NavList>

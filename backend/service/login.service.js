@@ -76,7 +76,7 @@ async function loginCompany(username, password) {
 async function loginDepartment(username, password) {
   try {
     const sql =
-      "SELECT department_id, password FROM departments WHERE username = ?";
+      "SELECT department_id, department_type, password FROM departments WHERE username = ?";
     const [department] = await query(sql, [username]);
 
     if (!department) {
@@ -91,6 +91,7 @@ async function loginDepartment(username, password) {
     return {
       id: department.department_id,
       key: "department_id",
+      department_type: department.department_type,
     };
   } catch (error) {
     console.error("Error logging in department:", error.message);

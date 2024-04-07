@@ -37,8 +37,9 @@ async function createDepartment(department) {
           phone_number,
           contact_email,
           office_location,
+          department_type,
           password
-        ) VALUES (?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
     const result = await query(insertDepartmentSql, [
       department.department_name,
@@ -46,6 +47,7 @@ async function createDepartment(department) {
       department.phone_number,
       department.contact_email,
       department.office_location,
+      department.department_type,
       hashedPassword,
     ]);
     const departmentId = result.insertId;
@@ -57,7 +59,6 @@ async function createDepartment(department) {
   }
 }
 
-// Function to update department details
 async function updateDepartment(departmentId, departmentData) {
   try {
     const {
@@ -65,6 +66,7 @@ async function updateDepartment(departmentId, departmentData) {
       phone_number,
       contact_email,
       office_location,
+      department_type,
       password,
     } = departmentData;
 
@@ -73,7 +75,7 @@ async function updateDepartment(departmentId, departmentData) {
 
     const username = `dept_${department_name}`;
 
-    // Update the department data including the hashed password
+    // Update the department data including the hashed password and department type
     const updateSql = `
       UPDATE departments
       SET department_name = ?,
@@ -81,7 +83,8 @@ async function updateDepartment(departmentId, departmentData) {
           phone_number = ?,
           contact_email = ?,
           office_location = ?,
-          password = ?
+          department_type = ?, -- Removed the comma here
+          password = ? -- Removed the comma here
       WHERE department_id = ?
     `;
     const result = await query(updateSql, [
@@ -90,7 +93,8 @@ async function updateDepartment(departmentId, departmentData) {
       phone_number,
       contact_email,
       office_location,
-      hashedPassword, // Update with hashed password
+      department_type,
+      hashedPassword,
       departmentId,
     ]);
 
@@ -144,6 +148,18 @@ async function deleteDepartment(departmentId) {
   }
 }
 
+// Function to retrieve distinct department types from the departments table
+async function getDepartmentTypes() {
+  try {
+    const sql = "SELECT DISTINCT department_type FROM departments";
+    const rows = await query(sql);
+    return rows.map((row) => row.department_type);
+  } catch (error) {
+    console.error("Error getting department types:", error.message);
+    throw new Error("Failed to retrieve department types");
+  }
+}
+
 // Export the functions
 module.exports = {
   checkIfDepartmentExists,
@@ -152,4 +168,5 @@ module.exports = {
   getAllDepartments,
   updateDepartment,
   deleteDepartment,
+  getDepartmentTypes,
 };

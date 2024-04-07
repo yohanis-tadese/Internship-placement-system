@@ -7,8 +7,7 @@ import Modal from "../../../ui/Modal";
 import CancelButton from "../../../ui/CancelButton";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Import department service
+import styled from "styled-components";
 import departmentService from "../../../services/department.service";
 
 const CreateDepartment = () => {
@@ -18,10 +17,29 @@ const CreateDepartment = () => {
     contact_email: "",
     office_location: "",
     password: "",
+    department_type: "",
   });
 
   const [modalVisible, setModalVisible] = useState(false);
   const [errors, setErrors] = useState({});
+  const departments = ["system", "science", "computer", "software"];
+
+  // Styled component for the select container
+  const SelectContainer = styled.div`
+    select {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #ccc;
+      background-color: var(--color-grey-50);
+      border-radius: 5px;
+      font-size: 1.4rem;
+    }
+
+    /* Style the selected option */
+    select option:checked {
+      background-color: #007bff; /* Change the background color */
+    }
+  `;
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -67,6 +85,12 @@ const CreateDepartment = () => {
       valid = false;
     }
 
+    // Validate department type
+    if (!formData.department_type) {
+      newErrors.department_type = "Department type is required";
+      valid = false;
+    }
+
     setErrors(newErrors);
     return valid;
   };
@@ -102,6 +126,7 @@ const CreateDepartment = () => {
           contact_email: "",
           office_location: "",
           password: "",
+          department_type: "",
         });
         setErrors({});
         toast.success(responseData.message, { autoClose: 2000 });
@@ -181,7 +206,22 @@ const CreateDepartment = () => {
                 onChange={handleChange}
               />
             </FormRow>
-
+            <FormRow label="Department Type" error={errors.department_type}>
+              <SelectContainer>
+                <select
+                  id="department_type"
+                  value={formData.department_type}
+                  onChange={handleChange}
+                >
+                  <option value="">Department</option>
+                  {departments.map((department) => (
+                    <option key={department} value={department}>
+                      {department}
+                    </option>
+                  ))}
+                </select>
+              </SelectContainer>
+            </FormRow>
             <div
               style={{
                 display: "flex",

@@ -2,10 +2,11 @@ import styled from "styled-components";
 import LoginForm from "../components/LoginForm";
 // import Heading from "../ui/Heading";
 import Header from "../components/Home/Header";
-import Footer from "../components/Home/Footer";
+// import Footer from "../components/Home/Footer";
 
 const LoginLayout = styled.main`
   min-height: 100vh;
+  border-bottom: 7px solid #cf711f;
   display: grid;
   grid-template-columns: 48rem;
   align-content: center;
@@ -27,7 +28,7 @@ function Login() {
       <LoginLayout>
         <LoginForm />
       </LoginLayout>
-      <Footer />
+      {/* <Footer /> */}
     </StyledAppLayout>
   );
 }

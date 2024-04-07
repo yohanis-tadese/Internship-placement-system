@@ -22,6 +22,7 @@ async function createDepartment(req, res, next) {
       phone_number: req.body.phone_number,
       contact_email: req.body.contact_email,
       office_location: req.body.office_location,
+      department_type: req.body.department_type,
       password: req.body.password,
     });
 
@@ -133,10 +134,33 @@ async function deleteDepartment(req, res, next) {
   }
 }
 
+async function getDepartmentTypes(req, res, next) {
+  try {
+    const departmentTypes = await departmentService.getDepartmentTypes();
+
+    if (!departmentTypes || departmentTypes.length === 0) {
+      return res.status(404).json({
+        error: "Department types not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      departmentTypes,
+    });
+  } catch (error) {
+    console.error("Error getting department types:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 module.exports = {
   createDepartment,
   getDepartment,
   getAllDepartments,
   updateDepartment,
   deleteDepartment,
+  getDepartmentTypes,
 };

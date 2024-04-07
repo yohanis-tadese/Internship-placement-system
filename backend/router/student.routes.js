@@ -8,5 +8,10 @@ router.get("/api/student", studentController.getAllStudents);
 router.get("/api/student/:id", studentController.getStudents);
 router.patch("/api/student/:id", studentController.updateStudent);
 router.delete("/api/student/:id", studentController.deleteStudent);
+router.get("/api/student/types", studentController.getStudentTypes);
+router.get(
+  "/api/students/:departmentType",
+  studentController.getStudentsByDepartment
+);
 
 module.exports = router;

@@ -304,12 +304,7 @@ const CompanyList = () => {
           onChange={handleSearchTextChange}
           placeholder="Search by name..."
         />
-        <CustomDataGrid
-          rows={filteredCompanies}
-          columns={columns}
-          autoHeight
-          pagination={true}
-        />
+        <CustomDataGrid rows={filteredCompanies} columns={columns} autoHeight />
         {editingCompanyId && (
           <EditCompany
             companyId={editingCompanyId}

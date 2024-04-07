@@ -91,7 +91,6 @@ async function getAllCompanies() {
   }
 }
 
-// Function to update an existing company
 async function updateCompany(companyId, companyData) {
   try {
     const {
@@ -102,6 +101,7 @@ async function updateCompany(companyId, companyData) {
       industry_sector,
       accepted_student_limit,
       password,
+      website, // Include website field
     } = companyData;
 
     // Hash the password before updating
@@ -109,7 +109,7 @@ async function updateCompany(companyId, companyData) {
 
     const username = `comp_${company_name}`;
 
-    // Update the company data including the hashed password
+    // Update the company data including the hashed password and website
     const updateSql = `
       UPDATE companies
       SET company_name = ?,
@@ -119,6 +119,7 @@ async function updateCompany(companyId, companyData) {
           location = ?,
           industry_sector = ?,
           accepted_student_limit = ?,
+          website = ?, 
           password = ?
       WHERE company_id = ?
     `;
@@ -130,6 +131,7 @@ async function updateCompany(companyId, companyData) {
       location,
       industry_sector,
       accepted_student_limit,
+      website, // Pass the website value
       hashedPassword, // Use hashedPassword instead of hashPassword
       companyId,
     ]);

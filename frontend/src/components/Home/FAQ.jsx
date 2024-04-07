@@ -4,6 +4,7 @@ import Header from "./Header";
 import Rule from "./Rule";
 
 const StyledAppLayout = styled.div`
+  border-bottom: 7px solid #cf711f;
   display: grid;
   min-height: 100vh;
   grid-template-rows: auto 1fr auto; /* Header, Main, Footer */
