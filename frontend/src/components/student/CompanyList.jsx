@@ -44,7 +44,7 @@ function FeaturedJobs() {
           <div className="ex-title">
             <h1 className="features-title">
               <span className="black-text">
-                Explore and select from our list of available company
+                Explore and select from our list of available companies
               </span>
             </h1>
           </div>
@@ -77,7 +77,8 @@ function Company({
   studentLimit,
 }) {
   const redirectToWebsite = () => {
-    window.open(website, "_blank");
+    const domain = website.replace(/^https?:\/\//i, "");
+    window.open(`//${domain}`, "_blank");
   };
   return (
     <>
@@ -109,7 +110,7 @@ function Company({
                 <i className="icons">
                   <PiStudentFill />
                 </i>
-                Accepte <span>{studentLimit}</span>students
+                Accepte <span>{studentLimit}</span> students
               </span>
             </div>
           </div>

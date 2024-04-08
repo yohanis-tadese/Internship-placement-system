@@ -32,22 +32,21 @@ const SelectContainer = styled.div`
 const EditStudent = ({ studentId, initialData, onCancel }) => {
   const [formData, setFormData] = useState(initialData || {});
   const [modalVisible, setModalVisible] = useState(true);
-  const [departmentTypes, setDepartmentTypes] = useState([]);
+  const [departmentIds, setDepartmentIds] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    // Fetch department types when component mounts
-    const fetchDepartmentTypes = async () => {
+    // Fetch department IDs when component mounts
+    const fetchDepartmentIds = async () => {
       try {
-        const types = await departmentService.getDepartmentTypes();
-        console.log(types);
-        setDepartmentTypes(types);
+        const ids = await departmentService.getDepartmentIds();
+        setDepartmentIds(ids);
       } catch (error) {
-        console.error("Error fetching department types:", error.message);
+        console.error("Error fetching department IDs:", error.message);
       }
     };
 
-    fetchDepartmentTypes();
+    fetchDepartmentIds();
   }, []);
 
   useEffect(() => {
@@ -145,18 +144,21 @@ const EditStudent = ({ studentId, initialData, onCancel }) => {
                 label={field.label}
                 error={errors[field.id]}
               >
-                {field.id === "department_type" ? ( // Render department select options dynamically
-                  <select
-                    id={field.id}
-                    value={formData[field.id] || ""}
-                    onChange={handleChange}
-                  >
-                    {departmentTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
+                {field.id === "department_id" ? (
+                  <SelectContainer>
+                    <select
+                      id={field.id}
+                      value={formData[field.id] || ""}
+                      onChange={handleChange}
+                    >
+                      <option value="">Department...</option>
+                      {departmentIds.map((id) => (
+                        <option key={id} value={id}>
+                          {id}
+                        </option>
+                      ))}
+                    </select>
+                  </SelectContainer>
                 ) : (
                   <Input
                     type={field.type}

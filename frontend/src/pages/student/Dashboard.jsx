@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../../components/student/Header";
 import styled from "styled-components";
 
-const studentLayout = styled.main`
+const StudentLayout = styled.div`
   min-height: 100vh;
   display: grid;
   grid-template-columns: 48rem;
@@ -15,9 +15,9 @@ const studentLayout = styled.main`
 const Dashboard = () => {
   return (
     <>
-      <studentLayout>
+      <StudentLayout>
         <Header />
-      </studentLayout>
+      </StudentLayout>
     </>
   );
 };

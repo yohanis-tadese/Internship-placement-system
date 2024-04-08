@@ -4,7 +4,7 @@ const departmentService = require("../service/department.service");
 async function createDepartment(req, res, next) {
   try {
     // Generate the username automatically
-    const username = `dept_${req.body.department_name}`;
+    const username = `dept.${req.body.department_name}`;
     // Check if department name already exists
     const departmentExists = await departmentService.checkIfDepartmentExists(
       username
@@ -22,7 +22,6 @@ async function createDepartment(req, res, next) {
       phone_number: req.body.phone_number,
       contact_email: req.body.contact_email,
       office_location: req.body.office_location,
-      department_type: req.body.department_type,
       password: req.body.password,
     });
 
@@ -134,22 +133,22 @@ async function deleteDepartment(req, res, next) {
   }
 }
 
-async function getDepartmentTypes(req, res, next) {
+async function getDepartmentIds(req, res, next) {
   try {
-    const departmentTypes = await departmentService.getDepartmentTypes();
+    const departmentIds = await departmentService.getDepartmentIds();
 
-    if (!departmentTypes || departmentTypes.length === 0) {
+    if (!departmentIds || departmentIds.length === 0) {
       return res.status(404).json({
-        error: "Department types not found",
+        error: "Department IDs not found",
       });
     }
 
     return res.status(200).json({
       status: true,
-      departmentTypes,
+      departmentIds,
     });
   } catch (error) {
-    console.error("Error getting department types:", error);
+    console.error("Error getting department IDs:", error);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -162,5 +161,5 @@ module.exports = {
   getAllDepartments,
   updateDepartment,
   deleteDepartment,
-  getDepartmentTypes,
+  getDepartmentIds,
 };

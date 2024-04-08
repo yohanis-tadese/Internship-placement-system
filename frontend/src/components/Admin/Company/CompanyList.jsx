@@ -257,8 +257,8 @@ const CompanyList = () => {
     { field: "id", headerName: "ID", width: 50 },
     { field: "company_name", headerName: "Name", width: 90 },
     { field: "phone_number", headerName: "Phone Number", width: 130 },
-    { field: "contact_email", headerName: "Contact Email", width: 170 },
-    { field: "location", headerName: "Location", width: 100 },
+    { field: "contact_email", headerName: "Contact Email", width: 160 },
+    { field: "location", headerName: "Location", width: 110 },
     { field: "industry_sector", headerName: "Industry Sector", width: 130 },
     {
       field: "accepted_student_limit",
@@ -302,7 +302,7 @@ const CompanyList = () => {
           type="text"
           value={searchText}
           onChange={handleSearchTextChange}
-          placeholder="Search by name..."
+          placeholder="Search ..."
         />
         <CustomDataGrid rows={filteredCompanies} columns={columns} autoHeight />
         {editingCompanyId && (

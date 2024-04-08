@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router";
-import getAuth from "../utils/auth";
+import getAuth from "../../utils/auth";
 
 const PrivateAuthRoute = ({ roles, children }) => {
   const [isChecked, setIsChecked] = useState(false);

@@ -1,5 +1,6 @@
 // Import necessary dependencies
 const { query } = require("../config/db.config");
+const bcrypt = require("bcrypt");
 
 // Function to check if the admin exists in the database
 async function checkIfAdminExists(username) {
@@ -12,7 +13,7 @@ async function checkIfAdminExists(username) {
 async function createAdmin(admin) {
   try {
     // Construct the username as "admin_firstname_firstTwoLettersOfLastName"
-    const username = `admin_${admin.first_name.toLowerCase()}_${admin.last_name
+    const username = `admin.${admin.first_name.toLowerCase()}.${admin.last_name
       .slice(0, 2)
       .toLowerCase()}`;
 

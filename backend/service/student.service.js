@@ -18,7 +18,7 @@ async function checkIfStudentExists(username) {
 async function createStudent(student) {
   try {
     // Construct the username as "student_firstname_firstTwoLettersOfLastName"
-    const username = `stud_${student.first_name.toLowerCase()}_${student.last_name
+    const username = `stud.${student.first_name.toLowerCase()}.${student.last_name
       .slice(0, 2)
       .toLowerCase()}`;
 
@@ -40,7 +40,7 @@ async function createStudent(student) {
           phone_number,
           contact_email,
           password,
-          department_type
+          department_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
     const result = await query(insertStudentSql, [
@@ -50,7 +50,7 @@ async function createStudent(student) {
       student.phone_number,
       student.contact_email,
       hashedPassword,
-      student.department_type,
+      student.department_id,
     ]);
     const studentId = result.insertId;
 
@@ -79,8 +79,7 @@ async function getStudent(studentId) {
 async function getAllStudents() {
   try {
     const sql = `SELECT * FROM  students
-    ORDER BY student_id DESC
-    LIMIT 5`;
+    ORDER BY student_id DESC`;
 
     const students = await query(sql);
     return students;
@@ -100,7 +99,7 @@ async function updateStudent(studentId, studentData) {
     const hashedPassword = await hashPassword(password);
 
     // Construct the username as "student_firstname_firstTwoLettersOfLastName"
-    const username = `stud_${first_name.toLowerCase()}_${last_name
+    const username = `stud.${first_name.toLowerCase()}.${last_name
       .slice(0, 2)
       .toLowerCase()}`;
 
@@ -153,7 +152,7 @@ async function getStudentsByDepartment(departmentType) {
     const sql = `
       SELECT * 
       FROM students
-      WHERE department_type = ?
+      WHERE department_id = ?
     `;
     const row = await query(sql, [departmentType]);
     return row;

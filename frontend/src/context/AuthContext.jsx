@@ -12,42 +12,51 @@ const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState(null);
   const [username, setUsername] = useState("");
+  const [secondName, setSecondName] = useState(""); // State to store the second name
   const [isAdmin, setIsAdmin] = useState(false);
   const [isDepartment, setIsDepartment] = useState(false);
   const [isStudent, setIsStudent] = useState(false);
   const [isCompany, setIsCompany] = useState(false);
-  const [usernameValue, setusernameValue] = useState("");
-  const [departmentType, setDepartmentType] = useState("");
 
   const value = {
     isLogged,
     userRole,
     userId,
     username,
+    secondName,
     isAdmin,
     isDepartment,
     isStudent,
     isCompany,
-    usernameValue,
-    departmentType,
+    setIsLogged,
   };
 
+  console.log(value);
+
   useEffect(() => {
-    const response = getAuth();
-    if (response) {
-      setIsLogged(true);
-      setUserRole(response.role);
-      setUserId(response.userId);
-      setUsername(response.username);
-      setIsAdmin(response.role === "Admin");
-      setIsDepartment(response.role === "Department");
-      setIsStudent(response.role === "Student");
-      setIsCompany(response.role === "Company");
-      const usernameParts = response.username.split("_");
-      const second = usernameParts.length > 1 ? usernameParts[1] : "";
-      setusernameValue(second);
-      setDepartmentType(response.departmentType);
-    }
+    const fetchData = async () => {
+      try {
+        const response = await getAuth();
+        if (response.token) {
+          setIsLogged(true);
+          setUserRole(response.role);
+          setUserId(response.userId);
+          setUsername(response.username);
+          setIsAdmin(response.role === "Admin");
+          setIsDepartment(response.role === "Department");
+          setIsStudent(response.role === "Student");
+          setIsCompany(response.role === "Company");
+
+          // Extract the second name from the username and set it in state
+          const secondName = response.username.split(".")[1];
+          setSecondName(secondName);
+        }
+      } catch (error) {
+        console.error("Error fetching authentication:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

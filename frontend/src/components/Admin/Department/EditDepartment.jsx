@@ -26,6 +26,7 @@ const EditDepartment = ({ departmentId, initialData, onCancel }) => {
   const fetchDepartmentData = async () => {
     try {
       const response = await departmentService.getDepartments(departmentId);
+      console.log(response);
       if (response.ok) {
         const responseData = await response.json();
         setFormData(responseData.department);
@@ -96,8 +97,6 @@ const EditDepartment = ({ departmentId, initialData, onCancel }) => {
       }
 
       const responseData = await response.json();
-
-      console.log("Response data:", responseData); // Log the response data
 
       if (response.status === 200) {
         setErrors({});

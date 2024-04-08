@@ -184,8 +184,6 @@ const DepartmentList = () => {
       if (response.ok) {
         const responseData = await response.json();
 
-        console.log("Hooo", Array.isArray(responseData.department));
-
         const departmentsData = responseData.department.map(
           (department, index) => ({
             ...department,
@@ -206,7 +204,7 @@ const DepartmentList = () => {
     fetchDepartments();
 
     // Set up interval to fetch departments every 10 seconds
-    const intervalId = setInterval(fetchDepartments, 3000);
+    const intervalId = setInterval(fetchDepartments, 2000);
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
@@ -234,16 +232,15 @@ const DepartmentList = () => {
 
   const columns = [
     { field: "id", headerName: "ID", width: 60 },
-    { field: "department_name", headerName: "Name", width: 100 },
-    { field: "username", headerName: "Username", width: 130 },
-    { field: "phone_number", headerName: "Phone Number", width: 130 },
-    { field: "contact_email", headerName: "Contact Email", width: 150 },
-    { field: "department_type", headerName: "Type", width: 100 },
-    { field: "office_location", headerName: "Office Location", width: 130 },
+    { field: "department_name", headerName: "Name", width: 123 },
+    { field: "username", headerName: "Username", width: 140 },
+    { field: "phone_number", headerName: "Phone Number", width: 150 },
+    { field: "contact_email", headerName: "Contact Email", width: 148 },
+    { field: "office_location", headerName: "Office Location", width: 150 },
     {
       field: "actions",
       headerName: "Actions",
-      width: 125,
+      width: 155,
       renderCell: (params) => (
         <ActionsWrapper>
           <IconButton
@@ -309,7 +306,7 @@ const DepartmentList = () => {
           type="text"
           value={searchText}
           onChange={handleSearchTextChange}
-          placeholder="Search by name..."
+          placeholder="Search ..."
         />
         <CustomDataGrid
           rows={filteredDepartments}

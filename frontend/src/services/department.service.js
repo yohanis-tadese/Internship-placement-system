@@ -75,8 +75,8 @@ const deleteDepartment = async (departmentId) => {
   return response;
 };
 
-// A function to send get request to fetch department types
-const getDepartmentTypes = async () => {
+// A function to send get request to fetch department IDs
+const getDepartmentIds = async () => {
   const requestOptions = {
     method: "GET",
     headers: {
@@ -86,16 +86,16 @@ const getDepartmentTypes = async () => {
 
   try {
     const response = await fetch(
-      `${api_url}/api/department-types`,
+      `${api_url}/api/departments/id`,
       requestOptions
     );
     if (!response.ok) {
-      throw new Error("Failed to fetch department types");
+      throw new Error("Failed to fetch department IDs");
     }
     const data = await response.json();
-    return data.departmentTypes;
+    return data.departmentIds;
   } catch (error) {
-    throw new Error(`Error fetching department types: ${error.message}`);
+    throw new Error(`Error fetching department IDs: ${error.message}`);
   }
 };
 
@@ -106,7 +106,7 @@ const departmentService = {
   getAllDepartments,
   updateDepartment,
   deleteDepartment,
-  getDepartmentTypes,
+  getDepartmentIds,
 };
 
 export default departmentService;

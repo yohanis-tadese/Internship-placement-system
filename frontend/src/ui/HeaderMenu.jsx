@@ -2,10 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import ButtonIcon from "./ButtonIcon";
 import { LuLogOut } from "react-icons/lu";
-import { FaRegUser } from "react-icons/fa";
+import { PiUserCircleDuotone } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import DarkModeToggle from "./DarkModeToggle";
 import { useAuth } from "../context/AuthContext";
+import loginService from "../services/login.service";
 
 const StyledHeaderMenu = styled.div`
   display: flex;
@@ -22,29 +23,47 @@ const WelcomeMessage = styled.span`
 
 function HeaderMenu() {
   const navigate = useNavigate();
-  const { isLogged, isDepartment } = useAuth();
+  const { isLogged, setIsLogged, userRole } = useAuth();
 
-  const handleLogout = () => {
-    // Clear user token from local storage
-    localStorage.removeItem("user_token");
+  const getWelcomeMessage = () => {
+    switch (userRole) {
+      case "Admin":
+        return "Welcome Admin!";
+      case "Company":
+        return "Welcome Company!";
+      case "Student":
+        return "Welcome Student!";
+      case "Department":
+        return "Welcome Department!";
+      default:
+        return "Welcome!";
+    }
+  };
+
+  const logOut = () => {
+    // Call the logout function from the login service
+    loginService.logOut();
+    // Set the isLogged state to false
+    setIsLogged(false);
 
     // Navigate to the login page
     navigate("/login");
+
+    // Reload the page after logout
   };
 
   return (
     <StyledHeaderMenu>
-      {isLogged && (
-        <>
-          <WelcomeMessage>Welcome</WelcomeMessage>
-          <ButtonIcon>
-            <FaRegUser />
-          </ButtonIcon>
-        </>
-      )}
+      <>
+        <WelcomeMessage>{getWelcomeMessage()}</WelcomeMessage>
+        <ButtonIcon>
+          <PiUserCircleDuotone />
+        </ButtonIcon>
+      </>
+
       <DarkModeToggle />
 
-      <ButtonIcon onClick={handleLogout}>
+      <ButtonIcon onClick={logOut}>
         <LuLogOut />
       </ButtonIcon>
     </StyledHeaderMenu>

@@ -6,7 +6,7 @@ async function createAdmin(req, res, next) {
     const { first_name, last_name, email, password } = req.body;
 
     // Generate the username automatically
-    const username = `admin_${first_name.toLowerCase()}_${last_name
+    const username = `admin.${first_name.toLowerCase()}.${last_name
       .slice(0, 2)
       .toLowerCase()}`;
 

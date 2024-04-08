@@ -2,6 +2,7 @@
 const getAuth = () => {
   try {
     const token = localStorage.getItem("user_token");
+    console.log("hello", token);
 
     if (token) {
       const decodedToken = decodeTokenPayload(token);
@@ -9,7 +10,7 @@ const getAuth = () => {
         role: decodedToken.user_role,
         userId: decodedToken[`${decodedToken.user_role.toLowerCase()}_id`],
         username: decodedToken.username,
-        departmentType: decodedToken.department_type,
+        token: token,
       };
     } else {
       console.log("Token is not found in local storage.");

@@ -23,12 +23,6 @@ export const DepartmentForm = [
     type: "text",
     autoComplete: "off",
   },
-  {
-    id: "department_type",
-    label: "Department Type",
-    type: "text",
-    autoComplete: "off",
-  },
 ];
 
 export const CompanyForm = [
@@ -102,7 +96,7 @@ export const StudentForm = [
     autoComplete: "off",
   },
   {
-    id: "department_type",
+    id: "department_id",
     label: "Department Type",
     type: "text",
     autoComplete: "off",

@@ -35,27 +35,38 @@ const CreateStudent = () => {
     phone_number: "",
     contact_email: "",
     password: "",
-    department_type: "",
+    department_id: "", // Change from department_type to department_id
   });
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [departmentTypes, setDepartmentTypes] = useState([]);
+  const [departmentIds, setDepartmentIds] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    // Fetch department types when component mounts
-    const fetchDepartmentTypes = async () => {
+    // Fetch department IDs when component mounts
+    const fetchDepartmentIds = async () => {
       try {
-        const types = await departmentService.getDepartmentTypes();
-        console.log(types);
-        setDepartmentTypes(types);
+        const ids = await departmentService.getDepartmentIds();
+
+        // Mapping department IDs to their corresponding names
+        const idToNameMap = {
+          1: "Information System",
+          2: "Information Science",
+          3: "Computer Science",
+          4: "Software Enginering",
+        };
+
+        // Map the IDs to their corresponding names
+        const departmentNames = ids.map((id) => idToNameMap[id]);
+
+        setDepartmentIds(ids); // Set department names in the state
       } catch (error) {
-        console.error("Error fetching department types:", error.message);
+        console.error("Error fetching department IDs:", error.message);
       }
     };
 
-    fetchDepartmentTypes();
-  }, []); // Empty dependency array to fetch only once when component mounts
+    fetchDepartmentIds();
+  }, []);
 
   const validateForm = () => {
     let valid = true;
@@ -97,9 +108,9 @@ const CreateStudent = () => {
       valid = false;
     }
 
-    // Validate department type
-    if (!formData.department_type) {
-      newErrors.department_type = "Department type is required";
+    // Validate department ID
+    if (!formData.department_id) {
+      newErrors.department_id = "Department is required";
       valid = false;
     }
 
@@ -143,7 +154,7 @@ const CreateStudent = () => {
           phone_number: "",
           contact_email: "",
           password: "",
-          department_type: "",
+          department_id: "",
         });
         setErrors({});
         toast.success("Student created successfully", { autoClose: 1000 });
@@ -228,17 +239,17 @@ const CreateStudent = () => {
                 onChange={handleChange}
               />
             </FormRow>
-            <FormRow label="Department Type" error={errors.department_type}>
+            <FormRow label="Department" error={errors.department_id}>
               <SelectContainer>
                 <select
-                  id="department_type"
-                  value={formData.department_type}
+                  id="department_id"
+                  value={formData.department_id}
                   onChange={handleChange}
                 >
-                  <option value="">Department</option>
-                  {departmentTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
+                  <option value="">Department...</option>
+                  {departmentIds.map((id) => (
+                    <option key={id} value={id}>
+                      {id}
                     </option>
                   ))}
                 </select>

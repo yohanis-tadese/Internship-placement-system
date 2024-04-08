@@ -81,24 +81,23 @@ const StyledButton = styled.button`
 // Header component
 const Header = () => {
   const navigate = useNavigate();
-  const { isLogged, usernameValue } = useAuth();
+  const { isLogged, secondName } = useAuth();
 
   const handleLogout = () => {
     // Clear user token from local storage
     localStorage.removeItem("user_token");
 
-    // Navigate to the login page
     navigate("/login");
   };
 
   return (
     <HeaderContainer>
-      <NavLink to="/">
+      <NavLink to="/student/dashboard">
         <LeftContainer>
           <Logo src="/logo-light.png" alt="IPS" />
           {isLogged ? (
             <Heading as="h5" style={{ textTransform: "capitalize" }}>
-              Welcome, {usernameValue}
+              <div>Welcome {secondName ? secondName : "User"}!</div>
             </Heading>
           ) : (
             <Heading as="h5">Internship placement system</Heading>

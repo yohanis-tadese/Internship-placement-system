@@ -4,7 +4,7 @@ const studentService = require("../service/student.service");
 async function createStudent(req, res, next) {
   try {
     // Generate the username automatically
-    const username = `stud_${req.body.first_name.toLowerCase()}_${req.body.last_name
+    const username = `stud.${req.body.first_name.toLowerCase()}.${req.body.last_name
       .slice(0, 2)
       .toLowerCase()}`;
 
@@ -17,7 +17,7 @@ async function createStudent(req, res, next) {
       });
     }
 
-    if (!req.body.department_type) {
+    if (!req.body.department_id) {
       return res.status(400).json({
         error: "Department type is required.",
       });
@@ -30,7 +30,7 @@ async function createStudent(req, res, next) {
       phone_number: req.body.phone_number,
       contact_email: req.body.contact_email,
       password: req.body.password,
-      department_type: req.body.department_type,
+      department_id: req.body.department_id,
     });
 
     return res.status(200).json({

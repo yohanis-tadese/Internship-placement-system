@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import PrivateAuthRoute from "./auth/PrivateAuthRoute";
+import PrivateAuthRoute from "./components/auth/PrivateAuthRoute";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import Login from "./pages/Login";
@@ -19,7 +19,7 @@ import AdminUser from "./pages/Admin/AdminUser";
 
 // Student Pages
 import Dashboard from "./pages/student/Dashboard";
-import StudentPlacementForm from "./components/student/CriteriaForm";
+import StudentPlacementForm from "./components/student/ApplyForm";
 import CompanyList from "./components/student/CompanyList";
 
 // import ViewCompany from "./components/student/ViewCompany";
@@ -42,64 +42,58 @@ function App() {
       <DarkModeProvider>
         <GlobalStyles />
         <Routes>
+          {/* ********* Public Routes ******* */}
+
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/FAQ" element={<FAQ />} />
           <Route path="*" element={<PageNotFound />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          <Route element={<AppLayout />}>
-            <Route path="admin">
-              <Route
-                index
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <Navigate replace to="dashboard" />
-                  </PrivateAuthRoute>
-                }
-              />
-              <Route
-                path="dashboard"
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <AdminDashboard />
-                  </PrivateAuthRoute>
-                }
-              />
-              <Route
-                path="user"
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <AdminUser />
-                  </PrivateAuthRoute>
-                }
-              />
-              <Route
-                path="department"
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <AdminDepartment />
-                  </PrivateAuthRoute>
-                }
-              />
-              <Route
-                path="company"
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <AdminCompany />
-                  </PrivateAuthRoute>
-                }
-              />
+          {/* ****** Admin Routes ******** */}
 
-              <Route
-                path="criteria"
-                element={
-                  <PrivateAuthRoute roles={["Admin"]}>
-                    <AdminSettings />
-                  </PrivateAuthRoute>
-                }
-              />
-            </Route>
+          <Route element={<AppLayout />}>
+            <Route
+              path="admin/dashboard"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <AdminDashboard />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="admin/user"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <AdminUser />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="admin/department"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <AdminDepartment />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="admin/company"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <AdminCompany />
+                </PrivateAuthRoute>
+              }
+            />
+
+            <Route
+              path="admin/criteria"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <AdminSettings />
+                </PrivateAuthRoute>
+              }
+            />
           </Route>
 
           {/* ************* department routes *********** */}
@@ -157,48 +151,39 @@ function App() {
           </Route>
 
           {/* ******* student routes ********* */}
-          <Route path="student">
-            <Route
-              index
-              element={
-                <PrivateAuthRoute roles={["Student"]}>
-                  <Navigate replace to="dashboard" />
-                </PrivateAuthRoute>
-              }
-            />
-            <Route
-              path="dashboard"
-              element={
-                <PrivateAuthRoute roles={["Student"]}>
-                  <Dashboard />
-                </PrivateAuthRoute>
-              }
-            />
-            <Route
-              path="company"
-              element={
-                <PrivateAuthRoute roles={["Student"]}>
-                  <CompanyList />
-                </PrivateAuthRoute>
-              }
-            />
-            <Route
-              path="apply"
-              element={
-                <PrivateAuthRoute roles={["Student"]}>
-                  <StudentPlacementForm />
-                </PrivateAuthRoute>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <PrivateAuthRoute roles={["Student"]}>
-                  <StudentPlacementForm />
-                </PrivateAuthRoute>
-              }
-            />
-          </Route>
+
+          <Route
+            path="student/dashboard"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <Dashboard />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="student/company"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <CompanyList />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="student/apply"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <StudentPlacementForm />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="student/profile"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <StudentPlacementForm />
+              </PrivateAuthRoute>
+            }
+          />
         </Routes>
       </DarkModeProvider>
     </>
