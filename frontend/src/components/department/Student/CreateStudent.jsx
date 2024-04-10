@@ -34,8 +34,9 @@ const CreateStudent = () => {
     last_name: "",
     phone_number: "",
     contact_email: "",
+    gpa: "",
     password: "",
-    department_id: "", // Change from department_type to department_id
+    department_id: "",
   });
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -114,6 +115,12 @@ const CreateStudent = () => {
       valid = false;
     }
 
+    // Validate department ID
+    if (!formData.gpa) {
+      newErrors.gpa = "Student GPA is required";
+      valid = false;
+    }
+
     setErrors(newErrors);
     return valid;
   };
@@ -153,6 +160,7 @@ const CreateStudent = () => {
           last_name: "",
           phone_number: "",
           contact_email: "",
+          gpa: "",
           password: "",
           department_id: "",
         });
@@ -227,6 +235,15 @@ const CreateStudent = () => {
                 id="contact_email"
                 autoComplete="on"
                 value={formData.contact_email}
+                onChange={handleChange}
+              />
+            </FormRow>
+            <FormRow label="Student GPA" error={errors.gpa}>
+              <Input
+                type="number"
+                id="gpa"
+                autoComplete="off"
+                value={formData.gpa}
                 onChange={handleChange}
               />
             </FormRow>

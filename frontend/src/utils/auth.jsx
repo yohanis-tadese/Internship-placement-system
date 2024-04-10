@@ -2,7 +2,6 @@
 const getAuth = () => {
   try {
     const token = localStorage.getItem("user_token");
-    console.log("hello", token);
 
     if (token) {
       const decodedToken = decodeTokenPayload(token);

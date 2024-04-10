@@ -80,6 +80,23 @@ const getStudentsByDepartment = async (departmentType) => {
   return response;
 };
 
+// A function to accept student apply form data
+const acceptStudentApplyForm = async ({
+  student_id,
+  name,
+  disability,
+  gender,
+  preferences,
+}) => {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ student_id, name, disability, gender, preferences }),
+  };
+  const response = await fetch(`${api_url}/api/student/apply`, requestOptions);
+  return response;
+};
+
 // Export all the functions
 const studentService = {
   createStudent,
@@ -88,6 +105,7 @@ const studentService = {
   updateStudent,
   deleteStudent,
   getStudentsByDepartment,
+  acceptStudentApplyForm,
 };
 
 export default studentService;

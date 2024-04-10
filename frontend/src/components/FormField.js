@@ -96,6 +96,12 @@ export const StudentForm = [
     autoComplete: "off",
   },
   {
+    id: "gpa",
+    label: "Student Gpa",
+    type: "number",
+    autoComplete: "off",
+  },
+  {
     id: "department_id",
     label: "Department Type",
     type: "text",

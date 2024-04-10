@@ -7,6 +7,8 @@ const adminRouter = require("./admin.routes");
 const companyRouter = require("./company.routes");
 const departmentRouter = require("./department.routes");
 const loginRouter = require("./login.routes");
+const criteriaRouter = require("./criteria.routes");
+const placementRouter = require("./placement.routes");
 
 router.use(installRouter);
 router.use(studentRouter);
@@ -14,5 +16,7 @@ router.use(adminRouter);
 router.use(companyRouter);
 router.use(departmentRouter);
 router.use(loginRouter);
+router.use(criteriaRouter);
+router.use(placementRouter);
 
 module.exports = router;

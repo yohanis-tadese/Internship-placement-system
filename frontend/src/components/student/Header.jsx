@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { NavLink, useNavigate } from "react-router-dom";
 import DarkModeToggle from "../../ui/DarkModeToggle";
@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import Heading from "../../ui/Heading";
 import { useAuth } from "../../context/AuthContext";
+import loginService from "../../services/login.service";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -81,12 +82,29 @@ const StyledButton = styled.button`
 // Header component
 const Header = () => {
   const navigate = useNavigate();
-  const { isLogged, secondName } = useAuth();
+  const { isLogged, secondName, setIsLogged } = useAuth();
 
-  const handleLogout = () => {
-    // Clear user token from local storage
-    localStorage.removeItem("user_token");
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "logoutEvent") {
+        logOut();
+      }
+    };
 
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const logOut = () => {
+    // Call the logout function from the login service
+    loginService.logOut();
+    // Set the isLogged state to false
+    setIsLogged(false);
+
+    // Navigate to the login page
     navigate("/login");
   };
 
@@ -95,12 +113,10 @@ const Header = () => {
       <NavLink to="/student/dashboard">
         <LeftContainer>
           <Logo src="/logo-light.png" alt="IPS" />
-          {isLogged ? (
-            <Heading as="h5" style={{ textTransform: "capitalize" }}>
+          {isLogged && (
+            <Heading as="h2" style={{ textTransform: "capitalize" }}>
               <div>Welcome {secondName ? secondName : "User"}!</div>
             </Heading>
-          ) : (
-            <Heading as="h5">Internship placement system</Heading>
           )}
         </LeftContainer>
       </NavLink>
@@ -119,7 +135,7 @@ const Header = () => {
             <FaUserCircle /> Profile
           </StyledNavLink>
           <DarkModeToggle />
-          <StyledButton onClick={handleLogout}>
+          <StyledButton onClick={logOut}>
             <FaSignOutAlt /> Logout
           </StyledButton>
         </RightContainer>

@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import PrivateAuthRoute from "./components/auth/PrivateAuthRoute";
+import { ToastContainer, toast } from "react-toastify";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import Login from "./pages/Login";
@@ -14,22 +15,21 @@ import FAQ from "./components/Home/FAQ";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminDepartment from "./pages/Admin/Department";
 import AdminCompany from "./pages/Admin/Company";
-import AdminSettings from "./pages/Admin/Settings";
 import AdminUser from "./pages/Admin/AdminUser";
+import CriteriaWeight from "./pages/Admin/CriteriaWeight";
+import StudentPlacement from "./components/Admin/Algorithm/Placement";
 
 // Student Pages
 import Dashboard from "./pages/student/Dashboard";
 import StudentPlacementForm from "./components/student/ApplyForm";
 import CompanyList from "./components/student/CompanyList";
-
-// import ViewCompany from "./components/student/ViewCompany";
+import PlacementResults from "./components/student/PlacementResults";
 
 // import Profile from "./pages/student/profile";
 
-// // Company Pages
-// import CompanyDashboard from "./pages/Company/Dashboard";
-// import CompanyProjects from "./pages/Company/Projects";
-// import CompanySettings from "./pages/Company/Settings";
+// Company Pages
+import CompanyDashboard from "./pages/company/Dashboard";
+import CompanyStudent from "./pages/company/Students";
 
 // Department Pages
 import DepartmentDashboard from "./pages/departments/Dashboard";
@@ -90,7 +90,15 @@ function App() {
               path="admin/criteria"
               element={
                 <PrivateAuthRoute roles={["Admin"]}>
-                  <AdminSettings />
+                  <CriteriaWeight />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="admin/placement"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <StudentPlacement />
                 </PrivateAuthRoute>
               }
             />
@@ -177,10 +185,37 @@ function App() {
             }
           />
           <Route
+            path="student/result"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <PlacementResults />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
             path="student/profile"
             element={
               <PrivateAuthRoute roles={["Student"]}>
                 <StudentPlacementForm />
+              </PrivateAuthRoute>
+            }
+          />
+
+          {/* ********** Company Routes ************ */}
+
+          <Route
+            path="company/dashboard"
+            element={
+              <PrivateAuthRoute roles={["Company"]}>
+                <CompanyDashboard />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="company/student"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <CompanyStudent />
               </PrivateAuthRoute>
             }
           />

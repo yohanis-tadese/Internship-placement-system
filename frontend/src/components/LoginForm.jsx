@@ -7,6 +7,7 @@ import Input from "../ui/Input";
 import loginService from "../services/login.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SpinnerMini from "../ui/SpinnerMini";
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function LoginForm() {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const validateForm = () => {
     let valid = true;
@@ -41,52 +43,61 @@ function LoginForm() {
       return;
     }
 
-    try {
-      const response = await loginService.logIn(formData);
-      const data = await response.json();
+    setLoading(true); // Set loading state to true during login request
 
-      if (response.status === 200) {
-        localStorage.setItem(
-          "user_token",
-          JSON.stringify(data.data.user_token)
-        );
+    // Simulate loading with a delay of 1.5 seconds
+    setTimeout(async () => {
+      try {
+        const response = await loginService.logIn(formData);
+        const data = await response.json();
 
-        const tokenData = JSON.parse(atob(data.data.user_token.split(".")[1]));
-        const userRole = tokenData.user_role;
+        if (response.status === 200) {
+          localStorage.setItem(
+            "user_token",
+            JSON.stringify(data.data.user_token)
+          );
 
-        let redirectTo = "";
-        switch (userRole) {
-          case "Admin":
-            redirectTo = "/admin/dashboard";
-            break;
-          case "Company":
-            redirectTo = "/company/dashboard";
-            break;
-          case "Student":
-            redirectTo = "/student/dashboard";
-            break;
-          case "Department":
-            redirectTo = "/department/dashboard";
-            break;
-          default:
-            redirectTo = "/";
-        }
+          const tokenData = JSON.parse(
+            atob(data.data.user_token.split(".")[1])
+          );
+          const userRole = tokenData.user_role;
 
-        toast.success("User login successful!", { autoClose: 1000 });
-        setTimeout(() => {
-          if (navigate) {
-            navigate(redirectTo);
-            // Refresh the page after redirecting
-            window.location.reload();
+          let redirectTo = "";
+          switch (userRole) {
+            case "Admin":
+              redirectTo = "/admin/dashboard";
+              break;
+            case "Company":
+              redirectTo = "/company/dashboard";
+              break;
+            case "Student":
+              redirectTo = "/student/dashboard";
+              break;
+            case "Department":
+              redirectTo = "/department/dashboard";
+              break;
+            default:
+              redirectTo = "/";
           }
-        }, 10);
-      } else {
-        toast.error(data.message, { autoClose: 2000 });
+
+          toast.success("User login successful!", { autoClose: 500 });
+          setTimeout(() => {
+            if (navigate) {
+              navigate(redirectTo);
+              // Refresh the page after redirecting
+              window.location.reload();
+            }
+          }, 1000);
+        } else {
+          toast.error(data.message, { autoClose: 2000 });
+        }
+      } catch (error) {
+        console.error("Login failed:", error.message);
+        toast.error("An error occurred. Please try again later.");
+      } finally {
+        setLoading(false); // Reset loading state once login request is complete
       }
-    } catch (error) {
-      console.error("Login failed:", error.message);
-      toast.error("An error occurred. Please try again later.");
-    }
+    }, 700);
   };
 
   const handleChange = (e) => {
@@ -121,8 +132,8 @@ function LoginForm() {
           />
         </FormRowVertical>
         <FormRowVertical>
-          <Button type="submit" size="large">
-            Log in
+          <Button type="submit" size="large" disabled={loading}>
+            {loading ? <SpinnerMini /> : "Log in"}{" "}
           </Button>
         </FormRowVertical>
       </Form>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import ButtonIcon from "./ButtonIcon";
 import { LuLogOut } from "react-icons/lu";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import DarkModeToggle from "./DarkModeToggle";
 import { useAuth } from "../context/AuthContext";
 import loginService from "../services/login.service";
+// import Heading from "./Heading";
 
 const StyledHeaderMenu = styled.div`
   display: flex;
@@ -23,22 +24,21 @@ const WelcomeMessage = styled.span`
 
 function HeaderMenu() {
   const navigate = useNavigate();
-  const { isLogged, setIsLogged, userRole } = useAuth();
+  const { setIsLogged, secondName } = useAuth();
 
-  const getWelcomeMessage = () => {
-    switch (userRole) {
-      case "Admin":
-        return "Welcome Admin!";
-      case "Company":
-        return "Welcome Company!";
-      case "Student":
-        return "Welcome Student!";
-      case "Department":
-        return "Welcome Department!";
-      default:
-        return "Welcome!";
-    }
-  };
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "logoutEvent") {
+        logOut();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const logOut = () => {
     // Call the logout function from the login service
@@ -48,18 +48,14 @@ function HeaderMenu() {
 
     // Navigate to the login page
     navigate("/login");
-
-    // Reload the page after logout
   };
 
   return (
     <StyledHeaderMenu>
-      <>
-        <WelcomeMessage>{getWelcomeMessage()}</WelcomeMessage>
-        <ButtonIcon>
-          <PiUserCircleDuotone />
-        </ButtonIcon>
-      </>
+      <WelcomeMessage>Wellcome, {secondName}</WelcomeMessage>
+      <ButtonIcon>
+        <PiUserCircleDuotone />
+      </ButtonIcon>
 
       <DarkModeToggle />
 

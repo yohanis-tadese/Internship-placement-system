@@ -17,7 +17,10 @@ const logIn = async (formData) => {
 };
 
 const logOut = () => {
+  // Remove user_token from localStorage
   localStorage.removeItem("user_token");
+  // Trigger a storage event to notify other tabs
+  localStorage.setItem("logoutEvent", Date.now().toString());
 };
 
 const loginService = {

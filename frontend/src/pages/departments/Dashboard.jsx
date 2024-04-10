@@ -7,6 +7,7 @@ import Row from "../../ui/Row";
 import { Link } from "react-router-dom";
 import companyService from "../../services/company.service"; // Correct import
 import studentService from "../../services/student.service"; // Correct import
+import { useAuth } from "../../context/AuthContext";
 
 // Styled component for the dashboard container
 const DashboardContainer = styled.div`
@@ -62,20 +63,23 @@ const IconContainer = styled.div`
 function Dashboard() {
   const [numCompanies, setNumCompanies] = useState(0);
   const [numStudents, setNumStudents] = useState(0);
+  const { userId } = useAuth();
 
   useEffect(() => {
     // Fetch real data for the dashboard
     async function fetchData() {
       try {
         const companyResponse = await companyService.getAllCompanies();
-        const studentResponse = await studentService.getAllStudents();
+        const studentResponse = await studentService.getStudentsByDepartment(
+          userId
+        );
 
         if (companyResponse.ok && studentResponse.ok) {
           const companyData = await companyResponse.json();
           const studentData = await studentResponse.json();
 
           setNumCompanies(companyData.companies.length);
-          setNumStudents(studentData.students.length);
+          setNumStudents(studentData.length);
         } else {
           console.error("Failed to fetch dashboard data");
         }
@@ -85,7 +89,7 @@ function Dashboard() {
     }
 
     fetchData();
-  }, []);
+  }, [userId]);
 
   return (
     <>

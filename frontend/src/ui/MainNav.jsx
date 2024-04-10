@@ -89,6 +89,13 @@ function MainNav() {
             <span>Criteria</span>
           </StyledNavLink>
         </li>
+
+        <li>
+          <StyledNavLink to="/admin/placement">
+            <HiOutlineCog />
+            <span>Generate</span>
+          </StyledNavLink>
+        </li>
       </NavList>
     </nav>
   );

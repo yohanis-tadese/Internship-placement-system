@@ -14,7 +14,6 @@ async function checkIfStudentExists(username) {
   return rows.length > 0;
 }
 
-// Function to create a new student
 async function createStudent(student) {
   try {
     // Construct the username as "student_firstname_firstTwoLettersOfLastName"
@@ -28,27 +27,29 @@ async function createStudent(student) {
     // Check if the student already exists
     const studentExist = await checkIfStudentExists(username);
     if (studentExist) {
-      throw new Error("Student is already exists.");
+      throw new Error("Student already exists.");
     }
 
     // Insert student details into the students table
     const insertStudentSql = `
-        INSERT INTO students (
-          first_name,
-          last_name,
-          username,
-          phone_number,
-          contact_email,
-          password,
-          department_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `;
+      INSERT INTO students (
+        first_name,
+        last_name,
+        username,
+        phone_number,
+        contact_email,
+        gpa,
+        password,
+        department_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
     const result = await query(insertStudentSql, [
       student.first_name,
       student.last_name,
       username,
       student.phone_number,
       student.contact_email,
+      student.gpa,
       hashedPassword,
       student.department_id,
     ]);
@@ -89,11 +90,16 @@ async function getAllStudents() {
   }
 }
 
-// Function to update an existing student
 async function updateStudent(studentId, studentData) {
   try {
-    const { first_name, last_name, phone_number, contact_email, password } =
-      studentData;
+    const {
+      first_name,
+      last_name,
+      phone_number,
+      contact_email,
+      password,
+      gpa,
+    } = studentData;
 
     // Hash the new password before updating
     const hashedPassword = await hashPassword(password);
@@ -103,7 +109,7 @@ async function updateStudent(studentId, studentData) {
       .slice(0, 2)
       .toLowerCase()}`;
 
-    // Update the student data including the hashed password
+    // Update the student data including the hashed password and gpa
     const updateSql = `
       UPDATE students
       SET first_name = ?,
@@ -111,6 +117,7 @@ async function updateStudent(studentId, studentData) {
           username = ?,
           phone_number = ?,
           contact_email = ?,
+          gpa = ?,
           password = ?
       WHERE student_id = ?
     `;
@@ -120,6 +127,7 @@ async function updateStudent(studentId, studentData) {
       username,
       phone_number,
       contact_email,
+      gpa,
       hashedPassword, // Update with hashed password
       studentId,
     ]);
@@ -162,6 +170,45 @@ async function getStudentsByDepartment(departmentType) {
   }
 }
 
+async function acceptStudentApplyForm({
+  student_id,
+  name,
+  disability,
+  gender,
+  preferences,
+}) {
+  try {
+    const insertApplyFormSql = `
+      INSERT INTO student_apply_form (student_id, name, disability, gender)
+      VALUES (?, ?, ?, ?)
+    `;
+    const result = await query(insertApplyFormSql, [
+      student_id,
+      name,
+      disability,
+      gender,
+    ]);
+    const apply_id = result.insertId; // Get the auto-generated apply_id
+
+    for (let i = 0; i < preferences.length; i++) {
+      const insertPreferenceSql = `
+        INSERT INTO student_preferences (apply_id, preference_order, student_id, company_id)
+        VALUES (?, ?, ?, ?)
+      `;
+      await query(insertPreferenceSql, [
+        apply_id,
+        i + 1,
+        student_id,
+        preferences[i],
+      ]);
+    }
+  } catch (error) {
+    throw new Error(
+      `Error accepting student apply form and preferences: ${error.message}`
+    );
+  }
+}
+
 // Export the functions
 module.exports = {
   checkIfStudentExists,
@@ -171,4 +218,5 @@ module.exports = {
   updateStudent,
   getStudentsByDepartment,
   deleteStudent,
+  acceptStudentApplyForm,
 };

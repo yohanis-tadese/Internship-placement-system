@@ -29,6 +29,7 @@ async function createStudent(req, res, next) {
       last_name: req.body.last_name,
       phone_number: req.body.phone_number,
       contact_email: req.body.contact_email,
+      gpa: req.body.gpa,
       password: req.body.password,
       department_id: req.body.department_id,
     });
@@ -154,6 +155,7 @@ async function getStudentsByDepartment(req, res, next) {
 
     return res.status(200).json({
       status: true,
+      length: students.length,
       data: students,
     });
   } catch (error) {
@@ -161,6 +163,28 @@ async function getStudentsByDepartment(req, res, next) {
     return res.status(500).json({
       error: "Internal server error",
     });
+  }
+}
+
+async function acceptStudentApplyForm(req, res, next) {
+  try {
+    const { student_id, name, disability, gender, preferences } = req.body;
+
+    // Call the combined function to accept student apply form data and preferences
+    await studentService.acceptStudentApplyForm({
+      student_id,
+      name,
+      disability,
+      gender,
+      preferences,
+    });
+
+    res.status(200).json({
+      message: "Student apply form data and preferences inserted successfully",
+    });
+  } catch (error) {
+    console.error("Error submitting student apply form:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -172,4 +196,5 @@ module.exports = {
   deleteStudent,
   getStudentTypes,
   getStudentsByDepartment,
+  acceptStudentApplyForm,
 };

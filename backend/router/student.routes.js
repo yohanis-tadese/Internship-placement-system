@@ -13,5 +13,6 @@ router.get(
   "/api/students/:departmentType",
   studentController.getStudentsByDepartment
 );
+router.post("/api/student/apply", studentController.acceptStudentApplyForm);
 
 module.exports = router;
