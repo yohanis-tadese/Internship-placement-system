@@ -21,8 +21,8 @@ const HeaderContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: var(--color-grey-100);
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-grey-0);
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
   z-index: 1;
 `;
 
@@ -40,7 +40,7 @@ const RightContainer = styled.div`
   display: flex;
   align-items: center;
   color: var(--color-silver-600);
-  gap: 1rem;
+  gap: 1.3rem;
   margin-right: 20px;
 `;
 
@@ -115,7 +115,7 @@ const Header = () => {
           <Logo src="/logo-light.png" alt="IPS" />
           {isLogged && (
             <Heading as="h2" style={{ textTransform: "capitalize" }}>
-              <div>Welcome {secondName ? secondName : "User"}!</div>
+              <div>Welcome {secondName ? secondName : "User"}</div>
             </Heading>
           )}
         </LeftContainer>
@@ -130,9 +130,6 @@ const Header = () => {
           </StyledNavLink>
           <StyledNavLink to="/student/result">
             <FaListAlt /> Result
-          </StyledNavLink>
-          <StyledNavLink to="/student/profile">
-            <FaUserCircle /> Profile
           </StyledNavLink>
           <DarkModeToggle />
           <StyledButton onClick={logOut}>

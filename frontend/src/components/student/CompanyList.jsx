@@ -7,6 +7,7 @@ import { PiStudentFill } from "react-icons/pi";
 import Header from "./Header";
 import Button from "../../ui/Button";
 import companyService from "../../services/company.service";
+import Heading from "../../ui/Heading";
 
 function FeaturedJobs() {
   const [companyData, setCompanyData] = useState([]);
@@ -43,9 +44,9 @@ function FeaturedJobs() {
         <div className="nav-bar">
           <div className="ex-title">
             <h1 className="features-title">
-              <span className="black-text">
+              <Heading as="h2">
                 Explore and select from our list of available companies
-              </span>
+              </Heading>
             </h1>
           </div>
         </div>

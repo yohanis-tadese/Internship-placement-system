@@ -2,8 +2,7 @@
   width: 100%;
   margin-top: 60px;
   padding: 40px;
-  background-color: var(--color-grey-50);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3); /* Drop shadow */
+  background-color: var(--color-grey-100);
 }
 
 .the-company {
@@ -14,7 +13,7 @@
   height: 17%;
   border-radius: 8px;
   background-color: var(--color-grey-0);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* Drop shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: space-between;
 }

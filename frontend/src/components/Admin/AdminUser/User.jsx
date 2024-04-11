@@ -51,7 +51,7 @@ function SignupForm() {
       try {
         // Send a request to create a new admin
         const response = await adminService.createAdmin(formData);
-        console.log("ggggg", response);
+
         if (response.status === 400) {
           // If department name already exists
           const responseData = await response.json();

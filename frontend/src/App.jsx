@@ -23,7 +23,9 @@ import StudentPlacement from "./components/Admin/Algorithm/Placement";
 import Dashboard from "./pages/student/Dashboard";
 import StudentPlacementForm from "./components/student/ApplyForm";
 import CompanyList from "./components/student/CompanyList";
+import ResultType from "./components/student/ResultType";
 import PlacementResults from "./components/student/PlacementResults";
+import EvaluationResults from "./components/student/EvaluationResults";
 
 // import Profile from "./pages/student/profile";
 
@@ -188,15 +190,23 @@ function App() {
             path="student/result"
             element={
               <PrivateAuthRoute roles={["Student"]}>
+                <ResultType />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="student/placement-results"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
                 <PlacementResults />
               </PrivateAuthRoute>
             }
           />
           <Route
-            path="student/profile"
+            path="student/evaluation-results"
             element={
               <PrivateAuthRoute roles={["Student"]}>
-                <StudentPlacementForm />
+                <EvaluationResults />
               </PrivateAuthRoute>
             }
           />

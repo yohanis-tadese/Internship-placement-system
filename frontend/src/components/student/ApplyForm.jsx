@@ -9,56 +9,69 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./Header";
 
 const CriteriaStyle = styled.div`
-  background-color: var(--color-grey-0);
+  background-color: var(--color-grey-200);
   min-height: 100vh;
-  padding: 5px;
+  padding: 20px;
 `;
 
 const Form = styled.form`
-  background-color: var(--color-grey-100);
+  background-color: var(--color-grey-0);
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  padding: 10px 20px;
+  padding: 30px;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   margin: 80px auto;
 `;
 
+const FormTitle = styled.h2`
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 7px;
+  font-weight: 550;
+  border-radius: 10px;
+`;
+
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 `;
 
 const Label = styled.label`
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
+  display: block;
 `;
 
 const SelectStyled = styled.select`
   padding: 5px;
   border: 1px solid ${({ invalid }) => (invalid ? "red" : "#ccc")};
-  border-radius: 2px;
+  border-radius: 5px;
   font-size: 16px;
+  width: 100%;
 `;
 
 const Button = styled.button`
-  padding: 10px 20px;
-  background-color: #0056b3;
+  padding: 10px 30px;
+  background-color: #12a37f;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #004499;
+    background-color: #16a37f;
   }
 `;
 
 const ErrorText = styled.span`
   color: red;
-  font-size: 12px;
-  margin-left: 5px;
+  font-size: 14px;
+  margin-top: 5px;
+  display: block;
 `;
 
 const StudentPlacementForm = () => {
@@ -178,7 +191,7 @@ const StudentPlacementForm = () => {
       <Header />
       <CriteriaStyle>
         <Form onSubmit={handleSubmit}>
-          <h2 className="text-center mb-4">Fill The Form</h2>
+          <FormTitle>Fill The Form Then Click Submit To Apply</FormTitle>
           <FormGroup className="mb-3">
             <Label>Are you Disabled</Label>
             <SelectStyled
