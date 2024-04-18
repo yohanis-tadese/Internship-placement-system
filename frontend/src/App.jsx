@@ -3,12 +3,11 @@ import PrivateAuthRoute from "./components/auth/PrivateAuthRoute";
 import { ToastContainer, toast } from "react-toastify";
 
 import GlobalStyles from "./styles/GlobalStyles";
-import Login from "./pages/Login";
-import PageNotFound from "./pages/PageNotFound";
-import AppLayout from "./ui/AppLayout";
+import Login from "./pages/Login/Login";
+import PageNotFound from "./pages/Not Found/PageNotFound";
 import { DarkModeProvider } from "./context/DarkModeContext";
-import Unauthorized from "./pages/Unauthorized";
-import Home from "./pages/Home";
+import Unauthorized from "./pages/Unauthorized/Unauthorized";
+import Home from "./pages/Home/Home";
 import FAQ from "./components/Home/FAQ";
 
 // Admin Pages
@@ -17,26 +16,33 @@ import AdminDepartment from "./pages/Admin/Department";
 import AdminCompany from "./pages/Admin/Company";
 import AdminUser from "./pages/Admin/AdminUser";
 import CriteriaWeight from "./pages/Admin/CriteriaWeight";
-import StudentPlacement from "./components/Admin/Algorithm/Placement";
+import Generate from "./pages/Admin/Generate";
+import Account from "./pages/Admin/Account";
+import AppLayout from "./ui/Admin/AppLayout";
 
 // Student Pages
 import Dashboard from "./pages/student/Dashboard";
-import StudentPlacementForm from "./components/student/ApplyForm";
-import CompanyList from "./components/student/CompanyList";
-import ResultType from "./components/student/ResultType";
-import PlacementResults from "./components/student/PlacementResults";
-import EvaluationResults from "./components/student/EvaluationResults";
+import StudentPlacementForm from "./components/student/Apply/ApplyForm";
+import CompanyList from "./components/student/Company/CompanyList";
+import ResultType from "./components/student/Result/ResultType";
+import PlacementResults from "./components/student/Result/PlacementResults";
+import EvaluationResults from "./components/student/Result/EvaluationResults";
 
 // import Profile from "./pages/student/profile";
-
-// Company Pages
-import CompanyDashboard from "./pages/company/Dashboard";
-import CompanyStudent from "./pages/company/Students";
 
 // Department Pages
 import DepartmentDashboard from "./pages/departments/Dashboard";
 import DepAppLayout from "./ui/Department/DepAppLayout";
 import DepartmentStudent from "./pages/departments/Student";
+import Result from "./pages/departments/Result";
+import PlacementResult from "./components/department/Result/PlacementResult";
+import CompanyResult from "./components/department/Result/CompanyResult";
+import EvaluationResult from "./components/department/Result/EvaluationResult";
+
+// Company Pages
+import CompanyDashboard from "./pages/company/Dashboard";
+import CompanyStudent from "./pages/company/Students";
+import CompanyAppLayout from "./ui/Company/CompanyAppLayout";
 
 function App() {
   return (
@@ -100,7 +106,15 @@ function App() {
               path="admin/placement"
               element={
                 <PrivateAuthRoute roles={["Admin"]}>
-                  <StudentPlacement />
+                  <Generate />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="admin/account"
+              element={
+                <PrivateAuthRoute roles={["Admin"]}>
+                  <Account />
                 </PrivateAuthRoute>
               }
             />
@@ -133,30 +147,38 @@ function App() {
                   </PrivateAuthRoute>
                 }
               />
-              {/* <Route
-                path="result"
+              <Route
+                path="student-results"
                 element={
                   <PrivateAuthRoute roles={["Department"]}>
-                    <AdminCompany />
+                    <Result />
                   </PrivateAuthRoute>
                 }
-              /> */}
-              {/* <Route
-                path="criteria"
+              />
+              <Route
+                path="student-placement-results"
                 element={
                   <PrivateAuthRoute roles={["Department"]}>
-                    <AdminCriteria />
+                    <PlacementResult />
                   </PrivateAuthRoute>
                 }
-              /> */}
-              {/* <Route
-                path="settings"
+              />
+              <Route
+                path="student-company-results"
                 element={
                   <PrivateAuthRoute roles={["Department"]}>
-                    <AdminSettings />
+                    <CompanyResult />
                   </PrivateAuthRoute>
                 }
-              /> */}
+              />
+              <Route
+                path="student-evaluation-results"
+                element={
+                  <PrivateAuthRoute roles={["Department"]}>
+                    <EvaluationResult />
+                  </PrivateAuthRoute>
+                }
+              />
             </Route>
           </Route>
 
@@ -212,23 +234,24 @@ function App() {
           />
 
           {/* ********** Company Routes ************ */}
-
-          <Route
-            path="company/dashboard"
-            element={
-              <PrivateAuthRoute roles={["Company"]}>
-                <CompanyDashboard />
-              </PrivateAuthRoute>
-            }
-          />
-          <Route
-            path="company/student"
-            element={
-              <PrivateAuthRoute roles={["Student"]}>
-                <CompanyStudent />
-              </PrivateAuthRoute>
-            }
-          />
+          <Route element={<CompanyAppLayout />}>
+            <Route
+              path="company/dashboard"
+              element={
+                <PrivateAuthRoute roles={["Company"]}>
+                  <CompanyDashboard />
+                </PrivateAuthRoute>
+              }
+            />
+            <Route
+              path="company/student"
+              element={
+                <PrivateAuthRoute roles={["Company"]}>
+                  <CompanyStudent />
+                </PrivateAuthRoute>
+              }
+            />
+          </Route>
         </Routes>
       </DarkModeProvider>
     </>

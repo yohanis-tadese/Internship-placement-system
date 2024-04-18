@@ -9,6 +9,7 @@ const departmentRouter = require("./department.routes");
 const loginRouter = require("./login.routes");
 const criteriaRouter = require("./criteria.routes");
 const placementRouter = require("./placement.routes");
+const resultRouter = require("./result.routes");
 
 router.use(installRouter);
 router.use(studentRouter);
@@ -18,5 +19,6 @@ router.use(departmentRouter);
 router.use(loginRouter);
 router.use(criteriaRouter);
 router.use(placementRouter);
+router.use(resultRouter);
 
 module.exports = router;

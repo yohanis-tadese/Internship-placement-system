@@ -50,9 +50,11 @@ CREATE TABLE IF NOT EXISTS `admins` (
   `last_name` VARCHAR(100) NOT NULL,
   `username` VARCHAR(255) NOT NULL UNIQUE,
   `email` VARCHAR(255) NOT NULL,
+  `photo` VARCHAR(255),
   `password` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`admin_id`)
 ) ENGINE=InnoDB;
+
 
 -- Student Apply Form Table
 CREATE TABLE IF NOT EXISTS `student_apply_form` (
@@ -101,9 +103,10 @@ VALUES
   ('Software', 'dept.software', '2345678901', 'soft_eng@gmail.com', 'Building E', '$2b$10$NQcPKGOvYo6.51l7aR.nkuVxdNZazz7xKE28i8jLKNHmCdcAkWMC2');
 
 -- Insert an admin
-INSERT INTO `admins` (`first_name`, `last_name`, `username`, `email`, `password`)
+INSERT INTO `admins` (`first_name`, `last_name`, `username`, `email`, `photo`, `password`)
 VALUES 
-  ('Jhon', 'Doe', 'admin.jhon.do', 'admin@example.com', '$2b$10$FnNRxXprBvWeyhl4UHiDs./ZaOQg8RVm/ShFg0aqPHe0AqD.I/bO6');
+  ('Jhon', 'Doe', 'admin.jhon.do', 'admin@example.com', 'yohanis.jpg', '$2b$10$FnNRxXprBvWeyhl4UHiDs./ZaOQg8RVm/ShFg0aqPHe0AqD.I/bO6');
+
 
 -- Insert five companies
 INSERT INTO companies (company_name, username, phone_number, contact_email, location, industry_sector, accepted_student_limit, website, password) VALUES
@@ -176,4 +179,21 @@ CREATE TABLE IF NOT EXISTS `placement_results` (
   FOREIGN KEY (`student_id`) REFERENCES `students`(`student_id`) ON DELETE CASCADE,
   FOREIGN KEY (`company_id`) REFERENCES `companies`(`company_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+
+
+CREATE TABLE IF NOT EXISTS `student_organization_results` (
+  `student_organization_results_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `student_id` INT(11) NOT NULL,
+  `department_id` INT(11) NOT NULL,
+  `company_id` INT(11) NOT NULL,
+  `grade1` DECIMAL(5,2),
+  `grade2` DECIMAL(5,2),
+  `grade3` DECIMAL(5,2),
+  PRIMARY KEY (`student_organization_results_id`),
+  FOREIGN KEY (`student_id`) REFERENCES `students`(`student_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`department_id`) REFERENCES `departments`(`department_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`company_id`) REFERENCES `companies`(`company_id`) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 

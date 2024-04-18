@@ -24,10 +24,31 @@ const getAllAdmins = async () => {
   return response;
 };
 
+async function uploadPhoto(formData) {
+  try {
+    const response = await fetch(`${api_url}/api/admin/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.error || "Failed to upload photo");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Error uploading photo:", error);
+    throw error;
+  }
+}
+
 // Export all the functions
 const adminService = {
   createAdmin,
   getAllAdmins,
+  uploadPhoto,
 };
 
 export default adminService;

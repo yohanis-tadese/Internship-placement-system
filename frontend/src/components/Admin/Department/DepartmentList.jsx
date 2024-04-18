@@ -5,6 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { FaRegTrashAlt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import styled from "styled-components";
 import EditDepartment from "./EditDepartment";
+import Spinner from "../../../ui/Spinner";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 
@@ -177,10 +178,14 @@ const DepartmentList = () => {
   const [editingDepartmentId, setEditingDepartmentId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [deletedDepartmentId, setDeletedDepartmentId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchDepartments = async () => {
     try {
       const response = await departmentService.getAllDepartments();
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
       if (response.ok) {
         const responseData = await response.json();
 
@@ -191,6 +196,9 @@ const DepartmentList = () => {
           })
         );
         setDepartments(departmentsData);
+
+        //After fetch data set loading is fsle
+        setLoading(false);
       } else {
         console.error("Failed to fetch departments:", response.statusText);
       }
@@ -308,12 +316,17 @@ const DepartmentList = () => {
           onChange={handleSearchTextChange}
           placeholder="Search ..."
         />
-        <CustomDataGrid
-          rows={filteredDepartments}
-          columns={columns}
-          autoHeight
-          pagination={true}
-        />
+
+        {loading ? (
+          <Spinner />
+        ) : (
+          <CustomDataGrid
+            rows={filteredDepartments}
+            columns={columns}
+            autoHeight
+            pagination={true}
+          />
+        )}
         {editingDepartmentId && (
           <EditDepartment
             departmentId={editingDepartmentId}

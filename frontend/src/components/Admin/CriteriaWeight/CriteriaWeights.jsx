@@ -17,22 +17,20 @@ function CriteriaForm() {
   });
   const [originalFormData, setOriginalFormData] = useState(null);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCriteria = async () => {
       try {
-        setLoading(true);
         const criteriaId = 1;
         const response = await criteriaService.getCriteriaById(criteriaId);
 
         setFormData(response.data);
+
         setOriginalFormData(response.data); // Store original data
       } catch (error) {
         console.error("Error fetching criteria:", error);
         toast.error("Error fetching criteria", { autoClose: 2000 });
       } finally {
-        setLoading(false);
       }
     };
     fetchCriteria();
@@ -66,10 +64,6 @@ function CriteriaForm() {
     // Reset form data to original fetched data
     setFormData(originalFormData);
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Form onSubmit={handleSubmit}>

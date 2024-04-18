@@ -7,6 +7,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import styled from "styled-components";
 import EditCompany from "./EditCompany";
 import { toast } from "react-toastify";
+import Spinner from "../../../ui/Spinner";
 import "react-toastify/dist/ReactToastify.css";
 
 const TableContainer = styled.div`
@@ -178,10 +179,14 @@ const CompanyList = () => {
   const [editingCompanyId, setEditingCompanyId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [deletedCompanyId, setDeletedCompanyId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchCompanies = async () => {
     try {
       const response = await companyService.getAllCompanies();
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
       if (response.ok) {
         const responseData = await response.json();
         const companiesData = responseData.companies.map((company, index) => ({
@@ -189,6 +194,9 @@ const CompanyList = () => {
           id: index + 1,
         }));
         setCompanies(companiesData);
+
+        //After fetch data set loading is fsle
+        setLoading(false);
       } else {
         console.error("Failed to fetch companies:", response.statusText);
       }
@@ -304,7 +312,15 @@ const CompanyList = () => {
           onChange={handleSearchTextChange}
           placeholder="Search ..."
         />
-        <CustomDataGrid rows={filteredCompanies} columns={columns} autoHeight />
+        {loading ? (
+          <Spinner />
+        ) : (
+          <CustomDataGrid
+            rows={filteredCompanies}
+            columns={columns}
+            autoHeight
+          />
+        )}
         {editingCompanyId && (
           <EditCompany
             companyId={editingCompanyId}

@@ -1,7 +1,7 @@
-import React from "react";
+import AcceptedStudentList from "../../components/company/Student/AcceptedStudentList";
 
-const CompanyStudent = () => {
-  return <div>CompanyStudent</div>;
-};
+function CompanyStudent() {
+  return <AcceptedStudentList />;
+}
 
 export default CompanyStudent;

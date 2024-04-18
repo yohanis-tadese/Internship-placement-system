@@ -21,7 +21,7 @@ const EditCompany = ({ companyId, initialData, onCancel }) => {
     } else {
       fetchCompanyData();
     }
-  }, [initialData, companyId]);
+  }, [companyId]);
 
   const fetchCompanyData = async () => {
     try {
@@ -29,7 +29,6 @@ const EditCompany = ({ companyId, initialData, onCancel }) => {
       if (response.ok) {
         const responseData = await response.json();
         setFormData(responseData.company);
-        console.log(responseData.company);
       } else {
         throw new Error(`Failed to fetch company: ${response.statusText}`);
       }

@@ -1,12 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Button from "../../../ui/Button";
 import Form from "../../../ui/Form";
 import FormRow from "../../../ui/FormRow";
 import Input from "../../../ui/Input";
-import adminService from "../../../services/admin.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CancelButton from "../../../ui/CancelButton";
+import adminService from "./../../../services/admin.service";
 
 function SignupForm() {
   const [formData, setFormData] = useState({
@@ -16,6 +16,7 @@ function SignupForm() {
     password: "",
   });
 
+  const [photo, setPhoto] = useState(null);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -24,6 +25,10 @@ function SignupForm() {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handlePhotoChange = (e) => {
+    setPhoto(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -49,32 +54,44 @@ function SignupForm() {
     // If there are no errors, submit the form
     if (Object.keys(errors).length === 0) {
       try {
-        // Send a request to create a new admin
-        const response = await adminService.createAdmin(formData);
+        // Create FormData object
+        const formDataWithPhoto = new FormData();
+        formDataWithPhoto.append("photo", photo);
 
-        if (response.status === 400) {
-          // If department name already exists
-          const responseData = await response.json();
-          toast.error(responseData.error, { autoClose: 1000 });
+        // Append other form data fields
+        for (const key in formData) {
+          formDataWithPhoto.append(key, formData[key]);
+        }
+
+        // Send a request to upload the photo
+        const photoResponse = await adminService.uploadPhoto(formDataWithPhoto);
+        if (!photoResponse.ok) {
+          toast.error("Failed to upload photo", { autoClose: 1000 });
           return;
         }
-        if (!response.ok) {
-          toast.error("Failed to create admin", { autoClose: 1000 });
-          return;
+
+        // Check if the response is valid JSON
+        const responseData = await photoResponse.json();
+        if (!photoResponse.ok) {
+          // If the response is not JSON, display an error message
+          throw new Error(responseData.error || "Failed to create admin");
         }
-        const responseData = await response.json();
-        if (response.status === 200) {
-          setFormData({
-            first_name: "",
-            last_name: "",
-            email: "",
-            password: "",
-          });
-          toast.success(responseData.message, { autoClose: 2000 });
-        }
+
+        // Handle the admin creation response
+        // Modify this part based on your implementation of createAdmin function
+
+        setFormData({
+          first_name: "",
+          last_name: "",
+          email: "",
+          password: "",
+        });
+        toast.success(responseData.message, { autoClose: 2000 });
       } catch (error) {
         console.error("Error creating admin:", error);
-        toast.error("Error creating admin", { autoClose: 2000 });
+        toast.error(error.message || "Error creating admin", {
+          autoClose: 2000,
+        });
       }
     }
   };
@@ -106,6 +123,7 @@ function SignupForm() {
           type="email"
           id="email"
           name="email"
+          autoComplete="off"
           value={formData.email}
           onChange={handleChange}
         />
@@ -118,6 +136,16 @@ function SignupForm() {
           name="password"
           value={formData.password}
           onChange={handleChange}
+        />
+      </FormRow>
+
+      <FormRow label="Photo">
+        <Input
+          type="file"
+          id="photo"
+          name="photo"
+          accept="image/*"
+          onChange={handlePhotoChange}
         />
       </FormRow>
 

@@ -29,7 +29,58 @@ async function sendPlacementResults(placementResults) {
 
 async function getPlacementResult(studentId) {
   try {
-    const response = await fetch(`${api_url}/api/placement/${studentId}`);
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    };
+    const response = await fetch(`${api_url}/api/placement/${studentId}`, {
+      requestOptions,
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to fetch placement results");
+    }
+  } catch (error) {
+    console.error("Error fetching placement results:", error);
+    throw error;
+  }
+}
+
+async function getAllPlacementResultsByDepartmentId(departmentId) {
+  try {
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    };
+    const response = await fetch(
+      `${api_url}/api/all/placement/${departmentId}`,
+      { requestOptions }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to fetch placement results");
+    }
+  } catch (error) {
+    console.error("Error fetching placement results:", error);
+    throw error;
+  }
+}
+
+async function getAllPlacementResultsByCompanyId(companyId) {
+  try {
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    };
+    const response = await fetch(`${api_url}/api/students/send/${companyId}`, {
+      requestOptions,
+    });
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -47,6 +98,8 @@ async function getPlacementResult(studentId) {
 const placementService = {
   sendPlacementResults,
   getPlacementResult,
+  getAllPlacementResultsByDepartmentId,
+  getAllPlacementResultsByCompanyId,
 };
 
 export default placementService;

@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useAuth } from "../../../context/AuthContext";
 import EditStudent from "./EditStudent";
 import { toast } from "react-toastify";
+import Spinner from "../../../ui/Spinner";
 import "react-toastify/dist/ReactToastify.css";
 
 const TableContainer = styled.div`
@@ -179,10 +180,13 @@ const StudentList = () => {
   const [editingStudentId, setEditingStudentId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [deletedStudentId, setDeletedStudentId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchStudents = async () => {
     try {
       const response = await studentService.getStudentsByDepartment(userId);
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
       if (response.ok) {
         const responseData = await response.json();
@@ -193,6 +197,9 @@ const StudentList = () => {
         }));
 
         setStudents(studentsData);
+
+        // After fetching data, set loading to false
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -283,6 +290,7 @@ const StudentList = () => {
           onCancel={handleCancelDelete}
         />
       )}
+
       <TableContainer>
         <SearchInput
           type="text"
@@ -290,12 +298,16 @@ const StudentList = () => {
           onChange={handleSearchTextChange}
           placeholder="Search ..."
         />
-        <CustomDataGrid
-          rows={filteredStudents}
-          columns={columns}
-          autoHeight
-          pageSize={5}
-        />
+        {loading ? (
+          <Spinner />
+        ) : (
+          <CustomDataGrid
+            rows={filteredStudents}
+            columns={columns}
+            autoHeight
+            pageSize={5}
+          />
+        )}
         {editingStudentId && (
           <EditStudent
             studentId={editingStudentId}

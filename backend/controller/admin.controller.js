@@ -55,7 +55,31 @@ async function getAllAdmins(req, res, next) {
   }
 }
 
+async function uploadPhoto(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    // Logic to save file path to database or perform any other necessary operations
+    const filePath = req.file.path;
+
+    // Call service function to update admin photo
+    await adminService.updateAdminPhoto(filePath);
+
+    return res.status(200).json({
+      status: true,
+      message: "Photo uploaded successfully",
+      filePath,
+    });
+  } catch (error) {
+    console.error("Error uploading photo:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 module.exports = {
   createAdmin,
   getAllAdmins,
+  uploadPhoto,
 };

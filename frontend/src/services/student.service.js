@@ -97,6 +97,33 @@ const acceptStudentApplyForm = async ({
   return response;
 };
 
+// A function to send get request to get all students
+const getAllApplyStudents = async () => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(
+    `${api_url}/api/students/apply/list`,
+    requestOptions
+  );
+  return response.json();
+};
+
+const deleteAllPlacementResults = async () => {
+  const requestOptions = {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  };
+  const response = await fetch(
+    `${api_url}/api/placement-result`,
+    requestOptions
+  );
+  return response;
+};
+
 // Export all the functions
 const studentService = {
   createStudent,
@@ -106,6 +133,8 @@ const studentService = {
   deleteStudent,
   getStudentsByDepartment,
   acceptStudentApplyForm,
+  getAllApplyStudents,
+  deleteAllPlacementResults,
 };
 
 export default studentService;

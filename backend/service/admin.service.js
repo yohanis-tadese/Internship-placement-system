@@ -64,8 +64,19 @@ async function getAllAdmins() {
   }
 }
 
+async function updateAdminPhoto(photoPath) {
+  try {
+    const updatePhotoSql = "UPDATE admins SET photo = ? WHERE id = ?";
+    await query(updatePhotoSql, [photoPath]);
+  } catch (error) {
+    console.error("Error updating admin photo:", error.message);
+    throw new Error("Failed to update admin photo");
+  }
+}
+
 module.exports = {
   checkIfAdminExists,
   createAdmin,
   getAllAdmins,
+  updateAdminPhoto,
 };

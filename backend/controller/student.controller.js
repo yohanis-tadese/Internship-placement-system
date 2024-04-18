@@ -188,6 +188,45 @@ async function acceptStudentApplyForm(req, res, next) {
   }
 }
 
+async function getAllApplyStudents(req, res, next) {
+  try {
+    const students = await studentService.getAllApplyStudents();
+
+    if (!students || students.length === 0) {
+      return res.status(404).json({
+        error: "No students found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      students: students,
+    });
+  } catch (error) {
+    console.error("Error getting all students:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+async function deleteAllPlacementResults(req, res, next) {
+  try {
+    // Assuming you have a service function to delete all placement results
+    await studentService.deleteAllPlacementResults();
+
+    return res.status(200).json({
+      success: true,
+      message: "All placement results have been deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting placement results:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 module.exports = {
   createStudent,
   getStudents,
@@ -197,4 +236,6 @@ module.exports = {
   getStudentTypes,
   getStudentsByDepartment,
   acceptStudentApplyForm,
+  getAllApplyStudents,
+  deleteAllPlacementResults,
 };

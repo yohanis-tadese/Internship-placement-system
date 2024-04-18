@@ -21,7 +21,7 @@ const EditDepartment = ({ departmentId, initialData, onCancel }) => {
     } else {
       fetchDepartmentData();
     }
-  }, [initialData, departmentId]);
+  }, [departmentId]);
 
   const fetchDepartmentData = async () => {
     try {

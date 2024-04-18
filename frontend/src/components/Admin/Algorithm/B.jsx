@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { companiesData } from "./company";
 import { studentsData } from "./student";
 import placementService from "../../../services/placement.service";
 import criteriaService from "../../../services/criteria.service";
@@ -29,6 +28,7 @@ function Data() {
         const data = await response.json();
 
         setCompaniesData(data.companies);
+        console.log("hello companyyyyy", companiesData);
       } else {
         console.error("Failed to fetch data");
       }
@@ -48,9 +48,7 @@ function Data() {
       setWeightGender(criteriaData.data.weight_gender);
       setWeightPreference(criteriaData.data.weight_preference);
       setWeightGrade(criteriaData.data.weight_grade);
-    } catch (error) {
-      console.error("Error updating weights:", error);
-    }
+    } catch (error) {}
   };
 
   const calculateRank = (student, company) => {
@@ -71,49 +69,55 @@ function Data() {
   };
 
   async function assignStudentsToCompanies() {
-    // Reset assignedStudents object
-    const assignedStudents = {};
-    const studentPreferences = new Map();
-    const assignedStudentSet = new Set();
+    try {
+      // Reset assignedStudents object
+      const assignedStudents = {};
+      const studentPreferences = new Map();
+      const assignedStudentSet = new Set();
 
-    studentsData.forEach((student) => {
-      student.preferences.forEach((pref) => {
-        if (studentPreferences.has(pref)) {
-          studentPreferences.get(pref).push(student.student_id);
-        } else {
-          studentPreferences.set(pref, [student.student_id]);
-        }
+      studentsData.forEach((student) => {
+        student.preferences.forEach((pref) => {
+          if (studentPreferences.has(pref)) {
+            studentPreferences.get(pref).push(student.student_id);
+          } else {
+            studentPreferences.set(pref, [student.student_id]);
+          }
+        });
       });
-    });
 
-    // Iterate over each company
-    companiesData.forEach(async (company) => {
-      assignedStudents[company.company_name] = []; // Initialize company's assigned students array
-      const companyPreferences = studentsData.map((student) => ({
-        student_id: student.student_id,
-        rank: calculateRank(student, company),
-      }));
+      // Iterate over each company
+      await Promise.all(
+        companiesData.map(async (company) => {
+          assignedStudents[company.company_name] = [];
+          const companyPreferences = studentsData.map((student) => ({
+            student_id: student.student_id,
+            rank: calculateRank(student, company),
+          }));
 
-      // Sort the preference list based on ranks
-      companyPreferences.sort((a, b) => b.rank - a.rank);
+          // Sort the preference list based on ranks
+          companyPreferences.sort((a, b) => b.rank - a.rank);
 
-      companyPreferences.forEach((pref) => {
-        const studentId = pref.student_id;
-        const studentPref = studentPreferences.get(company.company_id);
-        const studentIndex = studentPref ? studentPref.indexOf(studentId) : -1;
-        if (
-          studentIndex !== -1 &&
-          assignedStudents[company.company_name].length <
-            company.accepted_students_limit &&
-          !assignedStudentSet.has(studentId)
-        ) {
-          assignedStudents[company.company_name].push({
-            student_id: studentId,
-            company_id: company.company_id,
+          companyPreferences.forEach((pref) => {
+            const studentId = pref.student_id;
+            const studentPref = studentPreferences.get(company.company_id);
+            const studentIndex = studentPref
+              ? studentPref.indexOf(studentId)
+              : -1;
+            if (
+              studentIndex !== -1 &&
+              assignedStudents[company.company_name].length <
+                company.accepted_student_limit &&
+              !assignedStudentSet.has(studentId)
+            ) {
+              assignedStudents[company.company_name].push({
+                student_id: studentId,
+                company_id: company.company_id,
+              });
+              assignedStudentSet.add(studentId); // Mark student as assigned
+            }
           });
-          assignedStudentSet.add(studentId); // Mark student as assigned
-        }
-      });
+        })
+      );
 
       // Flatten the assigned students object into an array
       const flattenedResults = Object.values(assignedStudents).reduce(
@@ -122,18 +126,16 @@ function Data() {
       );
 
       // Send placement results to the backend
-      try {
-        const data = await placementService.sendPlacementResults(
-          flattenedResults
-        );
-        console.log("Placement results stored successfully", data);
-        setPlacementResults(flattenedResults); // Update state with placement results
-      } catch (error) {
-        console.error("Error storing placement results:", error);
-      }
-    });
+      const data = await placementService.sendPlacementResults(
+        flattenedResults
+      );
+      console.log("Placement results stored successfully", data);
+      setPlacementResults(flattenedResults); // Update state with placement results
 
-    console.log("Assigned students", assignedStudents);
+      console.log("Assigned students", assignedStudents);
+    } catch (error) {
+      console.error("Error assigning students:", error);
+    }
   }
 
   return (

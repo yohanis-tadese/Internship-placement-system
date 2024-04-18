@@ -17,7 +17,7 @@ async function checkIfCompanyExists(username) {
 async function createCompany(company) {
   try {
     // Generate a unique username for the company
-    const username = `comp_${company.company_name}`;
+    const username = `comp.${req.body.company_name.toLowerCase()}`;
 
     // Hash the password before storing it
     const hashedPassword = await bcrypt.hash(company.password, 10);
@@ -81,7 +81,7 @@ async function getAllCompanies() {
     const sql = `
       SELECT * 
       FROM companies
-      ORDER BY company_id DESC
+      ORDER BY company_id ASC
       LIMIT 10
     `;
     const rows = await query(sql);
@@ -101,7 +101,7 @@ async function updateCompany(companyId, companyData) {
       industry_sector,
       accepted_student_limit,
       password,
-      website, // Include website field
+      website,
     } = companyData;
 
     // Hash the password before updating
@@ -131,8 +131,8 @@ async function updateCompany(companyId, companyData) {
       location,
       industry_sector,
       accepted_student_limit,
-      website, // Pass the website value
-      hashedPassword, // Use hashedPassword instead of hashPassword
+      website,
+      hashedPassword,
       companyId,
     ]);
 

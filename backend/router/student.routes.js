@@ -14,5 +14,10 @@ router.get(
   studentController.getStudentsByDepartment
 );
 router.post("/api/student/apply", studentController.acceptStudentApplyForm);
+router.get("/api/students/apply/list", studentController.getAllApplyStudents);
+router.delete(
+  "/api/placement-result",
+  studentController.deleteAllPlacementResults
+);
 
 module.exports = router;

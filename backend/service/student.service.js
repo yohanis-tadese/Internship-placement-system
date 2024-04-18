@@ -1,6 +1,7 @@
 // Import necessary dependencies
 const { query } = require("../config/db.config");
 const bcrypt = require("bcrypt");
+const { get } = require("../router/student.routes");
 
 // Function to hash the password using bcrypt
 const hashPassword = async (password) => {
@@ -209,6 +210,59 @@ async function acceptStudentApplyForm({
   }
 }
 
+async function getAllApplyStudents() {
+  try {
+    const sql = `
+      SELECT 
+        sa.apply_id,
+        s.student_id, 
+        CONCAT(s.first_name, ' ', s.last_name) AS student_name, 
+        sa.disability,
+        sa.gender,
+        s.gpa,
+        GROUP_CONCAT(DISTINCT sp.company_id ORDER BY sp.preference_order) AS preferences,
+        p.company_name
+      FROM 
+        students s
+      INNER JOIN 
+        student_apply_form sa ON s.student_id = sa.student_id
+      LEFT JOIN 
+        student_preferences sp ON sa.apply_id = sp.apply_id
+      LEFT JOIN 
+        placement_results pr ON s.student_id = pr.student_id
+      LEFT JOIN 
+        companies p ON pr.company_id = p.company_id
+      GROUP BY 
+        sa.apply_id;
+    `;
+    const students = await query(sql);
+    return students;
+  } catch (error) {
+    console.error("Error retrieving students:", error.message);
+    throw new Error(`Failed to retrieve students: ${error.message}`);
+  }
+}
+
+async function deleteAllPlacementResults() {
+  try {
+    // Write the SQL query to delete all records from the "placement_results" table
+    const sql = `DELETE FROM placement_results`;
+
+    // Execute the query
+    await query(sql);
+
+    // Return a success message or handle the result as needed
+    return {
+      success: true,
+      message: "All placement results have been deleted",
+    };
+  } catch (error) {
+    // Handle any errors that occur during the deletion process
+    console.error("Error deleting placement results:", error);
+    throw new Error("Failed to delete placement results");
+  }
+}
+
 // Export the functions
 module.exports = {
   checkIfStudentExists,
@@ -219,4 +273,6 @@ module.exports = {
   getStudentsByDepartment,
   deleteStudent,
   acceptStudentApplyForm,
+  getAllApplyStudents,
+  deleteAllPlacementResults,
 };

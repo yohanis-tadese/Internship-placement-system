@@ -4,7 +4,8 @@ const companyService = require("../service/company.service");
 async function createCompany(req, res, next) {
   try {
     // Generate the username automatically
-    const username = `Comp_${req.body.company_name}`;
+    const username = `comp.${req.body.company_name.toLowerCase()}`;
+
     // Check if company name already exists
     const companyExists = await companyService.checkIfCompanyExists(username);
 
