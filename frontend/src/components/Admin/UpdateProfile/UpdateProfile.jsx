@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../../../ui/Button";
 import Form from "../../../ui/Form";
 import FormRow from "../../../ui/FormRow";
@@ -7,15 +7,38 @@ import adminService from "../../../services/admin.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CancelButton from "../../../ui/CancelButton";
+import { useAuth } from "../../../context/AuthContext";
 
 function UpdateProfile() {
+  const { userId } = useAuth();
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
+    photo: "default.jpg",
   });
 
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const response = await adminService.getAdminById(userId);
+        if (!response.ok) {
+          throw new Error("Failed to fetch admin data");
+        }
+        const adminData = await response.json();
+        const admin = adminData.data;
+        setFormData(admin);
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+        toast.error("Error fetching admin data", { autoClose: 2000 });
+      }
+    };
+
+    fetchAdminData();
+  }, [userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,10 +48,17 @@ function UpdateProfile() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      photo: file,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = {};
-    // Validation logic
     if (!formData.first_name) {
       errors.first_name = "First Name is required";
     }
@@ -44,32 +74,31 @@ function UpdateProfile() {
     // If there are no errors, submit the form
     if (Object.keys(errors).length === 0) {
       try {
-        // Send a request to create a new admin
-        const response = await adminService.createAdmin(formData);
+        const formDataWithFile = new FormData();
+        formDataWithFile.append("first_name", formData.first_name);
+        formDataWithFile.append("last_name", formData.last_name);
+        formDataWithFile.append("email", formData.email);
+        if (formData.photo) {
+          formDataWithFile.append("photo", formData.photo);
+        }
 
-        if (response.status === 400) {
-          // If department name already exists
-          const responseData = await response.json();
-          toast.error(responseData.error, { autoClose: 1000 });
-          return;
+        // Update admin information
+        const updateResponse = await adminService.updateAdmin(
+          userId,
+          formDataWithFile
+        );
+        if (!updateResponse.ok) {
+          throw new Error("Failed to update admin");
         }
-        if (!response.ok) {
-          toast.error("Failed to create admin", { autoClose: 1000 });
-          return;
-        }
-        const responseData = await response.json();
-        if (response.status === 200) {
-          setFormData({
-            first_name: "",
-            last_name: "",
-            email: "",
-            password: "",
-          });
-          toast.success(responseData.message, { autoClose: 2000 });
-        }
+
+        // Show success toast message
+        toast.success("Profile updated successfully", {
+          autoClose: 500,
+        });
       } catch (error) {
-        console.error("Error creating admin:", error);
-        toast.error("Error creating admin", { autoClose: 2000 });
+        console.error("Error updating admin profile:", error);
+        // Show error toast message
+        toast.error("Failed to update admin profile", { autoClose: 2000 });
       }
     }
   };
@@ -107,6 +136,16 @@ function UpdateProfile() {
         />
       </FormRow>
 
+      <FormRow label="Profile Photo">
+        <Input
+          type="file"
+          id="photo"
+          name="photo"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </FormRow>
+
       <FormRow>
         <CancelButton
           variant="secondary"
@@ -116,6 +155,7 @@ function UpdateProfile() {
               first_name: "",
               last_name: "",
               email: "",
+              photo: null,
             })
           }
         >

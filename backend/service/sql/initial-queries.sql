@@ -50,11 +50,10 @@ CREATE TABLE IF NOT EXISTS `admins` (
   `last_name` VARCHAR(100) NOT NULL,
   `username` VARCHAR(255) NOT NULL UNIQUE,
   `email` VARCHAR(255) NOT NULL,
-  `photo` VARCHAR(255),
+  `photo` VARCHAR(255) DEFAULT 'public/images/default.jpg', 
   `password` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`admin_id`)
 ) ENGINE=InnoDB;
-
 
 -- Student Apply Form Table
 CREATE TABLE IF NOT EXISTS `student_apply_form` (
@@ -87,6 +86,45 @@ CREATE TABLE IF NOT EXISTS `weights` (
   `weight_preference` INT(11) NOT NULL,
   `weight_grade` INT(11) NOT NULL,
   PRIMARY KEY (`weight_id`)
+) ENGINE=InnoDB;
+
+-- Placement Results Table
+CREATE TABLE IF NOT EXISTS `placement_results` (
+  `placement_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `student_id` INT(11) NOT NULL,
+  `company_id` INT(11) NOT NULL,
+   PRIMARY KEY (`placement_id`),
+  FOREIGN KEY (`student_id`) REFERENCES `students`(`student_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`company_id`) REFERENCES `companies`(`company_id`) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Plorganization  Results Table
+CREATE TABLE IF NOT EXISTS `student_organizational_result` (
+  `result_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `student_id` INT(11) NOT NULL,
+  `department_id` INT(11) NOT NULL,
+  `company_id` INT(11) NOT NULL,
+  `commitment` DECIMAL(5,2),
+  `courtesy` DECIMAL(5,2),
+  `conduct` DECIMAL(5,2),
+  `perseverance` DECIMAL(5,2),
+  `teamwork` DECIMAL(5,2),
+  `professional_ethics` DECIMAL(5,2),
+  `creativity` DECIMAL(5,2),
+  `technical_knowledge` DECIMAL(5,2),
+  `efficiency` DECIMAL(5,2),
+  `professional_comments` DECIMAL(5,2),
+  `attendance` DECIMAL(5,2),
+  `advisor_name` VARCHAR(255),
+  `department_assigned` VARCHAR(255),
+  `attachment_from_date` DATE,
+  `attachment_to_date` DATE,
+  `area_of_work` VARCHAR(255),
+  `total_hours` DECIMAL(8,2),
+  PRIMARY KEY (`result_id`),
+  FOREIGN KEY (`student_id`) REFERENCES `students`(`student_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`department_id`) REFERENCES `departments`(`department_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`company_id`) REFERENCES `companies`(`company_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- Insert test admin-defined weights
@@ -170,30 +208,9 @@ INSERT INTO `student_preferences` (`apply_id`, `preference_order`, `student_id`,
 (14, 1, 14, 3), (14, 2, 14, 4), (14, 3, 14, 2), (14, 4, 14, 1),
 (15, 1, 15, 2), (15, 2, 15, 1), (15, 3, 15, 3), (15, 4, 15, 4);
 
--- Placement Results Table
-CREATE TABLE IF NOT EXISTS `placement_results` (
-  `placement_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `student_id` INT(11) NOT NULL,
-  `company_id` INT(11) NOT NULL,
-   PRIMARY KEY (`placement_id`),
-  FOREIGN KEY (`student_id`) REFERENCES `students`(`student_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`company_id`) REFERENCES `companies`(`company_id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
 
 
 
-CREATE TABLE IF NOT EXISTS `student_organization_results` (
-  `student_organization_results_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `student_id` INT(11) NOT NULL,
-  `department_id` INT(11) NOT NULL,
-  `company_id` INT(11) NOT NULL,
-  `grade1` DECIMAL(5,2),
-  `grade2` DECIMAL(5,2),
-  `grade3` DECIMAL(5,2),
-  PRIMARY KEY (`student_organization_results_id`),
-  FOREIGN KEY (`student_id`) REFERENCES `students`(`student_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`department_id`) REFERENCES `departments`(`department_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`company_id`) REFERENCES `companies`(`company_id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+
 
 

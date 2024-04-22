@@ -188,7 +188,6 @@ const StudentPlacement = () => {
 
   return (
     <div>
-      <Hr />
       {!placementGenerated ? (
         <Button
           primary={placementGenerated ? "false" : "true"}
@@ -215,7 +214,6 @@ const StudentPlacement = () => {
           )}
         </>
       )}
-      <Hr />
       <ApplyStudentList
         showCompany={showCompany}
         companiesData={companiesData}

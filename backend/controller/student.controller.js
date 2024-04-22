@@ -198,8 +198,12 @@ async function getAllApplyStudents(req, res, next) {
       });
     }
 
+    // Get the length of the students array
+    const numberOfStudents = students.length;
+
     return res.status(200).json({
       status: true,
+      numberOfStudents: numberOfStudents,
       students: students,
     });
   } catch (error) {

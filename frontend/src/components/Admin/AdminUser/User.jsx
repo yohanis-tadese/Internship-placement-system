@@ -16,7 +16,6 @@ function SignupForm() {
     password: "",
   });
 
-  const [photo, setPhoto] = useState(null);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -25,10 +24,6 @@ function SignupForm() {
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -54,25 +49,17 @@ function SignupForm() {
     // If there are no errors, submit the form
     if (Object.keys(errors).length === 0) {
       try {
-        // Create FormData object
-        const formDataWithPhoto = new FormData();
-        formDataWithPhoto.append("photo", photo);
+        // Send a request to create the admin
+        const adminResponse = await adminService.createAdmin(formData);
 
-        // Append other form data fields
-        for (const key in formData) {
-          formDataWithPhoto.append(key, formData[key]);
-        }
-
-        // Send a request to upload the photo
-        const photoResponse = await adminService.uploadPhoto(formDataWithPhoto);
-        if (!photoResponse.ok) {
-          toast.error("Failed to upload photo", { autoClose: 1000 });
+        if (!adminResponse.ok) {
+          toast.error("Failed to create admin", { autoClose: 2000 });
           return;
         }
 
         // Check if the response is valid JSON
-        const responseData = await photoResponse.json();
-        if (!photoResponse.ok) {
+        const responseData = await adminResponse.json();
+        if (!adminResponse.ok) {
           // If the response is not JSON, display an error message
           throw new Error(responseData.error || "Failed to create admin");
         }
@@ -136,16 +123,6 @@ function SignupForm() {
           name="password"
           value={formData.password}
           onChange={handleChange}
-        />
-      </FormRow>
-
-      <FormRow label="Photo">
-        <Input
-          type="file"
-          id="photo"
-          name="photo"
-          accept="image/*"
-          onChange={handlePhotoChange}
         />
       </FormRow>
 

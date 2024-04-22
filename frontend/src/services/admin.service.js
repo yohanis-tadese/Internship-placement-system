@@ -12,6 +12,21 @@ const createAdmin = async (formData) => {
   return response;
 };
 
+// A function to send a get request to get an admin by ID
+const getAdminById = async (userId) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(
+    `${api_url}/api/admin/${userId}`,
+    requestOptions
+  );
+  return response;
+};
+
 // A function to send get request to get all admins
 const getAllAdmins = async () => {
   const requestOptions = {
@@ -24,31 +39,54 @@ const getAllAdmins = async () => {
   return response;
 };
 
-async function uploadPhoto(formData) {
-  try {
-    const response = await fetch(`${api_url}/api/admin/upload`, {
-      method: "POST",
-      body: formData,
-    });
+const updateAdmin = async (adminId, adminData) => {
+  const requestOptions = {
+    method: "PATCH",
+    body: adminData, // Using FormData directly as the body
+  };
 
-    const responseData = await response.json();
+  const response = await fetch(
+    `${api_url}/api/admin/${adminId}`,
+    requestOptions
+  );
+  return response;
+};
 
-    if (!response.ok) {
-      throw new Error(responseData.error || "Failed to upload photo");
-    }
+const changePassword = async (adminId, oldPassword, newPassword) => {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ oldPassword, newPassword }),
+  };
+  const response = await fetch(
+    `${api_url}/api/admin/password/${adminId}`,
+    requestOptions
+  );
+  return response;
+};
 
-    return responseData;
-  } catch (error) {
-    console.error("Error uploading photo:", error);
-    throw error;
-  }
-}
+const getAdminPhotoById = async (adminId) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(
+    `${api_url}/api/admin/${adminId}/photo`,
+    requestOptions
+  );
+  return response;
+};
 
 // Export all the functions
 const adminService = {
   createAdmin,
+  getAdminById,
   getAllAdmins,
-  uploadPhoto,
+  updateAdmin,
+  changePassword,
+  getAdminPhotoById,
 };
 
 export default adminService;

@@ -1,10 +1,12 @@
 import styled from "styled-components";
 import HeaderMenu from "./HeaderMenu";
+import UserAvatar from "./UseAvatar";
+import { NavLink } from "react-router-dom";
 
 const StyledHeader = styled.header`
   background-color: var(--color-grey-0);
   padding: 1.2rem 4.8rem;
-  border-bottom: 2px solid var(--color-grey-100);
+  border-bottom: 1px solid var(--color-grey-100);
 
   display: flex;
   gap: 2.4rem;
@@ -15,6 +17,10 @@ const StyledHeader = styled.header`
 function Header() {
   return (
     <StyledHeader>
+      <NavLink to="/admin/account" activeClassName="active">
+        <UserAvatar />
+      </NavLink>
+
       <HeaderMenu />
     </StyledHeader>
   );

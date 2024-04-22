@@ -20,6 +20,9 @@ const StyledHeaderMenu = styled.div`
 
 const WelcomeMessage = styled.span`
   font-weight: bold;
+  font-size: 14px;
+  text-transform: capitalize;
+  letter-spacing: 1px;
 `;
 
 function HeaderMenu() {

@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ButtonIcon from "./../ButtonIcon";
-import { LuLogOut } from "react-icons/lu";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import DarkModeToggle from "./../DarkModeToggle";
 import { useAuth } from "../../context/AuthContext";
 import loginService from "../../services/login.service";
+import { FaSignOutAlt } from "react-icons/fa";
 
 // import Heading from "./Heading";
 
@@ -21,6 +21,25 @@ const StyledHeaderMenu = styled.div`
 
 const WelcomeMessage = styled.span`
   font-weight: bold;
+  font-size: 14px;
+  text-transform: capitalize;
+  letter-spacing: 1px;
+`;
+
+const StyledButton = styled.button`
+  background-color: #08b3c1;
+  border: none;
+  border-radius: 20px;
+  color: #ffffff;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    background-color: #087aa4;
+    border-radius: 20px;
+    color: #ffffff;
+  }
 `;
 
 function HeaderMenu() {
@@ -53,18 +72,15 @@ function HeaderMenu() {
 
   return (
     <StyledHeaderMenu>
-      <WelcomeMessage>Wellcome, {secondName}</WelcomeMessage>
-      <ButtonIcon to="/admin/account">
-        <NavLink to="/admin/account" activeClassName="active">
-          <PiUserCircleDuotone />
-        </NavLink>
-      </ButtonIcon>
+      <WelcomeMessage>
+        Wellcome <span>{secondName}</span>
+      </WelcomeMessage>
 
       <DarkModeToggle />
 
-      <ButtonIcon onClick={logOut}>
-        <LuLogOut />
-      </ButtonIcon>
+      <StyledButton onClick={logOut}>
+        <FaSignOutAlt /> Logout
+      </StyledButton>
     </StyledHeaderMenu>
   );
 }

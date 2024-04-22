@@ -5,13 +5,15 @@ import {
   HiOutlineCalendar,
   HiOutlineCog,
   HiOutlineHome,
-  HiOutlineUsers,
-} from "react-icons/hi2";
+  HiOutlineUser,
+} from "react-icons/hi";
+import { FaUser } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
 
 const NavList = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.1rem;
 `;
 
 const StyledNavLink = styled(NavLink)`
@@ -20,7 +22,6 @@ const StyledNavLink = styled(NavLink)`
     display: flex;
     align-items: center;
     gap: 1.6rem;
-
     color: var(--color-grey-600);
     font-size: 1.6rem;
     font-weight: 500;
@@ -59,7 +60,7 @@ function MainNav() {
       <NavList>
         <li>
           <StyledNavLink to="/admin/dashboard">
-            <HiOutlineHome />
+            <MdDashboard />
             <span>Dashboard</span>
           </StyledNavLink>
         </li>
@@ -75,25 +76,28 @@ function MainNav() {
             <span>Company</span>
           </StyledNavLink>
         </li>
-
         <li>
           <StyledNavLink to="/admin/user">
-            <HiOutlineUsers />
+            <FaUser />
             <span>Admin</span>
           </StyledNavLink>
         </li>
-
         <li>
-          <StyledNavLink to="/admin/Criteria">
+          <StyledNavLink to="/admin/criteria">
             <HiOutlineCog />
             <span>Criteria</span>
           </StyledNavLink>
         </li>
-
         <li>
           <StyledNavLink to="/admin/placement">
             <HiOutlineCog />
             <span>Generate</span>
+          </StyledNavLink>
+        </li>
+        <li>
+          <StyledNavLink to="/admin/account">
+            <HiOutlineUser />
+            <span>Profile</span>
           </StyledNavLink>
         </li>
       </NavList>

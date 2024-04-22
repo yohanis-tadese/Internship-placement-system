@@ -119,7 +119,7 @@ async function getAllDepartments() {
       SELECT * 
       FROM departments
       ORDER BY department_id ASC
-      LIMIT 6
+      LIMIT 10
     `;
     const rows = await query(sql);
     return rows;

@@ -7,6 +7,7 @@ const app = express();
 
 // Add CORS middleware
 app.use(cors());
+app.use(express.static("public"));
 
 // Add express.json middleware
 app.use(express.json());

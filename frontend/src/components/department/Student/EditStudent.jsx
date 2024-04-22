@@ -11,10 +11,11 @@ import { StudentForm } from "../../FormField"; // Importing StudentForm from the
 import departmentService from "../../../services/department.service";
 import studentService from "../../../services/student.service";
 import styled from "styled-components";
+import { useAuth } from "../../../context/AuthContext";
 
 // Styled component for the select container
 const SelectContainer = styled.div`
-  select {
+  input {
     width: 100%;
     padding: 0.7rem;
     border: 1px solid #ccc;
@@ -22,14 +23,10 @@ const SelectContainer = styled.div`
     border-radius: 5px;
     font-size: 1.4rem;
   }
-
-  /* Style the selected option */
-  select option:checked {
-    background-color: #007bff; /* Change the background color */
-  }
 `;
 
 const EditStudent = ({ studentId, initialData, onCancel }) => {
+  const { userId } = useAuth();
   const [formData, setFormData] = useState(initialData || {});
   const [modalVisible, setModalVisible] = useState(true);
   const [departmentIds, setDepartmentIds] = useState([]);
@@ -40,6 +37,12 @@ const EditStudent = ({ studentId, initialData, onCancel }) => {
     const fetchDepartmentIds = async () => {
       try {
         const ids = await departmentService.getDepartmentIds();
+
+        setFormData((prevData) => ({
+          ...prevData,
+          department_id: userId,
+        }));
+
         setDepartmentIds(ids);
       } catch (error) {
         console.error("Error fetching department IDs:", error.message);
@@ -47,7 +50,7 @@ const EditStudent = ({ studentId, initialData, onCancel }) => {
     };
 
     fetchDepartmentIds();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (!initialData) {
@@ -146,18 +149,13 @@ const EditStudent = ({ studentId, initialData, onCancel }) => {
               >
                 {field.id === "department_id" ? (
                   <SelectContainer>
-                    <select
+                    <Input
+                      type="text"
                       id={field.id}
                       value={formData[field.id] || ""}
                       onChange={handleChange}
-                    >
-                      <option value="">Department...</option>
-                      {departmentIds.map((id) => (
-                        <option key={id} value={id}>
-                          {id}
-                        </option>
-                      ))}
-                    </select>
+                      disabled // Prevent editing
+                    />
                   </SelectContainer>
                 ) : (
                   <Input

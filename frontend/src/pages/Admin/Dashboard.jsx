@@ -14,7 +14,7 @@ import Spinner from "../../ui/Spinner";
 
 const DashboardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 4rem;
 `;
 
@@ -32,13 +32,13 @@ const Box = styled.div`
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin-bottom: 10px;
     color: var(--color-grey-600);
   }
 
   h3 {
-    font-size: 2.5rem;
+    font-size: 2.7rem;
     margin-bottom: 30px;
     color: var(--color-grey-600);
   }
@@ -64,10 +64,13 @@ function Dashboard() {
   const [numCompanies, setNumCompanies] = useState(0);
   const [numStudents, setNumStudents] = useState(0);
   const [numAdmins, setNumAdmins] = useState(0);
+  const [numApplyStudents, setNumApplyStudents] = useState([]);
+
   const [loadingDepartments, setLoadingDepartments] = useState(true);
   const [loadingCompanies, setLoadingCompanies] = useState(true);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [loadingAdmins, setLoadingAdmins] = useState(true);
+  const [loadingApplyStudents, setLoadingApplyStudents] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -75,6 +78,7 @@ function Dashboard() {
       const companyResponse = await companyService.getAllCompanies();
       const studentResponse = await studentService.getAllStudents();
       const adminResponse = await adminService.getAllAdmins();
+      const applyStudentResponse = await studentService.getAllApplyStudents();
 
       await new Promise((resolve) => setTimeout(resolve, 400));
 
@@ -82,7 +86,8 @@ function Dashboard() {
         departmentResponse.ok &&
         companyResponse.ok &&
         studentResponse.ok &&
-        adminResponse.ok
+        adminResponse.ok &&
+        applyStudentResponse
       ) {
         const departmentData = await departmentResponse.json();
         const companyData = await companyResponse.json();
@@ -93,6 +98,7 @@ function Dashboard() {
         setNumCompanies(companyData.companies.length);
         setNumStudents(studentData.students.length);
         setNumAdmins(adminData.admins.length);
+        setNumApplyStudents(applyStudentResponse.students.length);
       } else {
         console.error("Failed to fetch dashboard data");
       }
@@ -101,6 +107,7 @@ function Dashboard() {
       setLoadingCompanies(false);
       setLoadingStudents(false);
       setLoadingAdmins(false);
+      setLoadingApplyStudents(false);
     }
 
     fetchData();
@@ -111,7 +118,6 @@ function Dashboard() {
       <Row type="horizontal">
         <Heading as="h1">Admin Dashboard</Heading>
       </Row>
-      <br /> <br />
       <DashboardContainer>
         <Box>
           <Heading as="h2">Number of Admins</Heading>
@@ -166,6 +172,20 @@ function Dashboard() {
                 <FaUserGraduate size={24} color="#0984e3" />
               </IconContainer>
               <StyledLink>Students</StyledLink>
+            </>
+          )}
+        </Box>
+        <Box>
+          <Heading as="h2">Number of Apply Students</Heading>
+          {loadingApplyStudents ? (
+            <Spinner />
+          ) : (
+            <>
+              <h3>{numApplyStudents}</h3>
+              <IconContainer>
+                <FaUserGraduate size={24} color="#0984e3" />
+              </IconContainer>
+              <StyledLink to="/admin/placement">See detail</StyledLink>
             </>
           )}
         </Box>

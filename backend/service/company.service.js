@@ -76,15 +76,22 @@ async function getCompany(companyId) {
   }
 }
 
-async function getAllCompanies() {
+async function getAllCompanies(page, size) {
   try {
+    // Calculate offset based on page number and page size
+    const offset = (page - 1) * size;
+
+    // Modify the SQL query to include LIMIT and OFFSET clauses
     const sql = `
       SELECT * 
       FROM companies
       ORDER BY company_id ASC
-      LIMIT 10
+      LIMIT ? OFFSET ?
     `;
-    const rows = await query(sql);
+
+    // Execute the query with parameters for LIMIT and OFFSET
+    const rows = await query(sql, [size, offset]);
+
     return rows;
   } catch (error) {
     throw new Error(`Error getting all companies: ${error.message}`);

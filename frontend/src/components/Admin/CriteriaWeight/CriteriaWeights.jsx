@@ -15,6 +15,9 @@ function CriteriaForm() {
     weight_preference: 0,
     weight_grade: 0,
   });
+
+  console.log("criteria weight", formData);
+
   const [originalFormData, setOriginalFormData] = useState(null);
   const [errors, setErrors] = useState({});
 
@@ -26,7 +29,7 @@ function CriteriaForm() {
 
         setFormData(response.data);
 
-        setOriginalFormData(response.data); // Store original data
+        setOriginalFormData(response.data);
       } catch (error) {
         console.error("Error fetching criteria:", error);
         toast.error("Error fetching criteria", { autoClose: 2000 });

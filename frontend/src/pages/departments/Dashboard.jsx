@@ -96,7 +96,7 @@ function Dashboard() {
       <Row type="horizontal">
         <Heading as="h1">Department Dashboard</Heading>
       </Row>
-      <br /> <br />
+
       <DashboardContainer>
         <Box>
           <Heading as="h2">Number of Students</Heading>

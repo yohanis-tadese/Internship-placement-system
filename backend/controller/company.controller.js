@@ -63,27 +63,27 @@ async function getCompany(req, res, next) {
   }
 }
 
-async function getAllCompanies(req, res, next) {
+const getAllCompanies = async (req, res) => {
   try {
-    const companies = await companyService.getAllCompanies();
+    // Extract page number and page size from query parameters
+    const { page = 1, size = 5 } = req.query;
 
-    if (!companies) {
-      return res.status(404).json({
-        error: "Companies not found",
-      });
-    }
+    // Call the service function to fetch companies with pagination
+    const companies = await companyService.getAllCompanies(
+      parseInt(page),
+      parseInt(size)
+    );
 
-    return res.status(200).json({
-      status: true,
+    res.json({
       companies,
+      totalPages: 1,
     });
   } catch (error) {
-    console.error("Error getting companies:", error);
-    return res.status(500).json({
-      error: "Internal server error",
-    });
+    // Handle errors
+    console.error("Error fetching companies:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 async function updateCompany(req, res, next) {
   try {

@@ -9,6 +9,7 @@ import studentService from "../../../services/student.service";
 import departmentService from "../../../services/department.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../../../context/AuthContext";
 import styled from "styled-components";
 
 // Styled component for the select container
@@ -39,6 +40,7 @@ const CreateStudent = () => {
     department_id: "",
   });
 
+  const { userId } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [departmentIds, setDepartmentIds] = useState([]);
   const [errors, setErrors] = useState({});
@@ -49,16 +51,11 @@ const CreateStudent = () => {
       try {
         const ids = await departmentService.getDepartmentIds();
 
-        // Mapping department IDs to their corresponding names
-        const idToNameMap = {
-          1: "Information System",
-          2: "Information Science",
-          3: "Computer Science",
-          4: "Software Enginering",
-        };
-
-        // Map the IDs to their corresponding names
-        const departmentNames = ids.map((id) => idToNameMap[id]);
+        // Set the department ID to the user's department ID
+        setFormData((prevData) => ({
+          ...prevData,
+          department_id: userId,
+        }));
 
         setDepartmentIds(ids); // Set department names in the state
       } catch (error) {
@@ -67,7 +64,7 @@ const CreateStudent = () => {
     };
 
     fetchDepartmentIds();
-  }, []);
+  }, [userId]);
 
   const validateForm = () => {
     let valid = true;
@@ -257,21 +254,15 @@ const CreateStudent = () => {
               />
             </FormRow>
             <FormRow label="Department" error={errors.department_id}>
-              <SelectContainer>
-                <select
-                  id="department_id"
-                  value={formData.department_id}
-                  onChange={handleChange}
-                >
-                  <option value="">Department...</option>
-                  {departmentIds.map((id) => (
-                    <option key={id} value={id}>
-                      {id}
-                    </option>
-                  ))}
-                </select>
-              </SelectContainer>
+              <Input
+                type="text"
+                id="department_id"
+                value={formData.department_id}
+                onChange={handleChange}
+                disabled // Prevent editing
+              />
             </FormRow>
+
             <div
               style={{
                 display: "flex",

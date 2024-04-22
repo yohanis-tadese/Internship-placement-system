@@ -26,21 +26,24 @@ async function createAdmin(admin) {
       throw new Error("Admin already exists.");
     }
 
-    // Insert admin details into the admins table
+    // Insert admin details into the admins table, including the default photo path
     const insertAdminSql = `
         INSERT INTO admins (
           first_name,
           last_name,
           username,
           email,
+          photo,
           password
-        ) VALUES (?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `;
+    const defaultPhotoPath = "../public/images/admin/yohanis.gif";
     const result = await query(insertAdminSql, [
       admin.first_name,
       admin.last_name,
       username,
       admin.email,
+      defaultPhotoPath,
       hashedPassword,
     ]);
     const adminId = result.insertId;
@@ -49,6 +52,22 @@ async function createAdmin(admin) {
   } catch (error) {
     console.error("Error creating admin:", error.message);
     throw new Error("Failed to create admin");
+  }
+}
+
+async function getAdminById(adminId) {
+  try {
+    // Construct SQL query to fetch admin by ID
+    const sql = "SELECT * FROM admins WHERE admin_id = ?";
+
+    // Execute the query with the admin ID as a parameter
+    const [admin] = await query(sql, [adminId]);
+
+    // Return the admin data
+    return admin;
+  } catch (error) {
+    console.error("Error getting admin by ID:", error.message);
+    throw new Error("Failed to get admin by ID");
   }
 }
 
@@ -64,19 +83,100 @@ async function getAllAdmins() {
   }
 }
 
-async function updateAdminPhoto(photoPath) {
+async function updateAdmin(adminId, adminData, photoFilename) {
   try {
-    const updatePhotoSql = "UPDATE admins SET photo = ? WHERE id = ?";
-    await query(updatePhotoSql, [photoPath]);
+    const { first_name, last_name, email } = adminData;
+
+    // Check if a photo filename is provided and update the adminData accordingly
+    if (photoFilename) {
+      adminData.photo = photoFilename;
+    }
+
+    const username = `admin.${first_name.toLowerCase()}.${last_name
+      .slice(0, 2)
+      .toLowerCase()}`;
+
+    // Update the admin data
+    const updateSql = `
+      UPDATE admins
+      SET first_name = ?,
+          last_name = ?,
+          username = ?,
+          email = ?,
+          photo = ?
+      WHERE admin_id = ?
+    `;
+
+    const params = [
+      first_name,
+      last_name,
+      username,
+      email,
+      adminData.photo,
+      adminId,
+    ];
+
+    // Execute the SQL update query
+    const result = await query(updateSql, params);
+
+    // Check if the update was successful
+    return result.affectedRows > 0;
   } catch (error) {
-    console.error("Error updating admin photo:", error.message);
-    throw new Error("Failed to update admin photo");
+    throw new Error(`Error updating admin: ${error.message}`);
+  }
+}
+
+// Function to change the password of an admin
+async function changePassword(adminId, oldPassword, newPassword) {
+  try {
+    // Retrieve the current password of the admin from the database
+    const sql = "SELECT password FROM admins WHERE admin_id = ?";
+    const [admin] = await query(sql, [adminId]);
+
+    // Verify if the provided old password matches the current password
+    const isPasswordValid = await bcrypt.compare(oldPassword, admin.password);
+    if (!isPasswordValid) {
+      throw new Error("Old password is incorrect");
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the admin's password in the database
+    const updatePasswordSql = `
+      UPDATE admins
+      SET password = ?
+      WHERE admin_id = ?
+    `;
+    const result = await query(updatePasswordSql, [hashedPassword, adminId]);
+
+    // Check if the password was updated successfully
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    throw new Error("Failed to change password");
+  }
+}
+
+async function getAdminPhoto(adminId) {
+  try {
+    // Fetch admin data by ID
+    const admin = await getAdminById(adminId);
+
+    // Return admin's photo filename
+    return admin.photo;
+  } catch (error) {
+    console.error("Error getting admin photo:", error);
+    throw new Error("Failed to get admin photo");
   }
 }
 
 module.exports = {
   checkIfAdminExists,
+  getAdminById,
   createAdmin,
   getAllAdmins,
-  updateAdminPhoto,
+  updateAdmin,
+  changePassword,
+  getAdminPhoto,
 };

@@ -4,11 +4,6 @@ import Heading from "./../../../ui/Heading";
 import placementService from "./../../../services/placement.service";
 import { useAuth } from "./../../../context/AuthContext";
 
-// Styled component for placement results container
-const PlacementResultsContainer = styled.div`
-  margin-top: 20px;
-`;
-
 // Styled component for placement result table
 const PlacementResultTable = styled.table`
   width: 100%;
@@ -62,37 +57,33 @@ const PlacementResult = () => {
   return (
     <>
       <Heading as="h1">Placement Results</Heading>
-      <br />
-      <hr />
 
-      <PlacementResultsContainer>
-        <PlacementResultTable>
-          <thead>
-            <TableRow>
-              <TableHeaderCell>ID</TableHeaderCell>
-              <TableHeaderCell>Student Name</TableHeaderCell>
-              <TableHeaderCell>Gender</TableHeaderCell>
-              <TableHeaderCell>Department Name</TableHeaderCell>
-              <TableHeaderCell>Company Name</TableHeaderCell>
+      <PlacementResultTable>
+        <thead>
+          <TableRow>
+            <TableHeaderCell>ID</TableHeaderCell>
+            <TableHeaderCell>Student Name</TableHeaderCell>
+            <TableHeaderCell>Gender</TableHeaderCell>
+            <TableHeaderCell>Department Name</TableHeaderCell>
+            <TableHeaderCell>Company Name</TableHeaderCell>
+          </TableRow>
+        </thead>
+        <tbody>
+          {placementResults.map((result, index) => (
+            <TableRow key={result.placement_id}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>
+                {result.student_first_name} {result.student_last_name}
+              </TableCell>
+              <TableCell>{result.gender}</TableCell>
+              <TableCell>{result.department_name}</TableCell>
+              <TableCell style={{ color: "red" }}>
+                {result.company_name}
+              </TableCell>
             </TableRow>
-          </thead>
-          <tbody>
-            {placementResults.map((result, index) => (
-              <TableRow key={result.placement_id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  {result.student_first_name} {result.student_last_name}
-                </TableCell>
-                <TableCell>{result.gender}</TableCell>
-                <TableCell>{result.department_name}</TableCell>
-                <TableCell style={{ color: "red" }}>
-                  {result.company_name}
-                </TableCell>
-              </TableRow>
-            ))}
-          </tbody>
-        </PlacementResultTable>
-      </PlacementResultsContainer>
+          ))}
+        </tbody>
+      </PlacementResultTable>
     </>
   );
 };

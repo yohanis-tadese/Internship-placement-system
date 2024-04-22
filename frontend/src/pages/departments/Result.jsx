@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 // Styled components
 const PageContainer = styled.div`
-  padding-top: 80px;
+  padding-top: 40px;
   text-transform: uppercase;
   background-color: var(--color-grey-200);
   min-height: 80vh;
