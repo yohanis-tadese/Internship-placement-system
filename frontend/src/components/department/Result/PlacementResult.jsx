@@ -64,8 +64,10 @@ const PlacementResult = () => {
             <TableHeaderCell>ID</TableHeaderCell>
             <TableHeaderCell>Student Name</TableHeaderCell>
             <TableHeaderCell>Gender</TableHeaderCell>
-            <TableHeaderCell>Department Name</TableHeaderCell>
-            <TableHeaderCell>Company Name</TableHeaderCell>
+            <TableHeaderCell>Department</TableHeaderCell>
+            <TableHeaderCell>Company Number</TableHeaderCell>
+            <TableHeaderCell>Company Email</TableHeaderCell>
+            <TableHeaderCell>Assigned Company</TableHeaderCell>
           </TableRow>
         </thead>
         <tbody>
@@ -77,6 +79,8 @@ const PlacementResult = () => {
               </TableCell>
               <TableCell>{result.gender}</TableCell>
               <TableCell>{result.department_name}</TableCell>
+              <TableCell>{result.phone_number}</TableCell>
+              <TableCell>{result.contact_email}</TableCell>
               <TableCell style={{ color: "red" }}>
                 {result.company_name}
               </TableCell>

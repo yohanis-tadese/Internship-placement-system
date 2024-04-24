@@ -64,8 +64,6 @@ function UserAvatar() {
     return () => clearInterval(intervalId);
   }, [userId]);
 
-  console.log("gggggg", `http://localhost:8080/images/admin/` + photoUrl);
-
   return (
     <StyledUserAvatar>
       <Avatar

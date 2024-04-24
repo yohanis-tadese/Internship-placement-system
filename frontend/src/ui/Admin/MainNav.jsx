@@ -7,7 +7,6 @@ import {
   HiOutlineHome,
   HiOutlineUser,
 } from "react-icons/hi";
-import { FaUser } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 
 const NavList = styled.ul`
@@ -78,7 +77,7 @@ function MainNav() {
         </li>
         <li>
           <StyledNavLink to="/admin/user">
-            <FaUser />
+            <HiOutlineUser />
             <span>Admin</span>
           </StyledNavLink>
         </li>
@@ -91,7 +90,7 @@ function MainNav() {
         <li>
           <StyledNavLink to="/admin/placement">
             <HiOutlineCog />
-            <span>Generate</span>
+            <span>Algorithm</span>
           </StyledNavLink>
         </li>
         <li>

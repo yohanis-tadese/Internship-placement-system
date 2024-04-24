@@ -52,11 +52,16 @@ const updateAdmin = async (adminId, adminData) => {
   return response;
 };
 
-const changePassword = async (adminId, oldPassword, newPassword) => {
+const changePassword = async (
+  adminId,
+  oldPassword,
+  newPassword,
+  confirmPassword
+) => {
   const requestOptions = {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ oldPassword, newPassword }),
+    body: JSON.stringify({ oldPassword, newPassword, confirmPassword }),
   };
   const response = await fetch(
     `${api_url}/api/admin/password/${adminId}`,

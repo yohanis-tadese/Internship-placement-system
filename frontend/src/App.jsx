@@ -23,6 +23,7 @@ import AppLayout from "./ui/Admin/AppLayout";
 // Student Pages
 import Dashboard from "./pages/student/Dashboard";
 import StudentPlacementForm from "./components/student/Apply/ApplyForm";
+import StudentPlacementUpdateForm from "./components/student/Apply/UpdateForm";
 import CompanyList from "./components/student/Company/CompanyList";
 import ResultType from "./components/student/Result/ResultType";
 import PlacementResults from "./components/student/Result/PlacementResults";
@@ -164,7 +165,7 @@ function App() {
                 }
               />
               <Route
-                path="student-company-results"
+                path="student-organizational-results"
                 element={
                   <PrivateAuthRoute roles={["Department"]}>
                     <CompanyResult />
@@ -205,6 +206,14 @@ function App() {
             element={
               <PrivateAuthRoute roles={["Student"]}>
                 <StudentPlacementForm />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="student/form/update"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <StudentPlacementUpdateForm />
               </PrivateAuthRoute>
             }
           />

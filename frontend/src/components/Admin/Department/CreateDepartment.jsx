@@ -7,7 +7,6 @@ import Modal from "../../../ui/Modal";
 import CancelButton from "../../../ui/CancelButton";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components";
 import departmentService from "../../../services/department.service";
 
 const CreateDepartment = () => {
@@ -21,23 +20,6 @@ const CreateDepartment = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [errors, setErrors] = useState({});
-
-  // Styled component for the select container
-  const SelectContainer = styled.div`
-    select {
-      width: 100%;
-      padding: 0.7rem;
-      border: 1px solid #ccc;
-      background-color: var(--color-grey-50);
-      border-radius: 5px;
-      font-size: 1.4rem;
-    }
-
-    /* Style the selected option */
-    select option:checked {
-      background-color: #007bff; /* Change the background color */
-    }
-  `;
 
   const handleCloseModal = () => {
     setModalVisible(false);

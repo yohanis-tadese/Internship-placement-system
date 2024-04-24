@@ -112,6 +112,40 @@ const getAllApplyStudents = async () => {
   return response.json();
 };
 
+const getApplyStudentById = async (studentId) => {
+  try {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await fetch(
+      `${api_url}/api/students/apply/list/${studentId}`,
+      requestOptions
+    );
+    if (!response.ok) {
+      throw new Error("Failed to retrieve apply students");
+    }
+    return response.json();
+  } catch (error) {
+    throw new Error("Failed to retrieve apply students: " + error.message);
+  }
+};
+
+const updateStudentApplyForm = async (studentId, formData) => {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  };
+  const response = await fetch(
+    `${api_url}/api/student/apply/update/${studentId}`,
+    requestOptions
+  );
+  return response;
+};
+
 const deleteAllPlacementResults = async () => {
   const requestOptions = {
     method: "DELETE",
@@ -134,6 +168,8 @@ const studentService = {
   getStudentsByDepartment,
   acceptStudentApplyForm,
   getAllApplyStudents,
+  getApplyStudentById,
+  updateStudentApplyForm,
   deleteAllPlacementResults,
 };
 

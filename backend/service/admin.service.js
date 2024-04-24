@@ -127,8 +127,18 @@ async function updateAdmin(adminId, adminData, photoFilename) {
 }
 
 // Function to change the password of an admin
-async function changePassword(adminId, oldPassword, newPassword) {
+async function changePassword(
+  adminId,
+  oldPassword,
+  newPassword,
+  confirmPassword
+) {
   try {
+    // Check if the new password matches the confirm password
+    if (newPassword !== confirmPassword) {
+      throw new Error("New password and confirm password do not match");
+    }
+
     // Retrieve the current password of the admin from the database
     const sql = "SELECT password FROM admins WHERE admin_id = ?";
     const [admin] = await query(sql, [adminId]);
@@ -153,8 +163,7 @@ async function changePassword(adminId, oldPassword, newPassword) {
     // Check if the password was updated successfully
     return result.affectedRows > 0;
   } catch (error) {
-    console.error("Error changing password:", error.message);
-    throw new Error("Failed to change password");
+    throw new Error("Failed to change password: " + error.message);
   }
 }
 

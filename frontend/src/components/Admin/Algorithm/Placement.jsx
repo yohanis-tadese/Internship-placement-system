@@ -10,13 +10,13 @@ import ConfirmationDialog from "./ConfirmationDialog";
 const Button = styled.button`
   padding: 10px 20px;
   background-color: ${(props) =>
-    props.primary === "true" ? "#007bff" : "#FF0000"};
+    props.primary === "true" ? "#7dc400" : "#FF0000"};
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
   margin-bottom: 20px;
   margin-right: ${(props) => (props.marginRight ? "30px" : "0")};
 `;
@@ -32,29 +32,64 @@ const StudentPlacement = () => {
   const [weightGender, setWeightGender] = useState(0);
   const [weightPreference, setWeightPreference] = useState(0);
   const [weightGrade, setWeightGrade] = useState(0);
-  const [placementGenerated, setPlacementGenerated] = useState(false);
-  const [showCompany, setShowCompany] = useState(false);
+  const [placementGenerated, setPlacementGenerated] = useState(() => {
+    const storedPlacementStatus = localStorage.getItem("placementGenerated");
+    return storedPlacementStatus ? JSON.parse(storedPlacementStatus) : false;
+  });
+  const [showCompany, setShowCompany] = useState(() => {
+    const storedShowCompanyStatus = localStorage.getItem("showCompany");
+    return storedShowCompanyStatus
+      ? JSON.parse(storedShowCompanyStatus)
+      : false;
+  });
+
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     fetchData();
     updateWeights();
-    // Check if placement status is stored in localStorage
+    // Retrieve showCompany status from localStorage
+    const storedShowCompanyStatus = localStorage.getItem("showCompany");
+    if (storedShowCompanyStatus) {
+      setShowCompany(JSON.parse(storedShowCompanyStatus));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "placementGenerated",
+      JSON.stringify(placementGenerated)
+    );
+    localStorage.setItem("showCompany", JSON.stringify(showCompany));
+  }, [placementGenerated, showCompany]);
+
+  useEffect(() => {
+    fetchData();
+    updateWeights();
     const storedPlacementStatus = localStorage.getItem("placementGenerated");
     if (storedPlacementStatus) {
       setPlacementGenerated(JSON.parse(storedPlacementStatus));
       setShowCompany(JSON.parse(storedPlacementStatus));
     }
+
+    // Retrieve showCompany status from localStorage
+    const storedShowCompanyStatus = localStorage.getItem("showCompany");
+    if (storedShowCompanyStatus) {
+      setShowCompany(JSON.parse(storedShowCompanyStatus));
+    }
   }, []);
 
   useEffect(() => {
-    // Store placement status in localStorage
-    localStorage.setItem("placementGenerated", placementGenerated);
-  }, [placementGenerated]);
+    localStorage.setItem(
+      "placementGenerated",
+      JSON.stringify(placementGenerated)
+    );
+    localStorage.setItem("showCompany", JSON.stringify(showCompany));
+  }, [placementGenerated, showCompany]);
 
   const fetchData = async () => {
     try {
-      const response = await companyService.getAllCompanies();
+      const response = await companyService.getAllCompaniesWithoutPagination();
 
       if (response.ok) {
         const data = await response.json();
@@ -175,6 +210,9 @@ const StudentPlacement = () => {
       const response = await studentService.deleteAllPlacementResults();
       if (response) {
         console.log("Placement results reset successfully.");
+        localStorage.setItem("placementGenerated", "false");
+        setPlacementGenerated(false);
+        setShowCompany(false);
       } else {
         console.error("Failed to reset placement results");
       }
@@ -182,8 +220,6 @@ const StudentPlacement = () => {
       console.error("Error resetting placement results:", error);
     }
     setShowConfirmation(false);
-    setPlacementGenerated(false);
-    setShowCompany(false);
   };
 
   return (
@@ -192,6 +228,7 @@ const StudentPlacement = () => {
         <Button
           primary={placementGenerated ? "false" : "true"}
           onClick={() => {
+            console.log("Generating placement...");
             assignStudentsToCompanies();
             setPlacementGenerated(true);
             setShowCompany(true);

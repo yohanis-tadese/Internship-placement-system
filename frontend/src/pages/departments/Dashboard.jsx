@@ -69,7 +69,8 @@ function Dashboard() {
     // Fetch real data for the dashboard
     async function fetchData() {
       try {
-        const companyResponse = await companyService.getAllCompanies();
+        const companyResponse =
+          await companyService.getAllCompaniesWithoutPagination();
         const studentResponse = await studentService.getStudentsByDepartment(
           userId
         );

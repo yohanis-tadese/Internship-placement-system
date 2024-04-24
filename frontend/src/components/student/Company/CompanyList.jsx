@@ -28,7 +28,9 @@ function FeaturedJobs() {
       try {
         // Simulate loading with a setTimeout
         setTimeout(async () => {
-          const response = await companyService.getAllCompanies();
+          const response =
+            await companyService.getAllCompaniesWithoutPagination();
+          console.log("gggggggg", response);
 
           if (response.ok) {
             const data = await response.json();
@@ -142,7 +144,11 @@ function Company({
           </div>
         </div>
         <div className="company-detail-button">
-          <Button onClick={redirectToWebsite} size="large">
+          <Button
+            onClick={redirectToWebsite}
+            style={{ background: "#7DC400", fontWeight: "700" }}
+            size="large"
+          >
             Website
           </Button>
         </div>

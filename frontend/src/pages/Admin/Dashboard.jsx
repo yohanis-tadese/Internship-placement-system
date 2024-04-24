@@ -14,7 +14,7 @@ import Spinner from "../../ui/Spinner";
 
 const DashboardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(30.33%, 1fr));
   gap: 4rem;
 `;
 
@@ -75,7 +75,8 @@ function Dashboard() {
   useEffect(() => {
     async function fetchData() {
       const departmentResponse = await departmentService.getAllDepartments();
-      const companyResponse = await companyService.getAllCompanies();
+      const companyResponse =
+        await companyService.getAllCompaniesWithoutPagination();
       const studentResponse = await studentService.getAllStudents();
       const adminResponse = await adminService.getAllAdmins();
       const applyStudentResponse = await studentService.getAllApplyStudents();
@@ -94,7 +95,7 @@ function Dashboard() {
         const studentData = await studentResponse.json();
         const adminData = await adminResponse.json();
 
-        setNumDepartments(departmentData.department.length);
+        setNumDepartments(departmentData.totalCount);
         setNumCompanies(companyData.companies.length);
         setNumStudents(studentData.students.length);
         setNumAdmins(adminData.admins.length);

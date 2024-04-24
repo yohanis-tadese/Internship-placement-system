@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `admins` (
   `last_name` VARCHAR(100) NOT NULL,
   `username` VARCHAR(255) NOT NULL UNIQUE,
   `email` VARCHAR(255) NOT NULL,
-  `photo` VARCHAR(255) DEFAULT 'public/images/default.jpg', 
+  `photo` VARCHAR(255) DEFAULT 'default.jpg', 
   `password` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`admin_id`)
 ) ENGINE=InnoDB;
@@ -143,7 +143,7 @@ VALUES
 -- Insert an admin
 INSERT INTO `admins` (`first_name`, `last_name`, `username`, `email`, `photo`, `password`)
 VALUES 
-  ('Jhon', 'Doe', 'admin.jhon.do', 'admin@example.com', 'yohanis.jpg', '$2b$10$FnNRxXprBvWeyhl4UHiDs./ZaOQg8RVm/ShFg0aqPHe0AqD.I/bO6');
+  ('Jhon', 'Doe', 'admin.jhon.do', 'admin@example.com', 'default.jpg', '$2b$10$FnNRxXprBvWeyhl4UHiDs./ZaOQg8RVm/ShFg0aqPHe0AqD.I/bO6');
 
 
 -- Insert five companies

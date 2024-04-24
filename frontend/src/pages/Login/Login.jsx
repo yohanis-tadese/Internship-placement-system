@@ -1,4 +1,5 @@
 import Header from "../../components/Home/Header";
+import Footer from "../../components/Home/Footer";
 import styled from "styled-components";
 import LoginForm from "../../components/Login/LoginForm";
 import Heading from "../../ui/Heading";
@@ -18,10 +19,10 @@ function Login() {
   return (
     <LoginLayout>
       <Header />
-      <hr />
-      <hr />
+      <br />
       <Heading as="h4">Log in to your account</Heading>
       <LoginForm />
+      <Footer />
     </LoginLayout>
   );
 }

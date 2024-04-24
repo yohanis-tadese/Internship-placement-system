@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import resultService from "../../../services/result.service";
 
 const Form = styled.form`
@@ -29,7 +31,7 @@ const Label = styled.label`
 const Input = styled.input`
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid var(--color-grey-300);
+  border: 1px solid var(--color-grey-100);
   width: 98%;
   background: var(--color-grey-50);
 `;
@@ -77,14 +79,55 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    // Regular expression to allow only letters, underscores, and dollar signs
+    const regex = /^[a-zA-Z_$]*$/;
+
+    // Check if the input element is a number type
+    if (e.target.type === "number") {
+      // Extract max allowed value from label text
+      const labelValue = parseFloat(e.target.labels[0].innerText.match(/\d+/));
+      const maxAllowedValue = labelValue;
+
+      if (
+        value === "" ||
+        (parseFloat(value) >= 0 && parseFloat(value) <= maxAllowedValue)
+      ) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }
+    } else if (e.target.type === "text") {
+      // Check if the input value matches the regular expression
+      if (regex.test(value)) {
+        // Update form data if the input value is valid
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }
+    } else {
+      // For non-number and non-text inputs, update form data directly
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Check if all fields are filled
+    const isFormFilled = Object.values(formData).every((value) => value !== "");
+
+    if (!isFormFilled) {
+      toast.error("Please fill all fields before submitting", {
+        autoClose: 1000,
+      });
+      return;
+    }
+
     try {
       await resultService.saveResults({
         student_id: studentId,
@@ -92,8 +135,11 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
         department_id: departmentId,
         ...formData,
       });
-      console.log("Results saved successfully", formData);
-      onClose();
+      toast.success("Form submitted successfully!", { autoClose: 1000 });
+      setTimeout(() => {
+        console.log("Results saved successfully", formData);
+        onClose();
+      }, 2000);
     } catch (error) {
       console.error("Error saving results:", error);
     }
@@ -105,7 +151,7 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
         <h2
           style={{
             textAlign: "center",
-            background: "var(--color-grey-100)",
+            background: "var(--color-grey-50)",
             fontSize: "25px",
             borderRadius: "6px",
             padding: "13px",
@@ -131,7 +177,7 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
             <br />
             <InputContainer>
               <div>
-                <Label htmlFor="commitment">
+                <Label htmlFor="commitment" maxAllowed="3">
                   Commitment (Attitude towards work showing enthusiasm and
                   interest) 3%
                 </Label>
@@ -197,9 +243,9 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
                 />
               </div>
               <div>
-                <Label htmlFor="professionalEthics">
-                  Professional professionalEthics (position of traits necessary
-                  for employment in this kind) 2%
+                <Label htmlFor="professional_ethics">
+                  professionalEthics (position of traits necessary for
+                  employment in this kind) 2%
                 </Label>
                 <Input
                   type="number"
@@ -328,9 +374,7 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
             </InputContainer>
 
             <InputContainer>
-              <Label htmlFor="attachmentdate">
-                Inclusive Date of Attachment From
-              </Label>
+              <Label>Inclusive Date of Attachment From</Label>
               <div
                 style={{
                   display: "flex",
@@ -372,7 +416,7 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
                 />
               </div>
               <div>
-                <Label htmlFor="total_hours">Total Hours</Label>
+                <Label htmlFor="total_hours">Total Working Hours 800</Label>
                 <Input
                   type="number"
                   id="total_hours"
@@ -389,6 +433,7 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
             <CancelButton onClick={onClose}>Cancel</CancelButton>
           </ButtonContainer>
         </Form>
+        <ToastContainer />
       </ContentContainer>
     </Modal>
   );

@@ -14,10 +14,22 @@ router.get(
   studentController.getStudentsByDepartment
 );
 router.post("/api/student/apply", studentController.acceptStudentApplyForm);
+router.patch(
+  "/api/student/apply/update/:studentId",
+  studentController.updateStudentApplyForm
+);
+router.get(
+  "/api/students/apply/list/:id",
+  studentController.getApplyStudentsById
+);
 router.get("/api/students/apply/list", studentController.getAllApplyStudents);
 router.delete(
   "/api/placement-result",
   studentController.deleteAllPlacementResults
+);
+router.patch(
+  "/api/student/changepassword/:id",
+  studentController.changePassword
 );
 
 module.exports = router;

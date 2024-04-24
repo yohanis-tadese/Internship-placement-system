@@ -38,6 +38,8 @@ async function getAllPlacementResultsByDepartment(departmentId) {
         s.first_name AS student_first_name,
         s.last_name AS student_last_name,
         c.company_name,
+        c.contact_email,
+        c.phone_number,
         saf.gender,
         d.department_id,
         d.department_name

@@ -7,46 +7,46 @@ import styled from "styled-components";
 import EditCompany from "./EditCompany";
 import { toast } from "react-toastify";
 import Spinner from "../../../ui/Spinner";
-import { CiSearch } from "react-icons/ci";
 import "react-toastify/dist/ReactToastify.css";
-import Pagination from "../../../ui/Pagination";
-import TableType from "../../../ui/TabelType";
-import { useSearchParams } from "react-router-dom";
+
+const TableContainer = styled.div`
+  width: 100%;
+  height: 400px;
+  font-size: 1.6rem;
+`;
+
+const SearchInput = styled.input`
+  width: 15%;
+  margin-bottom: 10px;
+  margin-left: 1px;
+  padding: 7px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1.4rem;
+  color: var(--color-grey-900);
+`;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
 `;
 
-const TableHead = styled.thead`
-  background-color: var(--color-grey-200);
-`;
-
-const TableHeader = styled.th`
-  padding: 12px;
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-`;
-
 const TableRow = styled.tr`
   &:nth-child(even) {
-    background-color: var(--color-grey-100);
+    background-color: #f2f2f2;
   }
 `;
 
 const TableCell = styled.td`
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #ddd;
+  padding: 8px;
 `;
 
-const SearchInput = styled.input`
-  margin-bottom: 10px;
-  margin-left: 1px;
-  padding: 7px;
-  border: 1px solid #ccc;
-  background: var(--color-grey-100)
-  font-size: 1.4rem;
-
+const TableHeader = styled.th`
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  background-color: #f2f2f2;
 `;
 
 const ActionsWrapper = styled.div`
@@ -88,8 +88,6 @@ const ConfirmationContainer = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
   width: 400px;
-  display: ${({ show }) =>
-    show ? "block" : "none"}; // Conditionally render based on 'show' prop
 `;
 
 const ConfirmationMessage = styled.p`
@@ -144,57 +142,41 @@ const CancelIcon = styled(FaTimesCircle)`
   color: #dc3545;
 `;
 
-const ConfirmationDialog = ({ message, onConfirm, onCancel, show }) => {
+const ConfirmationDialog = ({ message, onConfirm, onCancel }) => {
   return (
-    show && (
-      <ConfirmationContainer show={show}>
-        <ConfirmationMessage>{message}</ConfirmationMessage>
-        <ButtonWrapper>
-          <ConfirmButton onClick={onConfirm}>
-            <IconWrapper>
-              <ConfirmIcon />
-            </IconWrapper>
-            Confirm
-          </ConfirmButton>
-          <CancelButton onClick={onCancel}>
-            <IconWrapper>
-              <CancelIcon />
-            </IconWrapper>
-            Cancel
-          </CancelButton>
-        </ButtonWrapper>
-      </ConfirmationContainer>
-    )
+    <ConfirmationContainer>
+      <ConfirmationMessage>{message}</ConfirmationMessage>
+      <ButtonWrapper>
+        <ConfirmButton onClick={onConfirm}>
+          <IconWrapper>
+            <ConfirmIcon />
+          </IconWrapper>
+          Confirm
+        </ConfirmButton>
+        <CancelButton onClick={onCancel}>
+          <IconWrapper>
+            <CancelIcon />
+          </IconWrapper>
+          Cancel
+        </CancelButton>
+      </ButtonWrapper>
+    </ConfirmationContainer>
   );
 };
 
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
-  const [totalcompanies, setTotalCompanies] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [editingCompanyId, setEditingCompanyId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [deletedCompanyId, setDeletedCompanyId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const companiesPerPage = 5;
+  const currentPage = 5;
 
-  const [searchParams] = useSearchParams();
-  const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
-
-  useEffect(() => {
-    // Fetch departments initially
-    fetchCompanies();
-  }, [page]);
-
-  const fetchCompanies = async () => {
+  const fetchCompanies = async (page, size) => {
     try {
-      setLoading(true);
-      const response = await companyService.getAllCompanies(
-        page,
-        companiesPerPage
-      );
+      const response = await companyService.getAllCompanies(page, size);
 
       await new Promise((resolve) => setTimeout(resolve, 400));
 
@@ -202,13 +184,11 @@ const CompanyList = () => {
         const responseData = await response.json();
         const companiesData = responseData.companies.map((company, index) => ({
           ...company,
-          id: (page - 1) * companiesPerPage + index + 1,
+          id: index + 1,
         }));
-
-        const data = responseData.totalCount;
-
         setCompanies(companiesData);
-        setTotalCompanies(data);
+
+        //After fetch data set loading is false
         setLoading(false);
       } else {
         console.error("Failed to fetch companies:", response.statusText);
@@ -218,25 +198,22 @@ const CompanyList = () => {
     }
   };
 
-  const nextPage = () => {
-    if (currentPage < Math.ceil(totalcompanies / totalcompanies)) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
-
   useEffect(() => {
-    fetchCompanies();
-  }, []);
+    // Fetch companies initially
+    fetchCompanies(currentPage, companiesPerPage);
+
+    // Set up interval to fetch companies every 10 seconds
+    const intervalId = setInterval(
+      () => fetchCompanies(currentPage, companiesPerPage),
+      5000
+    );
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [currentPage, companiesPerPage]);
 
   const handleSearchTextChange = (event) => {
-    const searchText = event.target.value.toLowerCase();
-    setSearchText(searchText);
+    setSearchText(event.target.value);
   };
 
   const handleEdit = (companyId) => {
@@ -247,19 +224,22 @@ const CompanyList = () => {
     setEditingCompanyId(null);
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    fetchCompanies(pageNumber, companiesPerPage);
+  };
+
   const handleDelete = (companyId) => {
     setDeletedCompanyId(companyId);
     setShowConfirmation(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (companyId) => {
     try {
-      const response = await companyService.deleteCompany(deletedCompanyId);
-
+      const response = await companyService.deleteCompany(companyId);
       if (response.ok) {
-        setCompanies(
-          companies.filter((company) => company.id !== deletedCompanyId)
-        );
+        // Remove deleted company from the list
+        setCompanies(companies.filter((company) => company.id !== companyId));
         toast.success("Company deleted successfully.", { autoClose: 1000 });
       } else {
         console.error("Failed to delete company:", response.statusText);
@@ -276,94 +256,62 @@ const CompanyList = () => {
     setShowConfirmation(false);
   };
 
-  const filterCompanies = (company) => {
-    const {
-      company_name,
-      phone_number,
-      contact_email,
-      location,
-      industry_sector,
-    } = company;
-
-    return (
-      company_name.toLowerCase().includes(searchText) ||
-      phone_number.toLowerCase().includes(searchText) ||
-      contact_email.toLowerCase().includes(searchText) ||
-      location.toLowerCase().includes(searchText) ||
-      industry_sector.toLowerCase().includes(searchText)
-    );
-  };
-
   const filteredCompanies = searchText
-    ? companies.filter(filterCompanies)
+    ? companies.filter((company) =>
+        company.company_name.toLowerCase().includes(searchText.toLowerCase())
+      )
     : companies;
+
+  console.log("hhhhhhhhhhh", companies, "hhhhhhhhhhhh", filteredCompanies);
 
   return (
     <>
-      <ConfirmationDialog
-        message="Are you sure you want to delete this company?"
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        show={showConfirmation}
-      />
-      <div style={{ position: "relative" }}>
+      {showConfirmation && (
+        <ConfirmationDialog
+          message="Are you sure you want to delete this company?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+      <TableContainer>
         <SearchInput
-          style={{
-            borderRadius: "15px",
-            paddingLeft: "40px",
-            width: "55%",
-            maxWidth: "60%",
-          }}
           type="text"
           value={searchText}
           onChange={handleSearchTextChange}
-          placeholder="Search by company name, email, phone and industry sector"
+          placeholder="Search ..."
         />
-        <CiSearch
-          style={{
-            position: "absolute",
-            left: "10px",
-            top: "10%",
-            paddingRight: "10px",
-            fontSize: "28px",
-          }}
-        />
-      </div>
-      {loading ? (
-        <Spinner />
-      ) : (
-        <>
+        {loading ? (
+          <Spinner />
+        ) : (
           <Table>
-            <TableHead>
+            <thead>
               <TableRow>
                 <TableHeader>ID</TableHeader>
-                <TableHeader>Company Name</TableHeader>
+                <TableHeader>Name</TableHeader>
                 <TableHeader>Phone Number</TableHeader>
                 <TableHeader>Contact Email</TableHeader>
                 <TableHeader>Location</TableHeader>
                 <TableHeader>Industry Sector</TableHeader>
+                <TableHeader>Accepted Limit</TableHeader>
                 <TableHeader>Actions</TableHeader>
               </TableRow>
-            </TableHead>
+            </thead>
             <tbody>
               {filteredCompanies.map((company) => (
-                <TableRow key={company.company_id}>
+                <TableRow key={company.id}>
                   <TableCell>{company.id}</TableCell>
                   <TableCell>{company.company_name}</TableCell>
                   <TableCell>{company.phone_number}</TableCell>
                   <TableCell>{company.contact_email}</TableCell>
                   <TableCell>{company.location}</TableCell>
                   <TableCell>{company.industry_sector}</TableCell>
+                  <TableCell>{company.accepted_student_limit}</TableCell>
                   <TableCell>
                     <ActionsWrapper>
-                      <IconButton
-                        onClick={() => handleEdit(company.company_id)}
-                      >
+                      <IconButton onClick={() => handleEdit(company.id)}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton
-                        onClick={() => handleDelete(company.company_id)}
-                      >
+                      <IconButton onClick={() => handleDelete(company.id)}>
                         <DeleteIcon />
                       </IconButton>
                     </ActionsWrapper>
@@ -372,27 +320,17 @@ const CompanyList = () => {
               ))}
             </tbody>
           </Table>
-          <TableType.Footer>
-            <Pagination
-              count={totalcompanies}
-              currentPage={currentPage}
-              itemsPerPage={companiesPerPage}
-              nextPage={nextPage}
-              prevPage={prevPage}
-            />
-          </TableType.Footer>
-        </>
-      )}
-      {editingCompanyId && (
-        <EditCompany
-          companyId={editingCompanyId}
-          initialData={companies.find(
-            (company) => company.company_id === editingCompanyId
-          )}
-          onCancel={handleCancelEdit}
-          fetchCompanies={fetchCompanies}
-        />
-      )}
+        )}
+        {editingCompanyId && (
+          <EditCompany
+            companyId={editingCompanyId}
+            initialData={companies.find(
+              (company) => company.id === editingCompanyId
+            )}
+            onCancel={() => setEditingCompanyId(null)}
+          />
+        )}
+      </TableContainer>
     </>
   );
 };

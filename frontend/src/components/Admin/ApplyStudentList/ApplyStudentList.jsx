@@ -67,7 +67,7 @@ const ApplyStudentList = ({ showCompany }) => {
 
       <Table>
         <TableHead>
-          <TableRow>
+          <TableRow style={{ background: "#0062", color: "black" }}>
             <TableHeader>ID</TableHeader>
             <TableHeader>Name</TableHeader>
             <TableHeader>Disability</TableHeader>
@@ -89,9 +89,11 @@ const ApplyStudentList = ({ showCompany }) => {
               {showCompany && (
                 <TableCell
                   style={{
-                    color: "red",
+                    color: "#456fff",
                     textTransform: "uppercase",
-                    fontWeight: "bold",
+                    fontWeight: "700",
+                    margin: "-10px",
+                    background: "#FFFAA9",
                   }}
                 >
                   {item.company_name}

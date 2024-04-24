@@ -63,20 +63,25 @@ async function getDepartment(req, res, next) {
 
 async function getAllDepartments(req, res, next) {
   try {
-    const department = await departmentService.getAllDepartments();
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const size = req.query.size ? parseInt(req.query.size) : 5;
 
-    if (!department) {
-      return res.status(404).json({
-        error: "Department not found",
-      });
-    }
+    // Fetch the total count of departments
+    const totalCount = await departmentService.getDepartmentCount();
+
+    const departments = await departmentService.getAllDepartments(page, size);
+
+    // Calculate total pages based on total count and page size
+    const totalPages = Math.ceil(totalCount / size);
 
     return res.status(200).json({
       status: true,
-      department,
+      departments,
+      totalCount,
+      totalPages,
     });
   } catch (error) {
-    console.error("Error getting department:", error);
+    console.error("Error getting departments:", error);
     return res.status(500).json({
       error: "Internal server error",
     });

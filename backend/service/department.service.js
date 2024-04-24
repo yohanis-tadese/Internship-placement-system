@@ -57,6 +57,55 @@ async function createDepartment(department) {
   }
 }
 
+async function getDepartment(departmentId) {
+  try {
+    const sql = `
+      SELECT * 
+      FROM departments
+      WHERE department_id = ?
+    `;
+    const [department] = await query(sql, [departmentId]);
+    return department;
+  } catch (error) {
+    throw new Error(`Error getting department: ${error.message}`);
+  }
+}
+
+// Function to get the total count of departments
+async function getDepartmentCount() {
+  try {
+    const sql = `SELECT COUNT(*) AS total FROM departments`;
+    const [{ total }] = await query(sql);
+    return total;
+  } catch (error) {
+    throw new Error(
+      `Error getting total count of departments: ${error.message}`
+    );
+  }
+}
+
+async function getAllDepartments(page, size) {
+  try {
+    // Calculate offset based on page number and page size
+    const offset = (page - 1) * size;
+
+    // Modify the SQL query to include LIMIT and OFFSET clauses
+    const sql = `
+      SELECT * 
+      FROM departments
+      ORDER BY department_id ASC
+      LIMIT ? OFFSET ?
+    `;
+
+    // Execute the query with parameters for LIMIT and OFFSET
+    const rows = await query(sql, [size, offset]);
+
+    return rows;
+  } catch (error) {
+    throw new Error(`Error fetching departments: ${error.message}`);
+  }
+}
+
 async function updateDepartment(departmentId, departmentData) {
   try {
     const {
@@ -99,35 +148,6 @@ async function updateDepartment(departmentId, departmentData) {
   }
 }
 
-async function getDepartment(departmentId) {
-  try {
-    const sql = `
-      SELECT * 
-      FROM departments
-      WHERE department_id = ?
-    `;
-    const [department] = await query(sql, [departmentId]);
-    return department;
-  } catch (error) {
-    throw new Error(`Error getting department: ${error.message}`);
-  }
-}
-
-async function getAllDepartments() {
-  try {
-    const sql = `
-      SELECT * 
-      FROM departments
-      ORDER BY department_id ASC
-      LIMIT 10
-    `;
-    const rows = await query(sql);
-    return rows;
-  } catch (error) {
-    throw new Error(`Error getting all departments: ${error.message}`);
-  }
-}
-
 async function deleteDepartment(departmentId) {
   try {
     // Check if departmentId is undefined
@@ -161,6 +181,7 @@ module.exports = {
   createDepartment,
   getDepartment,
   getAllDepartments,
+  getDepartmentCount,
   updateDepartment,
   deleteDepartment,
   getDepartmentIds,

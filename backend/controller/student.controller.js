@@ -130,6 +130,45 @@ async function deleteStudent(req, res, next) {
   }
 }
 
+const changePassword = async (req, res, next) => {
+  try {
+    const studentId = req.params.id;
+    const { oldPassword, newPassword } = req.body;
+
+    // Call the service method to change the password
+    const response = await studentService.changePassword(
+      studentId,
+      oldPassword,
+      newPassword
+    );
+
+    if (response) {
+      return res.status(200).json({
+        status: "success",
+        message: "Password updated successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "fail",
+        message: "Failed to update password. The old password is incorrect.",
+      });
+    }
+  } catch (error) {
+    console.error("Error changing password:", error);
+    if (error.message === "Old password is incorrect") {
+      return res.status(400).json({
+        status: false,
+        message: "Failed to update password. The old password is incorrect.",
+      });
+    } else {
+      return res.status(500).json({
+        status: false,
+        message: "Failed to update password. Please try again later.",
+      });
+    }
+  }
+};
+
 async function getStudentTypes(req, res, next) {
   try {
     const studentTypes = await studentService.getStudentTypes();
@@ -198,12 +237,8 @@ async function getAllApplyStudents(req, res, next) {
       });
     }
 
-    // Get the length of the students array
-    const numberOfStudents = students.length;
-
     return res.status(200).json({
       status: true,
-      numberOfStudents: numberOfStudents,
       students: students,
     });
   } catch (error) {
@@ -211,6 +246,45 @@ async function getAllApplyStudents(req, res, next) {
     return res.status(500).json({
       error: "Internal server error",
     });
+  }
+}
+
+async function getApplyStudentsById(req, res, next) {
+  try {
+    // Extract student ID from request parameters
+    const studentId = req.params.id;
+
+    // Call the service method to retrieve apply students by ID
+    const applyStudents = await studentService.getApplyStudentsById(studentId);
+
+    // Send response with the retrieved apply students
+    res.status(200).json({
+      status: true,
+      applyStudents,
+    });
+  } catch (error) {
+    console.error("Error getting apply students by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+async function updateStudentApplyForm(req, res, next) {
+  try {
+    const student_id = req.params.studentId;
+    const formdata = req.body;
+
+    // Call the service method to update the student's apply form data
+    await studentService.updateStudentApplyForm({
+      student_id,
+      formdata,
+    });
+
+    res.status(200).json({
+      message: "Student apply form data updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating student apply form data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -237,9 +311,12 @@ module.exports = {
   getAllStudents,
   updateStudent,
   deleteStudent,
+  changePassword,
   getStudentTypes,
   getStudentsByDepartment,
   acceptStudentApplyForm,
   getAllApplyStudents,
+  getApplyStudentsById,
+  updateStudentApplyForm,
   deleteAllPlacementResults,
 };

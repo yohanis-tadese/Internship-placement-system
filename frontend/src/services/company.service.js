@@ -13,14 +13,31 @@ const createCompany = async (formData) => {
 };
 
 // A function to send get request to get all companies
-const getAllCompanies = async () => {
+const getAllCompanies = async (page, size) => {
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   };
-  const response = await fetch(`${api_url}/api/company/`, requestOptions);
+  const response = await fetch(
+    `${api_url}/api/companies/page?page=${page}&size=${size}`,
+    requestOptions
+  );
+
+  return response;
+};
+
+// A function to send get request to get all companies
+const getAllCompaniesWithoutPagination = async () => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(`${api_url}/api/company`, requestOptions);
+
   return response;
 };
 
@@ -84,6 +101,7 @@ const companyService = {
   getCompany,
   updateCompany,
   deleteCompany,
+  getAllCompaniesWithoutPagination,
 };
 
 export default companyService;

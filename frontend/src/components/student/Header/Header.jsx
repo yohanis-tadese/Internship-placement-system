@@ -1,16 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavLink, useNavigate } from "react-router-dom";
 import DarkModeToggle from "../../../ui/DarkModeToggle";
-import {
-  FaUserCircle,
-  FaSignOutAlt,
-  FaBuilding,
-  FaListAlt,
-} from "react-icons/fa";
+import { FaSignOutAlt, FaBuilding, FaListAlt } from "react-icons/fa";
 import Heading from "../../../ui/Heading";
 import { useAuth } from "../../../context/AuthContext";
 import loginService from "../../../services/login.service";
+import studentService from "../../../services/student.service";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -75,7 +71,7 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 const StyledButton = styled.button`
-  background-color: #08b3c1;
+  background-color: #7dc400;
   border: none;
   border-radius: 20px;
   color: #ffffff;
@@ -84,7 +80,7 @@ const StyledButton = styled.button`
   text-align: center;
 
   &:hover {
-    background-color: #087aa4;
+    background-color: #7dc400;
     border-radius: 20px;
     color: #ffffff;
   }
@@ -93,7 +89,31 @@ const StyledButton = styled.button`
 // Header component
 const Header = () => {
   const navigate = useNavigate();
-  const { isLogged, secondName, setIsLogged } = useAuth();
+  const { isLogged, secondName, setIsLogged, userId } = useAuth();
+  const [hasFilledForm, setHasFilledForm] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await studentService.getApplyStudentById(userId);
+
+        if (
+          response.applyStudents[0].student_id !== undefined &&
+          response.applyStudents[0].student_id !== null
+        ) {
+          setHasFilledForm(true);
+        } else {
+          console.error("Failed to fetch student data:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+      }
+    };
+
+    if (isLogged) {
+      fetchData();
+    }
+  }, [userId, isLogged]);
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -136,12 +156,18 @@ const Header = () => {
           <StyledNavLink to="/student/company">
             <FaBuilding /> Company
           </StyledNavLink>
-          <StyledNavLink to="/student/apply">
+
+          <StyledNavLink
+            to={
+              hasFilledForm === true ? "/student/form/update" : "/student/apply"
+            }
+          >
             <FaListAlt /> Apply
           </StyledNavLink>
           <StyledNavLink to="/student/result">
-            <FaListAlt /> Result
+            <FaBuilding /> result
           </StyledNavLink>
+
           <DarkModeToggle />
           <StyledButton onClick={logOut}>
             <FaSignOutAlt /> Logout

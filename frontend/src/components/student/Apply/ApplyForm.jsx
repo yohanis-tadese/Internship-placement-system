@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "../Header/Header";
+import { useNavigate } from "react-router-dom";
 
 const CriteriaStyle = styled.div`
   background-color: var(--color-grey-200);
@@ -28,7 +29,7 @@ const FormTitle = styled.h2`
   text-align: center;
   margin-bottom: 30px;
   font-size: 24px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   padding: 7px;
   font-weight: 550;
   border-radius: 10px;
@@ -50,6 +51,14 @@ const SelectStyled = styled.select`
   border-radius: 5px;
   font-size: 16px;
   width: 100%;
+
+  option {
+    color: black;
+  }
+
+  option[selected="true"] {
+    color: red;
+  }
 `;
 
 const Button = styled.button`
@@ -86,11 +95,13 @@ const StudentPlacementForm = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { userId, secondName } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await companyService.getAllCompanies();
+        const response =
+          await companyService.getAllCompaniesWithoutPagination();
         if (response.ok) {
           const data = await response.json();
           if (data && data.companies) {
@@ -126,14 +137,6 @@ const StudentPlacementForm = () => {
       (preference, index) =>
         index !== preferenceIndex && preference === selectedCompanyId
     );
-
-    // Display toast error message if the company is already selected in another dropdown
-    if (isCompanySelected) {
-      toast.error("You cannot select the same company more than once", {
-        autoClose: 1500,
-      });
-      return;
-    }
 
     // Update the studentPreferences array to store only the selected preference for the current student
     const updatedStudentPreferences = studentPreferences.map(
@@ -180,6 +183,19 @@ const StudentPlacementForm = () => {
       preferences: studentPreferences.map((preference) => !preference),
     });
 
+    // Check if any company is selected more than once
+    const duplicateCompany = studentPreferences.some((companyId, index) => {
+      return studentPreferences.indexOf(companyId) !== index;
+    });
+
+    // If any company is selected more than once, display an error message and return
+    if (duplicateCompany) {
+      toast.error("can't select the same company", {
+        autoClose: 1200,
+      });
+      return;
+    }
+
     if (isGenderSelected && isDisabilitySelected && areAllPreferencesSelected) {
       // Handle form submission
       setIsSubmitted(true);
@@ -209,6 +225,9 @@ const StudentPlacementForm = () => {
         // Reset isSubmitted to false to allow resubmission
         setIsSubmitted(false);
         toast.success("Form submitted successfully!", { autoClose: 1000 });
+        setTimeout(() => {
+          navigate("/student/form/update");
+        }, 2000);
       } catch (error) {
         console.error("Error accepting student apply form:", error);
       }
@@ -279,6 +298,7 @@ const StudentPlacementForm = () => {
               )}
             </FormGroup>
           ))}
+
           <Button type="submit" className="mt-3" disabled={isSubmitted}>
             Submit
           </Button>

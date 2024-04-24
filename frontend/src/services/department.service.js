@@ -27,14 +27,17 @@ const getDepartments = async (departmentId) => {
 };
 
 // A function to send get request to get all departments
-const getAllDepartments = async () => {
+const getAllDepartments = async (page, size) => {
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   };
-  const response = await fetch(`${api_url}/api/department`, requestOptions);
+  const response = await fetch(
+    `${api_url}/api/department?page=${page}&size=${size}`,
+    requestOptions
+  );
 
   return response;
 };

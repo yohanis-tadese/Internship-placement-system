@@ -189,7 +189,7 @@ async function acceptStudentApplyForm({
       disability,
       gender,
     ]);
-    const apply_id = result.insertId; // Get the auto-generated apply_id
+    const apply_id = result.insertId;
 
     for (let i = 0; i < preferences.length; i++) {
       const insertPreferenceSql = `
@@ -243,6 +243,94 @@ async function getAllApplyStudents() {
   }
 }
 
+async function getApplyStudentsById(id) {
+  try {
+    // Query to retrieve apply students by ID
+    const sql = `
+      SELECT 
+      sa.apply_id,
+      s.student_id, 
+      CONCAT(s.first_name, ' ', s.last_name) AS student_name, 
+      sa.disability,
+      sa.gender,
+      s.gpa,
+      GROUP_CONCAT(DISTINCT sp.company_id ORDER BY sp.preference_order) AS preferences
+    FROM 
+        students s
+    INNER JOIN 
+        student_apply_form sa ON s.student_id = sa.student_id
+    LEFT JOIN 
+        student_preferences sp ON sa.apply_id = sp.apply_id
+    LEFT JOIN 
+        placement_results pr ON s.student_id = pr.student_id
+    WHERE 
+        s.student_id = ?
+    GROUP BY 
+        sa.apply_id;
+
+    `;
+    // Execute the query with the provided student ID
+    const applyStudents = await query(sql, [id]);
+    return applyStudents;
+  } catch (error) {
+    console.error("Error retrieving apply students by ID:", error);
+    throw new Error("Internal server error");
+  }
+}
+
+async function updateStudentApplyForm({ student_id, formdata }) {
+  try {
+    const { name, disability, gender, preferences } = formdata;
+    const updateApplyFormSql = `
+      UPDATE student_apply_form
+      SET name = ?,
+          disability = ?,
+          gender = ?
+      WHERE student_id = ?
+    `;
+    await query(updateApplyFormSql, [name, disability, gender, student_id]);
+
+    // Check if preferences already exist for the student
+    const existingPreferencesSql = `
+      SELECT * FROM student_preferences WHERE student_id = ?
+    `;
+    const existingPreferences = await query(existingPreferencesSql, [
+      student_id,
+    ]);
+
+    if (existingPreferences.length > 0) {
+      // Preferences exist, update them
+      for (let i = 0; i < preferences.length; i++) {
+        const updatePreferenceSql = `
+          UPDATE student_preferences
+          SET company_id = ?
+          WHERE student_id = ? AND preference_order = ?
+        `;
+        await query(updatePreferenceSql, [preferences[i], student_id, i + 1]);
+      }
+    } else {
+      // Preferences do not exist, insert new preferences
+      for (let i = 0; i < preferences.length; i++) {
+        const insertPreferenceSql = `
+          INSERT INTO student_preferences (apply_id, preference_order, student_id, company_id)
+          VALUES (?, ?, ?, ?)
+        `;
+        await query(insertPreferenceSql, [
+          apply_id, // Assuming apply_id is available in the scope
+          i + 1,
+          student_id,
+          preferences[i],
+        ]);
+      }
+    }
+
+    return "Apply form data updated successfully";
+  } catch (error) {
+    console.error("Error updating student apply form data:", error);
+    throw new Error("Internal server error");
+  }
+}
+
 async function deleteAllPlacementResults() {
   try {
     // Write the SQL query to delete all records from the "placement_results" table
@@ -273,6 +361,8 @@ module.exports = {
   getStudentsByDepartment,
   deleteStudent,
   acceptStudentApplyForm,
+  updateStudentApplyForm,
   getAllApplyStudents,
+  getApplyStudentsById,
   deleteAllPlacementResults,
 };

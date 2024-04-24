@@ -34,8 +34,6 @@ const AuthProvider = ({ children }) => {
     setIsLogged,
   };
 
-  console.log(value);
-
   useEffect(() => {
     const fetchData = async () => {
       try {

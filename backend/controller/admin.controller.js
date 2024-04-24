@@ -121,36 +121,44 @@ async function updateAdmin(req, res, next) {
 const changePassword = async (req, res, next) => {
   try {
     const adminId = req.params.id;
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Check if the new password matches the confirm password
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        status: "fail",
+        message: "New password and confirm password do not match.",
+      });
+    }
 
     // Call the service method to change the password
-    const success = await adminService.changePassword(
+    const response = await adminService.changePassword(
       adminId,
       oldPassword,
-      newPassword
+      newPassword,
+      confirmPassword
     );
 
-    if (success) {
+    if (response) {
       return res.status(200).json({
-        status: true,
+        status: "success",
         message: "Password updated successfully",
       });
     } else {
       return res.status(400).json({
-        status: false,
+        status: "fail",
         message: "Failed to update password. The old password is incorrect.",
       });
     }
   } catch (error) {
-    console.error("Error changing password:", error);
     if (error.message === "Old password is incorrect") {
-      return res.status(400).json({
-        status: false,
+      return res.status(402).json({
+        status: "fail",
         message: "Failed to update password. The old password is incorrect.",
       });
     } else {
       return res.status(500).json({
-        status: false,
+        status: "fail",
         message: "Failed to update password. Please try again later.",
       });
     }

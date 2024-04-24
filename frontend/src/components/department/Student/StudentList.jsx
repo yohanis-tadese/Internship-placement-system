@@ -1,61 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import studentService from "../../../services/student.service";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import styled from "styled-components";
+import { CiSearch } from "react-icons/ci";
 import { useAuth } from "../../../context/AuthContext";
 import EditStudent from "./EditStudent";
 import { toast } from "react-toastify";
 import Spinner from "../../../ui/Spinner";
 import "react-toastify/dist/ReactToastify.css";
+import Department from "./../../../pages/Admin/Department";
 
-const TableContainer = styled.div`
+const Table = styled.table`
   width: 100%;
-  height: 400px;
-  font-size: 1.6rem;
+  border-collapse: collapse;
+`;
+
+const TableHead = styled.thead`
+  background-color: var(--color-grey-200);
+`;
+
+const TableHeader = styled.th`
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+`;
+
+const TableRow = styled.tr`
+  &:nth-child(even) {
+    background-color: var(--color-grey-100);
+  }
+`;
+
+const TableCell = styled.td`
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
 `;
 
 const SearchInput = styled.input`
-  width: 15%;
   margin-bottom: 10px;
   margin-left: 1px;
   padding: 7px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  background: var(--color-grey-100)
   font-size: 1.4rem;
-  color: var(--color-grey-900);
-`;
 
-const CustomDataGrid = styled(DataGrid)`
-  & .MuiDataGrid-root {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    overflow: hidden;
-  }
-
-  & .MuiDataGrid-columnsContainer {
-    background-color: var(--color-grey-300);
-    border-bottom: 1px solid #ccc;
-    font-weight: bold;
-  }
-
-  & .MuiDataGrid-columnHeader {
-    border-right: 1px solid #ccc;
-    background-color: var(--color-grey-100);
-    color: var(--color-grey-900);
-    padding: 12px;
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  & .MuiDataGrid-row {
-    transition: background-color 0.2s;
-    border-bottom: 1px solid #ccc;
-    color: var(--color-grey-900);
-    height: 50px;
-    font-size: 13px;
-  }
 `;
 
 const ActionsWrapper = styled.div`
@@ -151,30 +140,32 @@ const CancelIcon = styled(FaTimesCircle)`
   color: #dc3545;
 `;
 
-const ConfirmationDialog = ({ message, onConfirm, onCancel }) => {
+const ConfirmationDialog = ({ message, onConfirm, onCancel, show }) => {
   return (
-    <ConfirmationContainer>
-      <ConfirmationMessage>{message}</ConfirmationMessage>
-      <ButtonWrapper>
-        <ConfirmButton onClick={onConfirm}>
-          <IconWrapper>
-            <ConfirmIcon />
-          </IconWrapper>
-          Confirm
-        </ConfirmButton>
-        <CancelButton onClick={onCancel}>
-          <IconWrapper>
-            <CancelIcon />
-          </IconWrapper>
-          Cancel
-        </CancelButton>
-      </ButtonWrapper>
-    </ConfirmationContainer>
+    show && (
+      <ConfirmationContainer>
+        <ConfirmationMessage>{message}</ConfirmationMessage>
+        <ButtonWrapper>
+          <ConfirmButton onClick={onConfirm}>
+            <IconWrapper>
+              <ConfirmIcon />
+            </IconWrapper>
+            Confirm
+          </ConfirmButton>
+          <CancelButton onClick={onCancel}>
+            <IconWrapper>
+              <CancelIcon />
+            </IconWrapper>
+            Cancel
+          </CancelButton>
+        </ButtonWrapper>
+      </ConfirmationContainer>
+    )
   );
 };
 
 const StudentList = () => {
-  const { isLogged, userId } = useAuth();
+  const { userId } = useAuth();
   const [students, setStudents] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [editingStudentId, setEditingStudentId] = useState(null);
@@ -211,7 +202,8 @@ const StudentList = () => {
   }, [userId]);
 
   const handleSearchTextChange = (event) => {
-    setSearchText(event.target.value);
+    const searchText = event.target.value.toLowerCase();
+    setSearchText(searchText);
   };
 
   const handleDelete = (studentId) => {
@@ -241,41 +233,21 @@ const StudentList = () => {
     setShowConfirmation(false);
   };
 
-  const filteredStudents = searchText
-    ? students.filter((student) =>
-        student.first_name.toLowerCase().includes(searchText.toLowerCase())
-      )
-    : students;
+  const filterStudents = (student) => {
+    const { first_name, last_name, contact_email, phone_number, gpa } = student;
 
-  const columns = [
-    { field: "id", headerName: "ID", width: 90 },
-    { field: "first_name", headerName: "First Name", width: 110 },
-    { field: "last_name", headerName: "Last Name", width: 110 },
-    { field: "phone_number", headerName: "Phone Number", width: 150 },
-    { field: "contact_email", headerName: "Contact Email", width: 190 },
-    { field: "department_id", headerName: "Department", width: 135 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 140,
-      renderCell: (params) => (
-        <ActionsWrapper>
-          <IconButton
-            aria-label="edit"
-            onClick={() => handleEdit(params.row.student_id)}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleDelete(params.row.student_id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </ActionsWrapper>
-      ),
-    },
-  ];
+    return (
+      first_name.toLowerCase().includes(searchText) ||
+      last_name.toLowerCase().includes(searchText) ||
+      contact_email.toLowerCase().includes(searchText) ||
+      phone_number.toLowerCase().includes(searchText) ||
+      gpa.toLowerCase().includes(searchText)
+    );
+  };
+
+  const filteredStudents = searchText
+    ? students.filter(filterStudents)
+    : students;
 
   const handleEdit = (studentId) => {
     setEditingStudentId(studentId);
@@ -283,39 +255,92 @@ const StudentList = () => {
 
   return (
     <>
-      {showConfirmation && (
-        <ConfirmationDialog
-          message="Are you sure you want to delete this company?"
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-        />
-      )}
-
-      <TableContainer>
+      <ConfirmationDialog
+        message="Are you sure you want to delete this student?"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        show={showConfirmation}
+      />
+      <div style={{ position: "relative" }}>
         <SearchInput
+          style={{
+            borderRadius: "15px",
+            paddingLeft: "40px",
+            width: "45%",
+            maxWidth: "60%",
+          }}
           type="text"
           value={searchText}
           onChange={handleSearchTextChange}
-          placeholder="Search ..."
+          placeholder="Search by student name, email, phone and gpa ..."
         />
-        {loading ? (
-          <Spinner />
-        ) : (
-          <CustomDataGrid
-            rows={filteredStudents}
-            columns={columns}
-            autoHeight
-            pageSize={5}
-          />
-        )}
-        {editingStudentId && (
-          <EditStudent
-            studentId={editingStudentId}
-            initialData={students.find((stud) => stud.id === editingStudentId)}
-            onCancel={() => setEditingStudentId(null)}
-          />
-        )}
-      </TableContainer>
+        <CiSearch
+          style={{
+            position: "absolute",
+            left: "10px",
+            top: "10%",
+            paddingRight: "10px",
+            fontSize: "28px",
+          }}
+        />
+      </div>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>ID</TableHeader>
+                <TableHeader>First Name</TableHeader>
+                <TableHeader>Last Name</TableHeader>
+                <TableHeader>Phone Number</TableHeader>
+                <TableHeader>Contact Email</TableHeader>
+                <TableHeader>Gpa</TableHeader>
+                <TableHeader>Department</TableHeader>
+                <TableHeader>Action</TableHeader>
+              </TableRow>
+            </TableHead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <TableRow key={student.student_id}>
+                  <TableCell>{student.id}</TableCell>
+                  <TableCell>{student.first_name}</TableCell>
+                  <TableCell>{student.last_name}</TableCell>
+                  <TableCell>{student.phone_number}</TableCell>
+                  <TableCell>{student.contact_email}</TableCell>
+                  <TableCell>{student.gpa}</TableCell>
+                  <TableCell>{student.department_id}</TableCell>
+                  <TableCell>
+                    <ActionsWrapper>
+                      <IconButton
+                        onClick={() => handleEdit(student.student_id)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDelete(student.student_id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </ActionsWrapper>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      )}
+      {editingStudentId && (
+        <EditStudent
+          studentId={editingStudentId}
+          initialData={students.find(
+            (student) => student.student_id === editingStudentId
+          )}
+          onCancel={handleCancelDelete}
+          fetchStudents={fetchStudents}
+        />
+      )}
     </>
   );
 };

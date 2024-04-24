@@ -17,7 +17,7 @@ async function checkIfCompanyExists(username) {
 async function createCompany(company) {
   try {
     // Generate a unique username for the company
-    const username = `comp.${req.body.company_name.toLowerCase()}`;
+    const username = `comp.${company.company_name.toLowerCase()}`;
 
     // Hash the password before storing it
     const hashedPassword = await bcrypt.hash(company.password, 10);
@@ -76,6 +76,17 @@ async function getCompany(companyId) {
   }
 }
 
+async function getCompanyCount() {
+  try {
+    const sql = `SELECT COUNT(*) AS total FROM companies`;
+    const [{ total }] = await query(sql);
+    return total;
+  } catch (error) {
+    throw new Error(`Error getting total count of companies: ${error.message}`);
+  }
+}
+
+// Function to fetch companies with pagination
 async function getAllCompanies(page, size) {
   try {
     // Calculate offset based on page number and page size
@@ -94,7 +105,23 @@ async function getAllCompanies(page, size) {
 
     return rows;
   } catch (error) {
-    throw new Error(`Error getting all companies: ${error.message}`);
+    throw new Error(`Error fetching companies: ${error.message}`);
+  }
+}
+
+async function getAllCompaniesWithoutPagination() {
+  try {
+    const sql = `
+      SELECT * 
+      FROM companies
+      ORDER BY company_id ASC
+    `;
+    const companies = await query(sql);
+    return companies;
+  } catch (error) {
+    throw new Error(
+      `Error fetching companies without pagination: ${error.message}`
+    );
   }
 }
 
@@ -174,4 +201,6 @@ module.exports = {
   updateCompany,
   deleteCompany,
   getAllCompanies,
+  getAllCompaniesWithoutPagination,
+  getCompanyCount,
 };

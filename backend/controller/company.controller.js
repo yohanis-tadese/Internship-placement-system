@@ -63,20 +63,44 @@ async function getCompany(req, res, next) {
   }
 }
 
-const getAllCompanies = async (req, res) => {
+async function getAllCompaniesWithoutPagination(req, res, next) {
   try {
-    // Extract page number and page size from query parameters
-    const { page = 1, size = 5 } = req.query;
+    // Call the service function to fetch all companies
+    const companies = await companyService.getAllCompaniesWithoutPagination();
 
-    // Call the service function to fetch companies with pagination
-    const companies = await companyService.getAllCompanies(
-      parseInt(page),
-      parseInt(size)
-    );
+    // Calculate total count of companies
+    const totalCount = companies.length;
 
     res.json({
       companies,
-      totalPages: 1,
+      totalCount,
+    });
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching companies:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+const getAllCompanies = async (req, res) => {
+  try {
+    // Extract page number and page size from query parameters
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const size = req.query.size ? parseInt(req.query.size) : 5;
+
+    // Call the service function to fetch companies with pagination
+    const companies = await companyService.getAllCompanies(page, size);
+
+    // Calculate total count of companies
+    const totalCount = await companyService.getCompanyCount();
+
+    // Calculate total pages based on total count and page size
+    const totalPages = Math.ceil(totalCount / size);
+
+    res.json({
+      companies,
+      totalCount,
+      totalPages,
     });
   } catch (error) {
     // Handle errors
@@ -140,5 +164,6 @@ module.exports = {
   getAllCompanies,
   updateCompany,
   deleteCompany,
+  getAllCompaniesWithoutPagination,
   getCompany,
 };
