@@ -6,6 +6,7 @@ import companyService from "../../../services/company.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "../Header/Header";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const CriteriaStyle = styled.div`
   background-color: var(--color-grey-200);
@@ -84,7 +85,12 @@ const ErrorText = styled.span`
   display: block;
 `;
 
+const StyledNavLink = styled(NavLink)`
+  text-decoration: none;
+`;
+
 const UpdateForm = () => {
+  const navigate = useNavigate();
   const [studentData, setStudentData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [studentPreferences, setStudentPreferences] = useState([]);
@@ -97,6 +103,16 @@ const UpdateForm = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { userId } = useAuth();
+  const [placementGenerated, setPlacementGenerated] = useState(false);
+
+  useEffect(() => {
+    // Fetch data from local storage
+    const placementGeneratedFromLocalStorage =
+      localStorage.getItem("placementGenerated");
+    if (placementGeneratedFromLocalStorage === "true") {
+      setPlacementGenerated(true);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -150,7 +166,6 @@ const UpdateForm = () => {
   const handlePreferenceChange = (e, preferenceIndex) => {
     const selectedCompanyId = parseInt(e.target.value);
 
-    // Update the studentPreferences array to store only the selected preference for the current student
     const updatedStudentPreferences = [...studentPreferences];
     updatedStudentPreferences[preferenceIndex] = selectedCompanyId;
     setStudentPreferences(updatedStudentPreferences);
@@ -225,116 +240,142 @@ const UpdateForm = () => {
   return (
     <CriteriaStyle>
       <Header />
-      <Form onSubmit={handleSubmit}>
-        <FormTitle>May Be Update Your Application Form 👇</FormTitle>
-        <FormGroup
+
+      {placementGenerated ? (
+        <h2
           style={{
-            display: "flex",
-            gap: "2rem",
-            border: "none",
+            marginTop: "70px",
+            background: "var(--color-grey-300)",
+            textAlign: "center",
+            padding: "15px",
             alignItems: "center",
           }}
         >
-          <Label htmlFor="studentId">Student ID:</Label>
-          <Input
-            style={{
-              width: "20%",
-              border: "none",
-              marginTop: "-6px",
-              fontWeight: "700",
-            }}
-            type="text"
-            id="studentId"
-            value={student_id}
-            onChange={(e) =>
-              setStudentData({ ...studentData, student_id: e.target.value })
-            }
-            readOnly
-          />
-
-          <Label htmlFor="studentName">Name:</Label>
-          <Input
-            style={{
-              width: "20%",
-              border: "none",
-              marginTop: "-5px",
-              fontWeight: "700",
-            }}
-            type="text"
-            id="studentName"
-            value={student_name}
-            onChange={(e) =>
-              setStudentData({ ...studentData, student_name: e.target.value })
-            }
-            readOnly
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label htmlFor="disability">Are you Disabled:</Label>
-          <SelectStyled
-            className="form-select"
-            value={isDisabled}
-            onChange={(e) => setIsDisabled(e.target.value)}
-            invalid={errors.isDisabled}
+          Congratulations! Your placement has already been generated.
+          <Button
+            type="submit"
+            className="mt-3"
+            style={{ background: "#7DC400", marginLeft: "30px" }}
+            disabled={isSubmitted}
           >
-            <option value="">Select</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </SelectStyled>
-          {errors.isDisabled && (
-            <ErrorText>Please select disability status</ErrorText>
-          )}
-        </FormGroup>
-        <FormGroup>
-          <Label htmlFor="gender">Gender:</Label>
-          <SelectStyled
-            className="form-select"
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            invalid={errors.gender}
-          >
-            <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </SelectStyled>
-          {errors.gender && <ErrorText>Please select a gender</ErrorText>}
-        </FormGroup>
-
-        {companies.map((company, preferenceIndex) => (
+            <StyledNavLink to="/student/placement-results">
+              See your placement result
+            </StyledNavLink>
+          </Button>
+        </h2>
+      ) : (
+        <Form onSubmit={handleSubmit}>
+          <FormTitle>May Be Update Your Application Form 👇</FormTitle>
           <FormGroup
-            key={`${preferenceIndex}-${company.company_id}`}
-            className="mb-3"
+            style={{
+              display: "flex",
+              gap: "2rem",
+              border: "none",
+              alignItems: "center",
+            }}
           >
-            <Label>{`Preference ${
-              preferenceIndex + 1
-            } (please select from drop down menu) * `}</Label>
+            <Label htmlFor="studentId">Student ID:</Label>
+            <Input
+              style={{
+                width: "20%",
+                border: "none",
+                marginTop: "-6px",
+                fontWeight: "700",
+              }}
+              type="text"
+              id="studentId"
+              value={student_id}
+              onChange={(e) =>
+                setStudentData({ ...studentData, student_id: e.target.value })
+              }
+              readOnly
+            />
+
+            <Label htmlFor="studentName">Name:</Label>
+            <Input
+              style={{
+                width: "20%",
+                border: "none",
+                marginTop: "-5px",
+                fontWeight: "700",
+              }}
+              type="text"
+              id="studentName"
+              value={student_name}
+              onChange={(e) =>
+                setStudentData({ ...studentData, student_name: e.target.value })
+              }
+              readOnly
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label htmlFor="disability">Are you Disabled:</Label>
             <SelectStyled
               className="form-select"
-              value={studentPreferences[preferenceIndex]}
-              onChange={(e) => handlePreferenceChange(e, preferenceIndex)}
-              invalid={errors.preferences[preferenceIndex]}
+              value={isDisabled}
+              onChange={(e) => setIsDisabled(e.target.value)}
+              invalid={errors.isDisabled}
             >
-              <option value="">select</option>
-              {companies.map((company) => (
-                <option key={company.company_id} value={company.company_id}>
-                  {company.company_name}
-                </option>
-              ))}
+              <option value="">Select</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
             </SelectStyled>
-            {errors.preferences[preferenceIndex] && (
-              <ErrorText>Please select a preference</ErrorText>
+            {errors.isDisabled && (
+              <ErrorText>Please select disability status</ErrorText>
             )}
           </FormGroup>
-        ))}
-        <Button
-          type="submit"
-          className="mt-3"
-          style={{ background: "#7DC400" }}
-          disabled={isSubmitted}
-        >
-          Update
-        </Button>
-      </Form>
+          <FormGroup>
+            <Label htmlFor="gender">Gender:</Label>
+            <SelectStyled
+              className="form-select"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              invalid={errors.gender}
+            >
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </SelectStyled>
+            {errors.gender && <ErrorText>Please select a gender</ErrorText>}
+          </FormGroup>
+
+          {companies.map((company, preferenceIndex) => (
+            <FormGroup
+              key={`${preferenceIndex}-${company.company_id}`}
+              className="mb-3"
+            >
+              <Label>{`Preference ${
+                preferenceIndex + 1
+              } (please select from drop down menu) * `}</Label>
+              <SelectStyled
+                className="form-select"
+                value={studentPreferences[preferenceIndex]}
+                onChange={(e) => handlePreferenceChange(e, preferenceIndex)}
+                invalid={errors.preferences[preferenceIndex]}
+              >
+                <option value="">select</option>
+                {companies.map((company) => (
+                  <option key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </option>
+                ))}
+              </SelectStyled>
+              {errors.preferences[preferenceIndex] && (
+                <ErrorText>Please select a preference</ErrorText>
+              )}
+            </FormGroup>
+          ))}
+          <Button
+            type="submit"
+            className="mt-3"
+            style={{ background: "#7DC400" }}
+            disabled={isSubmitted}
+          >
+            Update
+          </Button>
+        </Form>
+      )}
+
       <ToastContainer />
     </CriteriaStyle>
   );

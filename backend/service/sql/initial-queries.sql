@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `students` (
   `phone_number` VARCHAR(20),
   `contact_email` VARCHAR(255),
   `gpa` DECIMAL(3, 2),  
+  `photo` VARCHAR(255) DEFAULT 'default.jpg', 
   `password` VARCHAR(255) NOT NULL,
   `department_id` INT(11),
   PRIMARY KEY (`student_id`),

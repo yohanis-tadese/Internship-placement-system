@@ -73,8 +73,6 @@ const AcceptedStudentList = () => {
   return (
     <>
       <Heading as="h1">All Accepted Students</Heading>
-      <br />
-      <hr />
 
       <PlacementResultsContainer>
         <PlacementResultTable>

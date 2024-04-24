@@ -37,7 +37,7 @@ async function createAdmin(admin) {
           password
         ) VALUES (?, ?, ?, ?, ?, ?)
       `;
-    const defaultPhotoPath = "../public/images/admin/yohanis.gif";
+    const defaultPhotoPath = "default.jpg";
     const result = await query(insertAdminSql, [
       admin.first_name,
       admin.last_name,

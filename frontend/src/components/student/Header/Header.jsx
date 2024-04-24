@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavLink, useNavigate } from "react-router-dom";
 import DarkModeToggle from "../../../ui/DarkModeToggle";
-import { FaSignOutAlt, FaBuilding, FaListAlt } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
+// import { IoIosNotificationsOutline } from "react-icons/io";
 import Heading from "../../../ui/Heading";
 import { useAuth } from "../../../context/AuthContext";
 import loginService from "../../../services/login.service";
 import studentService from "../../../services/student.service";
+import defaultAvatar from "../../../../../backend/public/images/student/default.jpg";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -86,11 +88,34 @@ const StyledButton = styled.button`
   }
 `;
 
+const Avatar = styled.img`
+  display: block;
+  width: 4rem; /* Set your desired width */
+  height: 4rem; /* Set your desired height */
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  outline: 2px solid var(--color-grey-100);
+`;
+
+// const NotificationIcon = styled.div`
+//   position: relative;
+//   font-size: 2.8rem;
+//   color: var(--color-primary);
+//   cursor: pointer;
+
+//   &:hover {
+//     color: var(--color-primary-light);
+//   }
+// `;
+
 // Header component
 const Header = () => {
   const navigate = useNavigate();
   const { isLogged, secondName, setIsLogged, userId } = useAuth();
   const [hasFilledForm, setHasFilledForm] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,6 +154,46 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchStudentPhoto = async () => {
+      try {
+        // Fetch student data including photo URL
+        const response = await studentService.getStudent(userId);
+
+        if (response) {
+          const student = await response.json();
+
+          if (student.students.photo) {
+            const adjustedPhotoUrl = student.students.photo.replace(
+              "/public",
+              ""
+            );
+
+            // Set the adjusted photo URL in state
+            setPhotoUrl(adjustedPhotoUrl);
+          } else {
+            // If photo URL is not available, set default photo URL
+            setPhotoUrl(defaultAvatar);
+          }
+        } else {
+          throw new Error("Failed to fetch student data");
+        }
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+        // If error occurs, set default photo URL
+        setPhotoUrl(defaultAvatar);
+      }
+    };
+
+    fetchStudentPhoto();
+
+    // Fetch student photo every 30 seconds (30000 milliseconds)
+    const intervalId = setInterval(fetchStudentPhoto, 30000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [userId]);
+
   const logOut = () => {
     // Call the logout function from the login service
     loginService.logOut();
@@ -143,7 +208,15 @@ const Header = () => {
     <HeaderContainer>
       <NavLink to="/student/dashboard">
         <LeftContainer>
-          <Logo src="/logo-light.png" alt="IPS" />
+          <Avatar
+            style={{ marginRight: "20px", marginLeft: "40px" }}
+            src={
+              `http://localhost:8080/images/student/` + photoUrl ||
+              defaultAvatar
+            }
+            alt="Admin Avatar"
+          />
+
           {isLogged && (
             <Heading as="h2" style={{ textTransform: "capitalize" }}>
               <div>Welcome {secondName ? secondName : "User"}</div>
@@ -153,22 +226,41 @@ const Header = () => {
       </NavLink>
       {isLogged && (
         <RightContainer>
-          <StyledNavLink to="/student/company">
-            <FaBuilding /> Company
-          </StyledNavLink>
+          <StyledNavLink to="/student/company">Company</StyledNavLink>
 
           <StyledNavLink
             to={
               hasFilledForm === true ? "/student/form/update" : "/student/apply"
             }
           >
-            <FaListAlt /> Apply
+            Apply
           </StyledNavLink>
-          <StyledNavLink to="/student/result">
-            <FaBuilding /> result
-          </StyledNavLink>
-
+          <StyledNavLink to="/student/result">Result</StyledNavLink>
+          <StyledNavLink to="/student/profile">Profile</StyledNavLink>
           <DarkModeToggle />
+          {/* <NotificationIcon>
+            <IoIosNotificationsOutline />
+            <span
+              style={{
+                position: "absolute",
+                background: "red",
+                width: "15px",
+                height: "15px",
+                fontSize: "12px",
+                fontWeight: "550",
+                right: "1px",
+                top: "6px",
+                color: "#fff",
+                borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              4
+            </span>
+          </NotificationIcon> */}
+
           <StyledButton onClick={logOut}>
             <FaSignOutAlt /> Logout
           </StyledButton>

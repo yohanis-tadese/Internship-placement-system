@@ -1,6 +1,5 @@
 const adminService = require("../service/admin.service");
 const multer = require("multer");
-const path = require("path");
 
 async function createAdmin(req, res, next) {
   try {

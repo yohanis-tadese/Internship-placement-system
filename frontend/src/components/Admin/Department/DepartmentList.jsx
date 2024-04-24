@@ -82,7 +82,7 @@ const ConfirmationContainer = styled.div`
   position: absolute;
   top: 10px;
   left: 460px;
-  background-color: #ff9966;
+  background-color: #7dc400;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 15px;

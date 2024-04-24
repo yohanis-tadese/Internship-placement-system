@@ -28,6 +28,7 @@ import CompanyList from "./components/student/Company/CompanyList";
 import ResultType from "./components/student/Result/ResultType";
 import PlacementResults from "./components/student/Result/PlacementResults";
 import EvaluationResults from "./components/student/Result/EvaluationResults";
+import StudentAccount from "./pages/student/UpdateProfile";
 
 // import Profile from "./pages/student/profile";
 
@@ -222,6 +223,14 @@ function App() {
             element={
               <PrivateAuthRoute roles={["Student"]}>
                 <ResultType />
+              </PrivateAuthRoute>
+            }
+          />
+          <Route
+            path="/student/profile"
+            element={
+              <PrivateAuthRoute roles={["Student"]}>
+                <StudentAccount />
               </PrivateAuthRoute>
             }
           />

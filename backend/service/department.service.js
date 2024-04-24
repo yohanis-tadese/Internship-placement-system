@@ -76,6 +76,7 @@ async function getDepartmentCount() {
   try {
     const sql = `SELECT COUNT(*) AS total FROM departments`;
     const [{ total }] = await query(sql);
+
     return total;
   } catch (error) {
     throw new Error(

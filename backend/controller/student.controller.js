@@ -1,5 +1,6 @@
 // Import necessary dependencies
 const studentService = require("../service/student.service");
+const multer = require("multer");
 
 async function createStudent(req, res, next) {
   try {
@@ -30,6 +31,7 @@ async function createStudent(req, res, next) {
       phone_number: req.body.phone_number,
       contact_email: req.body.contact_email,
       gpa: req.body.gpa,
+      photo: req.body.photo,
       password: req.body.password,
       department_id: req.body.department_id,
     });
@@ -49,7 +51,7 @@ async function createStudent(req, res, next) {
 
 async function getStudents(req, res, next) {
   try {
-    const studentId = req.params.id;
+    const studentId = req.params.studentId;
     const students = await studentService.getStudent(studentId);
 
     return res.status(200).json({
@@ -80,9 +82,47 @@ async function getAllStudents(req, res, next) {
   }
 }
 
+async function updateStudentProfile(req, res, next) {
+  try {
+    const studentId = req.params.id;
+
+    // Check if a file was uploaded
+    let photoFilename = null;
+    if (req.file) {
+      photoFilename = req.file.filename;
+    }
+
+    const success = await studentService.updateStudentProfile(
+      studentId,
+      req.body,
+      photoFilename
+    );
+
+    if (success) {
+      const students = await studentService.getAllStudents();
+      return res.status(200).json({
+        status: true,
+        students,
+      });
+    } else {
+      // If update failed, return an error response
+      return res.status(404).json({
+        status: false,
+        error: "Student not found",
+      });
+    }
+  } catch (error) {
+    console.error("Error updating student:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
 async function updateStudent(req, res, next) {
   try {
     const studentId = req.params.id;
+
     const updatedStudent = await studentService.updateStudent(
       studentId,
       req.body
@@ -101,6 +141,63 @@ async function updateStudent(req, res, next) {
     });
   } catch (error) {
     console.error("Error updating student:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+}
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/images/student");
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `user-${req.params.id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+const UplodeStudentPhoto = upload.single("photo");
+
+async function getStudentPhoto(req, res, next) {
+  try {
+    // Extract admin ID from request parameters
+    const studentId = req.params.id;
+
+    // Call the service function to get the admin photo filename
+    const photoFilename = await studentService.getStudentPhoto(studentId);
+
+    // If photo filename is not found or empty, send a 404 response
+    if (!photoFilename) {
+      return res.status(404).json({
+        status: false,
+        error: "Student photo not found",
+      });
+    }
+
+    // Construct the photo URL based on the photo filename
+    const photoUrl = `/public/images/student/${photoFilename}`;
+
+    // Send the photo URL in the response
+    return res.status(200).json({
+      status: true,
+      photoUrl,
+    });
+  } catch (error) {
+    console.error("Error getting admin photo:", error);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -133,13 +230,22 @@ async function deleteStudent(req, res, next) {
 const changePassword = async (req, res, next) => {
   try {
     const studentId = req.params.id;
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Check if the new password matches the confirm password
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        status: "fail",
+        message: "New password and confirm password do not match.",
+      });
+    }
 
     // Call the service method to change the password
     const response = await studentService.changePassword(
       studentId,
       oldPassword,
-      newPassword
+      newPassword,
+      confirmPassword
     );
 
     if (response) {
@@ -319,4 +425,7 @@ module.exports = {
   getApplyStudentsById,
   updateStudentApplyForm,
   deleteAllPlacementResults,
+  UplodeStudentPhoto,
+  updateStudentProfile,
+  getStudentPhoto,
 };

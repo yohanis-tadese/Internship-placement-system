@@ -33,7 +33,7 @@ const getStudent = async (studentId) => {
     },
   };
   const response = await fetch(
-    `${api_url}/api/student/${studentId}`,
+    `${api_url}/api/students/byId/${studentId}`,
     requestOptions
   );
   return response;
@@ -47,7 +47,39 @@ const updateStudent = async (studentId, formData) => {
     body: JSON.stringify(formData),
   };
   const response = await fetch(
-    `${api_url}/api/student/${studentId}`,
+    `${api_url}/api/student/update/${studentId}`,
+    requestOptions
+  );
+  return response;
+};
+
+// A function to send put request to update a student
+const updateStudentProfile = async (studentId, formData) => {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  };
+  const response = await fetch(
+    `${api_url}/api/student/update/profile/${studentId}`,
+    requestOptions
+  );
+  return response;
+};
+
+const changePassword = async (
+  studentId,
+  oldPassword,
+  newPassword,
+  confirmPassword
+) => {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ oldPassword, newPassword, confirmPassword }),
+  };
+  const response = await fetch(
+    `${api_url}/api/student/changepassword/${studentId}`,
     requestOptions
   );
   return response;
@@ -61,6 +93,20 @@ const deleteStudent = async (studentId) => {
   };
   const response = await fetch(
     `${api_url}/api/student/${studentId}`,
+    requestOptions
+  );
+  return response;
+};
+
+const getStudentPhoto = async (studentId) => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(
+    `${api_url}/api/student/${studentId}/photo`,
     requestOptions
   );
   return response;
@@ -163,14 +209,19 @@ const studentService = {
   createStudent,
   getStudent,
   getAllStudents,
-  updateStudent,
+  getStudentPhoto,
+  getAllApplyStudents,
+
   deleteStudent,
   getStudentsByDepartment,
-  acceptStudentApplyForm,
-  getAllApplyStudents,
-  getApplyStudentById,
-  updateStudentApplyForm,
   deleteAllPlacementResults,
+  acceptStudentApplyForm,
+  getApplyStudentById,
+
+  updateStudentApplyForm,
+  updateStudent,
+  updateStudentProfile,
+  changePassword,
 };
 
 export default studentService;

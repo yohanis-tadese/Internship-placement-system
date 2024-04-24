@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./CompnySidebar";
+import Sidebar from "./Sidebar";
 import Header from "./Header";
 import styled from "styled-components";
 
@@ -8,6 +8,7 @@ const StyledAppLayout = styled.div`
   grid-template-columns: 26rem 1fr;
   grid-template-rows: auto 1fr;
   height: 100vh;
+  overflow: hidden;
 `;
 
 const Main = styled.main`

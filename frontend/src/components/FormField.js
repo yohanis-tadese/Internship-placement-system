@@ -101,10 +101,4 @@ export const StudentForm = [
     type: "number",
     autoComplete: "off",
   },
-  {
-    id: "department_id",
-    label: "Department Type",
-    type: "text",
-    autoComplete: "off",
-  },
 ];
