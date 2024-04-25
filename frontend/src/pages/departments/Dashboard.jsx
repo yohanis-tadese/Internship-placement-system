@@ -5,9 +5,10 @@ import { FaUserGraduate } from "react-icons/fa"; // Import student icon
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
 import { Link } from "react-router-dom";
-import companyService from "../../services/company.service"; // Correct import
-import studentService from "../../services/student.service"; // Correct import
+import companyService from "../../services/company.service";
+import studentService from "../../services/student.service";
 import { useAuth } from "../../context/AuthContext";
+import resultService from "./../../services/result.service";
 
 // Styled component for the dashboard container
 const DashboardContainer = styled.div`
@@ -63,6 +64,8 @@ const IconContainer = styled.div`
 function Dashboard() {
   const [numCompanies, setNumCompanies] = useState(0);
   const [numStudents, setNumStudents] = useState(0);
+  const [numSendResults, setNumSendResults] = useState(0);
+
   const { userId } = useAuth();
 
   useEffect(() => {
@@ -75,12 +78,17 @@ function Dashboard() {
           userId
         );
 
+        const resultResponse = await resultService.getResultsByDepartmentId(
+          userId
+        );
+
         if (companyResponse.ok && studentResponse.ok) {
           const companyData = await companyResponse.json();
           const studentData = await studentResponse.json();
 
           setNumCompanies(companyData.companies.length);
           setNumStudents(studentData.length);
+          setNumSendResults(resultResponse.length);
         } else {
           console.error("Failed to fetch dashboard data");
         }
@@ -104,7 +112,6 @@ function Dashboard() {
           <h3>{numStudents}</h3>
           <IconContainer>
             <FaUserGraduate size={24} color="#0984e3" />{" "}
-            {/* Use student icon */}
           </IconContainer>
           <StyledLink to="/department/student">See detail</StyledLink>
         </Box>
@@ -113,9 +120,18 @@ function Dashboard() {
           <h3>{numCompanies}</h3>
           <IconContainer>
             <MdBusiness size={24} color="#0984e3" />{" "}
-            {/* Use organization icon */}
           </IconContainer>
           <StyledLink>Numbers of companys</StyledLink>
+        </Box>
+        <Box>
+          <Heading as="h2">Number Of Students Who Sent Results</Heading>
+          <h3>{numSendResults}</h3>
+          <IconContainer>
+            <MdBusiness size={24} color="#0984e3" />{" "}
+          </IconContainer>
+          <StyledLink to="/department/student-organizational-results">
+            See detail
+          </StyledLink>
         </Box>
       </DashboardContainer>
     </>

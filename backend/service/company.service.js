@@ -134,14 +134,10 @@ async function updateCompany(companyId, companyData) {
       location,
       industry_sector,
       accepted_student_limit,
-      password,
       website,
     } = companyData;
 
-    // Hash the password before updating
-    const hashedPassword = await hashPassword(password);
-
-    const username = `comp_${company_name}`;
+    const username = `comp.${company_name.toLowerCase()}`;
 
     // Update the company data including the hashed password and website
     const updateSql = `
@@ -153,11 +149,12 @@ async function updateCompany(companyId, companyData) {
           location = ?,
           industry_sector = ?,
           accepted_student_limit = ?,
-          website = ?, 
-          password = ?
+          website = ?
       WHERE company_id = ?
     `;
-    const result = await query(updateSql, [
+
+    // Execute the SQL query
+    const params = [
       company_name,
       username,
       phone_number,
@@ -166,10 +163,12 @@ async function updateCompany(companyId, companyData) {
       industry_sector,
       accepted_student_limit,
       website,
-      hashedPassword,
       companyId,
-    ]);
+    ];
 
+    const result = await query(updateSql, params);
+
+    // Check if the update was successful
     return result.affectedRows > 0;
   } catch (error) {
     throw new Error(`Error updating company: ${error.message}`);

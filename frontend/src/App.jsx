@@ -37,6 +37,7 @@ import DepartmentDashboard from "./pages/departments/Dashboard";
 import DepAppLayout from "./ui/Department/DepAppLayout";
 import DepartmentStudent from "./pages/departments/Student";
 import Result from "./pages/departments/Result";
+import Grade from "./pages/departments/Grade";
 import PlacementResult from "./components/department/Result/PlacementResult";
 import CompanyResult from "./components/department/Result/CompanyResult";
 import EvaluationResult from "./components/department/Result/EvaluationResult";
@@ -178,6 +179,14 @@ function App() {
                 element={
                   <PrivateAuthRoute roles={["Department"]}>
                     <EvaluationResult />
+                  </PrivateAuthRoute>
+                }
+              />
+              <Route
+                path="student-grade"
+                element={
+                  <PrivateAuthRoute roles={["Department"]}>
+                    <Grade />
                   </PrivateAuthRoute>
                 }
               />

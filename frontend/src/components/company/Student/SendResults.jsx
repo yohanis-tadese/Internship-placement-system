@@ -81,7 +81,7 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
     const { name, value } = e.target;
 
     // Regular expression to allow only letters, underscores, and dollar signs
-    const regex = /^[a-zA-Z_$]*$/;
+    const regex = /^[a-zA-Z_$ ]*$/;
 
     // Check if the input element is a number type
     if (e.target.type === "number") {
@@ -101,7 +101,6 @@ const SendResults = ({ studentId, departmentId, companyId, onClose }) => {
     } else if (e.target.type === "text") {
       // Check if the input value matches the regular expression
       if (regex.test(value)) {
-        // Update form data if the input value is valid
         setFormData((prevData) => ({
           ...prevData,
           [name]: value,

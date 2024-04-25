@@ -14,6 +14,7 @@ router.patch(
 );
 
 router.patch("/api/admin/password/:id", adminController.changePassword);
+
 router.get("/api/admin/:id/photo", adminController.getAdminPhoto);
 
 module.exports = router;
