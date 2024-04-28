@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { CiSearch } from "react-icons/ci";
 import departmentService from "../../../services/department.service";
@@ -181,42 +181,40 @@ const DepartmentList = () => {
   const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
 
   useEffect(() => {
-    // Fetch departments initially
+    const fetchDepartments = async () => {
+      try {
+        setLoading(true);
+        const response = await departmentService.getAllDepartments(
+          page,
+          DepartmentPerPage
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
+        if (response.ok) {
+          const responseData = await response.json();
+
+          const departmentsData = responseData.departments?.map(
+            (department, index) => ({
+              ...department,
+              id: (page - 1) * DepartmentPerPage + index + 1,
+            })
+          );
+          setDepartments(departmentsData);
+
+          const data = responseData.totalCount;
+
+          setTotalDepartment(data);
+          setLoading(false);
+        } else {
+          console.error("Failed to fetch departments:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
     fetchDepartments();
   }, [page]);
-
-  const fetchDepartments = async () => {
-    try {
-      setLoading(true);
-      const response = await departmentService.getAllDepartments(
-        page,
-        DepartmentPerPage
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 400));
-
-      if (response.ok) {
-        const responseData = await response.json();
-
-        const departmentsData = responseData.departments?.map(
-          (department, index) => ({
-            ...department,
-            id: (page - 1) * DepartmentPerPage + index + 1,
-          })
-        );
-        setDepartments(departmentsData);
-
-        const data = responseData.totalCount;
-
-        setTotalDepartment(data);
-        setLoading(false);
-      } else {
-        console.error("Failed to fetch departments:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching departments:", error);
-    }
-  };
 
   const nextPage = () => {
     if (currentPage < Math.ceil(totalDepartment / DepartmentPerPage)) {
@@ -229,11 +227,6 @@ const DepartmentList = () => {
       setCurrentPage((prevPage) => prevPage - 1);
     }
   };
-
-  useEffect(() => {
-    // Fetch departments initially
-    fetchDepartments();
-  }, []);
 
   const handleSearchTextChange = (event) => {
     const searchText = event.target.value.toLowerCase();
@@ -265,7 +258,10 @@ const DepartmentList = () => {
             (department) => department.id !== deletedDepartmentId
           )
         );
-        toast.success("Department deleted successfully.", { autoClose: 1000 });
+        toast.success("Department deleted successfully.", { autoClose: 700 });
+        setTimeout(async () => {
+          handleUpdateDepartmentList();
+        }, 1000);
       } else {
         console.error("Failed to delete department:", response.statusText);
         toast.error("Failed to delete department.");
@@ -275,6 +271,34 @@ const DepartmentList = () => {
       toast.error("Error deleting department.");
     }
     setShowConfirmation(false);
+  };
+
+  const handleUpdateDepartmentList = async () => {
+    try {
+      const response = await departmentService.getAllDepartments(
+        page,
+        DepartmentPerPage
+      );
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const updatedDepartments = responseData.departments.map(
+          (department, index) => ({
+            ...department,
+            id: (page - 1) * DepartmentPerPage + index + 1,
+          })
+        );
+
+        const data = responseData.totalCount;
+
+        setDepartments(updatedDepartments);
+        setTotalDepartment(data);
+      } else {
+        console.error("Failed to fetch departments:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
   };
 
   const handleCancelDelete = () => {
@@ -387,6 +411,7 @@ const DepartmentList = () => {
             (department) => department.department_id === editingDepartmentId
           )}
           onCancel={handleCancelEdit}
+          onDepartmentUpdated={handleUpdateDepartmentList}
         />
       )}
     </>

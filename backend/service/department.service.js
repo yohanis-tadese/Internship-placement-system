@@ -106,43 +106,35 @@ async function getAllDepartments(page, size) {
     throw new Error(`Error fetching departments: ${error.message}`);
   }
 }
-
 async function updateDepartment(departmentId, departmentData) {
   try {
-    const {
-      department_name,
-      phone_number,
-      contact_email,
-      office_location,
-      password,
-    } = departmentData;
-
-    // Hash the password before updating
-    const hashedPassword = await hashPassword(password);
+    const { department_name, phone_number, contact_email, office_location } =
+      departmentData;
 
     const username = `dept.${department_name}`;
 
-    // Update the department data including the hashed password and department type
     const updateSql = `
       UPDATE departments
       SET department_name = ?,
           username = ?,
           phone_number = ?,
           contact_email = ?,
-          office_location = ?,
-          password = ? 
+          office_location = ?
       WHERE department_id = ?
     `;
-    const result = await query(updateSql, [
+
+    const params = [
       department_name,
       username,
       phone_number,
       contact_email,
       office_location,
-      hashedPassword,
       departmentId,
-    ]);
+    ];
 
+    const result = await query(updateSql, params);
+
+    // Check if the update was successful
     return result.affectedRows > 0;
   } catch (error) {
     throw new Error(`Error updating department: ${error.message}`);

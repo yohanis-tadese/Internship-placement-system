@@ -21,22 +21,23 @@ function UpdateProfile() {
 
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        const response = await adminService.getAdminById(userId);
-        if (!response.ok) {
-          throw new Error("Failed to fetch admin data");
-        }
-        const adminData = await response.json();
-        const admin = adminData.data;
-        setFormData(admin);
-      } catch (error) {
-        console.error("Error fetching admin data:", error);
-        toast.error("Error fetching admin data", { autoClose: 2000 });
-      }
-    };
+  const fetchAdminData = async () => {
+    try {
+      const response = await adminService.getAdminById(userId);
 
+      if (!response.ok) {
+        throw new Error("Failed to fetch admin data");
+      }
+      const adminData = await response.json();
+      const admin = adminData.data;
+      setFormData(admin);
+    } catch (error) {
+      console.error("Error fetching admin data:", error);
+      toast.error("Error fetching admin data", { autoClose: 2000 });
+    }
+  };
+
+  useEffect(() => {
     fetchAdminData();
   }, [userId]);
 
@@ -87,6 +88,7 @@ function UpdateProfile() {
           userId,
           formDataWithFile
         );
+
         if (!updateResponse.ok) {
           throw new Error("Failed to update admin");
         }

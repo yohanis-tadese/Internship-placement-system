@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import Button from "../../../ui/Button";
 import Form from "../../../ui/Form";
 import FormRow from "../../../ui/FormRow";
@@ -10,33 +11,38 @@ import "react-toastify/dist/ReactToastify.css";
 import { DepartmentForm } from "../../FormField";
 import departmentService from "../../../services/department.service";
 
-const EditDepartment = ({ departmentId, initialData, onCancel }) => {
+const EditDepartment = ({
+  departmentId,
+  initialData,
+  onCancel,
+  onDepartmentUpdated,
+}) => {
   const [formData, setFormData] = useState({});
   const [modalVisible, setModalVisible] = useState(true);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    const fetchDepartmentData = async () => {
+      try {
+        const response = await departmentService.getDepartments(departmentId);
+        console.log(response);
+        if (response.ok) {
+          const responseData = await response.json();
+          setFormData(responseData.department);
+        } else {
+          console.error("Failed to fetch department:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching department:", error);
+      }
+    };
+
     if (initialData) {
       setFormData(initialData);
     } else {
       fetchDepartmentData();
     }
-  }, [departmentId]);
-
-  const fetchDepartmentData = async () => {
-    try {
-      const response = await departmentService.getDepartments(departmentId);
-      console.log(response);
-      if (response.ok) {
-        const responseData = await response.json();
-        setFormData(responseData.department);
-      } else {
-        console.error("Failed to fetch department:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching department:", error);
-    }
-  };
+  }, [departmentId, initialData]);
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -100,10 +106,11 @@ const EditDepartment = ({ departmentId, initialData, onCancel }) => {
 
       if (response.status === 200) {
         setErrors({});
-        toast.success(responseData.message, { autoClose: 2000 });
+        toast.success(responseData.message, { autoClose: 700 });
       }
 
       setModalVisible(false);
+      setTimeout(onDepartmentUpdated, 1000);
     } catch (error) {
       console.error("Error updating department:", error); // Log the error
       toast.error("Error updating department.", { autoClose: 2000 });
@@ -155,6 +162,13 @@ const EditDepartment = ({ departmentId, initialData, onCancel }) => {
       <ToastContainer />
     </div>
   );
+};
+
+EditDepartment.propTypes = {
+  departmentId: PropTypes.string.isRequired,
+  initialData: PropTypes.object,
+  onCancel: PropTypes.func.isRequired,
+  onDepartmentUpdated: PropTypes.func.isRequired,
 };
 
 export default EditDepartment;

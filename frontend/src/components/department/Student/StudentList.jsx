@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import studentService from "../../../services/student.service";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
@@ -9,7 +9,6 @@ import EditStudent from "./EditStudent";
 import { toast } from "react-toastify";
 import Spinner from "../../../ui/Spinner";
 import "react-toastify/dist/ReactToastify.css";
-import Department from "./../../../pages/Admin/Department";
 
 const Table = styled.table`
   width: 100%;
@@ -221,7 +220,10 @@ const StudentList = () => {
       if (response.ok) {
         // Remove deleted student from the list
         setStudents(students.filter((student) => student.id !== studentId));
-        toast.success("Student deleted successfully.", { autoClose: 1000 });
+        toast.success("Student deleted successfully.", { autoClose: 700 });
+        setTimeout(() => {
+          fetchStudents();
+        }, 1000);
       } else {
         console.error("Failed to delete student:", response.statusText);
         toast.error("Failed to delete student.");

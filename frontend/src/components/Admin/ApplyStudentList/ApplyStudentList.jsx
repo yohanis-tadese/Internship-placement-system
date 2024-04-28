@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import studentService from "../../../services/student.service";
 
 const Table = styled.table`
@@ -33,11 +34,26 @@ const ApplyStudentList = ({ showCompany }) => {
 
   useEffect(() => {
     fetchData();
-  }, [data]);
+  }, []);
+
+  useEffect(() => {
+    if (showCompany) {
+      fetchData();
+      // Set up interval only when showCompany is true
+
+      const interval = setInterval(() => {
+        fetchData();
+      }, 1000);
+
+      // Cleanup function to clear the interval when component unmounts or showCompany becomes false
+      return () => clearInterval(interval);
+    }
+  }, [showCompany]);
 
   const fetchData = async () => {
     try {
       const response = await studentService.getAllApplyStudents();
+      console.log("helllo", response.students);
       if (response) {
         setData(response.students);
       } else {
@@ -105,6 +121,11 @@ const ApplyStudentList = ({ showCompany }) => {
       </Table>
     </div>
   );
+};
+
+// PropTypes validation
+ApplyStudentList.propTypes = {
+  showCompany: PropTypes.bool.isRequired,
 };
 
 export default ApplyStudentList;

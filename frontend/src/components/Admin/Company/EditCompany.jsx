@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Button from "../../../ui/Button";
 import Form from "../../../ui/Form";
 import FormRow from "../../../ui/FormRow";
@@ -10,33 +10,38 @@ import "react-toastify/dist/ReactToastify.css";
 import companyService from "../../../services/company.service";
 import { CompanyForm } from "../../FormField";
 
-const EditCompany = ({ companyId, initialData, onCancel }) => {
+const EditCompany = ({
+  companyId,
+  initialData,
+  onCancel,
+  onCompanyUpdated,
+}) => {
   const [formData, setFormData] = useState({});
   const [modalVisible, setModalVisible] = useState(true);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const response = await companyService.getCompany(companyId);
+        if (response.ok) {
+          const responseData = await response.json();
+          setFormData(responseData.company);
+        } else {
+          throw new Error(`Failed to fetch company: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error("Error fetching company:", error);
+        // Optionally, you can set an error state here to display to the user
+      }
+    };
+
     if (initialData) {
       setFormData(initialData);
     } else {
       fetchCompanyData();
     }
-  }, [companyId]);
-
-  const fetchCompanyData = async () => {
-    try {
-      const response = await companyService.getCompany(companyId);
-      if (response.ok) {
-        const responseData = await response.json();
-        setFormData(responseData.company);
-      } else {
-        throw new Error(`Failed to fetch company: ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error("Error fetching company:", error);
-      // Optionally, you can set an error state here to display to the user
-    }
-  };
+  }, [companyId, initialData]);
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -98,11 +103,13 @@ const EditCompany = ({ companyId, initialData, onCancel }) => {
           throw new Error(response.error); // Handle the error
         } else {
           // Handle successful response
-          toast.success("Company updated successfully", { autoClose: 2000 });
+          toast.success("Company updated successfully", { autoClose: 700 });
 
           // Clear any previous errors
           setErrors({});
           setModalVisible(false);
+
+          setTimeout(onCompanyUpdated, 1200);
         }
       } else {
         throw new Error("Failed to update company");

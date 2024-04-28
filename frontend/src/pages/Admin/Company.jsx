@@ -1,4 +1,3 @@
-import React from "react";
 import CreateCompany from "../../components/Admin/Company/CreateCompany";
 import CompanyList from "../../components/Admin/Company/CompanyList";
 import Heading from "../../ui/Heading";

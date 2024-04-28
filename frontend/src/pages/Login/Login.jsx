@@ -11,19 +11,21 @@ const LoginLayout = styled.main`
   align-content: center;
   justify-content: center;
   gap: 3.2rem;
-  border-bottom: 7px solid #cf711f;
-  background-color: var(--color-grey-50);
+  background-color: var(--color-grey-0);
 `;
 
 function Login() {
   return (
-    <LoginLayout>
-      <Header />
-      <br />
-      <Heading as="h4">Log in to your account</Heading>
-      <LoginForm />
+    <>
+      <LoginLayout>
+        <Header />
+        <br />
+        <Heading as="h4">Log in to your account</Heading>
+
+        <LoginForm />
+      </LoginLayout>
       <Footer />
-    </LoginLayout>
+    </>
   );
 }
 

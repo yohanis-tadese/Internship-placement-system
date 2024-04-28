@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import companyService from "../../../services/company.service";
 import { FaEdit } from "react-icons/fa";
@@ -83,7 +83,7 @@ const ConfirmationContainer = styled.div`
   position: absolute;
   top: 10px;
   left: 460px;
-  background-color: #ff9966;
+  background-color: #7dc400;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
@@ -184,39 +184,39 @@ const CompanyList = () => {
   const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
 
   useEffect(() => {
-    // Fetch departments initially
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        const response = await companyService.getAllCompanies(
+          page,
+          companiesPerPage
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
+        if (response.ok) {
+          const responseData = await response.json();
+          const companiesData = responseData.companies.map(
+            (company, index) => ({
+              ...company,
+              id: (page - 1) * companiesPerPage + index + 1,
+            })
+          );
+
+          const data = responseData.totalCount;
+
+          setCompanies(companiesData);
+          setTotalCompanies(data);
+          setLoading(false);
+        } else {
+          console.error("Failed to fetch companies:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
     fetchCompanies();
   }, [page]);
-
-  const fetchCompanies = async () => {
-    try {
-      setLoading(true);
-      const response = await companyService.getAllCompanies(
-        page,
-        companiesPerPage
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 400));
-
-      if (response.ok) {
-        const responseData = await response.json();
-        const companiesData = responseData.companies.map((company, index) => ({
-          ...company,
-          id: (page - 1) * companiesPerPage + index + 1,
-        }));
-
-        const data = responseData.totalCount;
-
-        setCompanies(companiesData);
-        setTotalCompanies(data);
-        setLoading(false);
-      } else {
-        console.error("Failed to fetch companies:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching companies:", error);
-    }
-  };
 
   const nextPage = () => {
     if (currentPage < Math.ceil(totalcompanies / totalcompanies)) {
@@ -229,10 +229,6 @@ const CompanyList = () => {
       setCurrentPage((prevPage) => prevPage - 1);
     }
   };
-
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
 
   const handleSearchTextChange = (event) => {
     const searchText = event.target.value.toLowerCase();
@@ -260,7 +256,10 @@ const CompanyList = () => {
         setCompanies(
           companies.filter((company) => company.id !== deletedCompanyId)
         );
-        toast.success("Company deleted successfully.", { autoClose: 1000 });
+        toast.success("Company deleted successfully.", { autoClose: 700 });
+        setTimeout(async () => {
+          handleUpdateCompanyList();
+        }, 1000);
       } else {
         console.error("Failed to delete company:", response.statusText);
         toast.error("Failed to delete company.");
@@ -276,27 +275,31 @@ const CompanyList = () => {
     setShowConfirmation(false);
   };
 
-  const filterCompanies = (company) => {
-    const {
-      company_name,
-      phone_number,
-      contact_email,
-      location,
-      industry_sector,
-    } = company;
+  const handleUpdateCompanyList = async () => {
+    try {
+      const response = await companyService.getAllCompanies(
+        page,
+        companiesPerPage
+      );
 
-    return (
-      company_name.toLowerCase().includes(searchText) ||
-      phone_number.toLowerCase().includes(searchText) ||
-      contact_email.toLowerCase().includes(searchText) ||
-      location.toLowerCase().includes(searchText) ||
-      industry_sector.toLowerCase().includes(searchText)
-    );
+      if (response.ok) {
+        const responseData = await response.json();
+        const companiesData = responseData.companies.map((company, index) => ({
+          ...company,
+          id: (page - 1) * companiesPerPage + index + 1,
+        }));
+
+        const data = responseData.totalCount;
+
+        setCompanies(companiesData);
+        setTotalCompanies(data);
+      } else {
+        console.error("Failed to fetch companies:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+    }
   };
-
-  const filteredCompanies = searchText
-    ? companies.filter(filterCompanies)
-    : companies;
 
   return (
     <>
@@ -346,7 +349,7 @@ const CompanyList = () => {
               </TableRow>
             </TableHead>
             <tbody>
-              {filteredCompanies.map((company) => (
+              {companies.map((company) => (
                 <TableRow key={company.company_id}>
                   <TableCell>{company.id}</TableCell>
                   <TableCell>{company.company_name}</TableCell>
@@ -384,14 +387,16 @@ const CompanyList = () => {
         </>
       )}
       {editingCompanyId && (
-        <EditCompany
-          companyId={editingCompanyId}
-          initialData={companies.find(
-            (company) => company.company_id === editingCompanyId
-          )}
-          onCancel={handleCancelEdit}
-          fetchCompanies={fetchCompanies}
-        />
+        <>
+          <EditCompany
+            companyId={editingCompanyId}
+            initialData={companies.find(
+              (company) => company.company_id === editingCompanyId
+            )}
+            onCancel={handleCancelEdit}
+            onCompanyUpdated={handleUpdateCompanyList}
+          />
+        </>
       )}
     </>
   );

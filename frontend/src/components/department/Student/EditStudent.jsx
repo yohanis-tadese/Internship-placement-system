@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Button from "../../../ui/Button";
 import Form from "../../../ui/Form";
 import FormRow from "../../../ui/FormRow";
@@ -7,7 +7,7 @@ import Modal from "../../../ui/Modal";
 import CancelButton from "../../../ui/CancelButton";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { StudentForm } from "../../FormField"; // Importing StudentForm from the correct path
+import { StudentForm } from "../../FormField";
 import departmentService from "../../../services/department.service";
 import studentService from "../../../services/student.service";
 import styled from "styled-components";
@@ -25,25 +25,22 @@ const SelectContainer = styled.div`
   }
 `;
 
-const EditStudent = ({ studentId, initialData, onCancel }) => {
+const EditStudent = ({ studentId, initialData, onCancel, fetchStudents }) => {
   const { userId } = useAuth();
   const [formData, setFormData] = useState(initialData || {});
   const [modalVisible, setModalVisible] = useState(true);
-  const [departmentIds, setDepartmentIds] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     // Fetch department IDs when component mounts
     const fetchDepartmentIds = async () => {
       try {
-        const ids = await departmentService.getDepartmentIds();
+        await departmentService.getDepartmentIds();
 
         setFormData((prevData) => ({
           ...prevData,
           department_id: userId,
         }));
-
-        setDepartmentIds(ids);
       } catch (error) {
         console.error("Error fetching department IDs:", error.message);
       }
@@ -53,24 +50,23 @@ const EditStudent = ({ studentId, initialData, onCancel }) => {
   }, [userId]);
 
   useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const response = await studentService.getStudent(studentId);
+        if (response.ok) {
+          const responseData = await response.json();
+          setFormData(responseData.students);
+        } else {
+          console.error("Failed to fetch student:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching student:", error);
+      }
+    };
     if (!initialData) {
       fetchStudentData();
     }
   }, [initialData, studentId]);
-
-  const fetchStudentData = async () => {
-    try {
-      const response = await studentService.getStudent(studentId);
-      if (response.ok) {
-        const responseData = await response.json();
-        setFormData(responseData.students);
-      } else {
-        console.error("Failed to fetch student:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching student:", error);
-    }
-  };
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -118,10 +114,13 @@ const EditStudent = ({ studentId, initialData, onCancel }) => {
 
       if (response.status === 200) {
         setErrors({});
-        toast.success(responseData.message, { autoClose: 2000 });
+        toast.success(responseData.message, { autoClose: 700 });
       }
 
       setModalVisible(false);
+      setTimeout(() => {
+        fetchStudents();
+      }, 1000);
     } catch (error) {
       console.error("Error updating student:", error); // Log the error
       toast.error("Error updating student.", { autoClose: 2000 });

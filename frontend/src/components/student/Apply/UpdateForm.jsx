@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import studentService from "../../../services/student.service";
 import { useAuth } from "../../../context/AuthContext";
@@ -6,7 +6,7 @@ import companyService from "../../../services/company.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "../Header/Header";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const CriteriaStyle = styled.div`
   background-color: var(--color-grey-200);
@@ -90,7 +90,6 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 const UpdateForm = () => {
-  const navigate = useNavigate();
   const [studentData, setStudentData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [studentPreferences, setStudentPreferences] = useState([]);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import adminService from "../../services/admin.service";
 import { useAuth } from "../../context/AuthContext";
@@ -28,49 +28,47 @@ function UserAvatar() {
   const [photoUrl, setPhotoUrl] = useState(null);
   const { userId } = useAuth();
 
-  useEffect(() => {
-    const fetchAdminPhoto = async () => {
-      try {
-        // Fetch admin data including photo URL
-        const response = await adminService.getAdminById(userId);
+  const fetchAdminPhoto = async () => {
+    try {
+      // Fetch admin data including photo URL
+      const response = await adminService.getAdminById(userId);
 
-        if (response.ok) {
-          const admin = await response.json();
-          if (admin.data.photo) {
-            // Adjust the photo URL by removing '/public' if present
-            const adjustedPhotoUrl = admin.data.photo.replace("/public", "");
-            // Set the adjusted photo URL in state
-            setPhotoUrl(adjustedPhotoUrl);
-          } else {
-            // If photo URL is not available, set default photo URL
-            setPhotoUrl(defaultAvatar);
-          }
+      if (response.ok) {
+        const admin = await response.json();
+        if (admin.data.photo) {
+          // Adjust the photo URL by removing '/public' if present
+          const adjustedPhotoUrl = admin.data.photo.replace("/public", "");
+          // Set the adjusted photo URL in state
+          setPhotoUrl(adjustedPhotoUrl);
         } else {
-          throw new Error("Failed to fetch admin data");
+          // If photo URL is not available, set default photo URL
+          setPhotoUrl(defaultAvatar);
         }
-      } catch (error) {
-        console.error("Error fetching admin data:", error);
-        // If error occurs, set default photo URL
-        setPhotoUrl(defaultAvatar);
+      } else {
+        throw new Error("Failed to fetch admin data");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching admin data:", error);
+      // If error occurs, set default photo URL
+      setPhotoUrl(defaultAvatar);
+    }
+  };
 
+  useEffect(() => {
     fetchAdminPhoto();
-
-    // Fetch admin photo every 30 seconds (30000 milliseconds)
-    const intervalId = setInterval(fetchAdminPhoto, 2500);
-
-    // Clear interval on component unmount
-    return () => clearInterval(intervalId);
   }, [userId]);
 
   return (
-    <StyledUserAvatar>
-      <Avatar
-        src={`http://localhost:8080/images/admin/` + photoUrl || defaultAvatar}
-        alt="Admin Avatar"
-      />
-    </StyledUserAvatar>
+    <>
+      <StyledUserAvatar>
+        <Avatar
+          src={
+            `http://localhost:8080/images/admin/` + photoUrl || defaultAvatar
+          }
+          alt="Admin Avatar"
+        />
+      </StyledUserAvatar>
+    </>
   );
 }
 

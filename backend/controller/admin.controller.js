@@ -65,6 +65,7 @@ async function getAdminById(req, res, next) {
 async function getAllAdmins(req, res, next) {
   try {
     const admins = await adminService.getAllAdmins();
+
     return res.status(200).json({
       status: true,
       admins,

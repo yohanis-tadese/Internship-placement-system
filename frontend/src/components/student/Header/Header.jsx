@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavLink, useNavigate } from "react-router-dom";
 import DarkModeToggle from "../../../ui/DarkModeToggle";
@@ -22,10 +22,6 @@ const HeaderContainer = styled.div`
   background-color: var(--color-grey-0);
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
   z-index: 1;
-`;
-
-const Logo = styled.img`
-  width: 100px;
 `;
 
 const LeftContainer = styled.div`

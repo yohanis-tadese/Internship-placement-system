@@ -1,5 +1,4 @@
-// export default LoginForm;
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
@@ -69,7 +68,7 @@ function LoginForm() {
         setLoginSuccess("User login successful!");
       } else {
         setLoginSuccess(null);
-        setLoginError(data.message);
+        setLoginError("Invalid username or password!");
       }
 
       setLoading(false);
@@ -133,8 +132,6 @@ function LoginForm() {
             textAlign: "center",
             marginBottom: "-5px",
             border: "1px solid red",
-            background: "red",
-            color: "white",
           }}
         >
           {loginError}
@@ -146,8 +143,7 @@ function LoginForm() {
             color: "#1BA345",
             textAlign: "center",
             border: "1px solid #1BA345",
-            background: "#1BA345",
-            color: "white",
+            borderRadius: "7px",
           }}
         >
           {loginSuccess}

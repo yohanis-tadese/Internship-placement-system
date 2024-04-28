@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import studentService from "../../../services/student.service";
 import placementService from "../../../services/placement.service";
@@ -10,7 +10,7 @@ import ConfirmationDialog from "./ConfirmationDialog";
 const Button = styled.button`
   padding: 10px 20px;
   background-color: ${(props) =>
-    props.primary === "true" ? "#7dc400" : "#FF0000"};
+    props.primary === "true" ? "#7dc400" : "red"};
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -19,11 +19,6 @@ const Button = styled.button`
   font-weight: 700;
   margin-bottom: 20px;
   margin-right: ${(props) => (props.marginRight ? "30px" : "0")};
-`;
-
-const Hr = styled.hr`
-  margin-top: 20px;
-  margin-bottom: 20px;
 `;
 
 const StudentPlacement = () => {
@@ -36,6 +31,7 @@ const StudentPlacement = () => {
     const storedPlacementStatus = localStorage.getItem("placementGenerated");
     return storedPlacementStatus ? JSON.parse(storedPlacementStatus) : false;
   });
+
   const [showCompany, setShowCompany] = useState(() => {
     const storedShowCompanyStatus = localStorage.getItem("showCompany");
     return storedShowCompanyStatus
@@ -46,16 +42,6 @@ const StudentPlacement = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
-    fetchData();
-    updateWeights();
-    // Retrieve showCompany status from localStorage
-    const storedShowCompanyStatus = localStorage.getItem("showCompany");
-    if (storedShowCompanyStatus) {
-      setShowCompany(JSON.parse(storedShowCompanyStatus));
-    }
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem(
       "placementGenerated",
       JSON.stringify(placementGenerated)
@@ -64,7 +50,6 @@ const StudentPlacement = () => {
   }, [placementGenerated, showCompany]);
 
   useEffect(() => {
-    fetchData();
     updateWeights();
     const storedPlacementStatus = localStorage.getItem("placementGenerated");
     if (storedPlacementStatus) {
@@ -80,28 +65,25 @@ const StudentPlacement = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(
-      "placementGenerated",
-      JSON.stringify(placementGenerated)
-    );
-    localStorage.setItem("showCompany", JSON.stringify(showCompany));
-  }, [placementGenerated, showCompany]);
+    const fetchData = async () => {
+      try {
+        const response =
+          await companyService.getAllCompaniesWithoutPagination();
 
-  const fetchData = async () => {
-    try {
-      const response = await companyService.getAllCompaniesWithoutPagination();
+        if (response.ok) {
+          const data = await response.json();
 
-      if (response.ok) {
-        const data = await response.json();
-
-        setCompaniesData(data.companies);
-      } else {
-        console.error("Failed to fetch data");
+          setCompaniesData(data.companies);
+        } else {
+          console.error("Failed to fetch data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    };
+
+    fetchData();
+  }, []);
 
   const updateWeights = async () => {
     try {
@@ -197,9 +179,7 @@ const StudentPlacement = () => {
         []
       );
 
-      const data = await placementService.sendPlacementResults(
-        flattenedResults
-      );
+      await placementService.sendPlacementResults(flattenedResults);
     } catch (error) {
       console.error("Error assigning students:", error);
     }
@@ -244,7 +224,7 @@ const StudentPlacement = () => {
 
           {showConfirmation && (
             <ConfirmationDialog
-              message="Are you sure you want to reset placement? you agree deleted all placement results from the database."
+              message="Are you sure you want to reset placement?."
               onConfirm={handleResetPlacement}
               onCancel={() => setShowConfirmation(false)}
             />

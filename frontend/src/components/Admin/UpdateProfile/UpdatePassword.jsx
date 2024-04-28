@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Input from "../../../ui/Input"; // Assuming you have a custom Input component
+import Input from "../../../ui/Input";
 import FormRow from "../../../ui/FormRow";
 import adminService from "../../../services/admin.service";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,10 +14,10 @@ function UpdatePassword() {
   const [formData, setFormData] = useState({
     oldPassword: "",
     newPassword: "",
-    confirmPassword: "", // New state for confirm password
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password view
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,14 +71,10 @@ function UpdatePassword() {
           const data = await response.json();
           toast.error(data.message, { autoClose: 700 });
         }
-      } else {
-        const data = await response.json();
-        toast.error(data.message, { autoClose: 700 });
       }
     } catch (error) {
       if (error.message === "Old password is incorrect") {
-        const data = await response.json();
-        toast.error(data.message, { autoClose: 700 });
+        toast.error(error.message, { autoClose: 700 });
       }
       console.error("Error updating password:", error);
       toast.error("Failed to update password", { autoClose: 700 });
@@ -131,8 +127,6 @@ function UpdatePassword() {
             style={{
               display: "flex",
               alignItems: "center",
-              background: "#7DC400",
-              margin: "auto",
               padding: "2px 20px",
               borderRadius: "7px",
             }}
@@ -143,9 +137,7 @@ function UpdatePassword() {
               onChange={togglePasswordView}
               style={{ marginRight: "10px", cursor: "pointer" }}
             />
-            <span style={{ color: "#fff", fontWeight: "700" }}>
-              Show Password
-            </span>
+            <span style={{ color: "#", fontWeight: "700" }}>Show Password</span>
           </label>
         </FormRow>
 

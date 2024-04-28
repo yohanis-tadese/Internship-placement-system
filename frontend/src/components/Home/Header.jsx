@@ -1,8 +1,6 @@
-import React from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom"; // Import NavLink
 import DarkModeToggle from "../../ui/DarkModeToggle";
-import Heading from "../../ui/Heading";
 
 const HeaderContainer = styled.div`
   position: fixed;
@@ -60,6 +58,23 @@ const StyledButton = styled(NavLink)`
   }
 `;
 
+const HeadingContainer = styled.div`
+  display: none;
+
+  @media screen and (min-width: 592px) {
+    display: block;
+  }
+
+  @media screen and (max-width: 650px) {
+    font-size: 13px;
+  }
+`;
+
+const HeadingText = styled.h2`
+  margin: 0;
+  font-size: 1.2em;
+`;
+
 // Header component
 const Header = () => {
   return (
@@ -67,12 +82,15 @@ const Header = () => {
       <NavLink to="/">
         <LeftContainer>
           <Logo src="/logo-light.png" alt="IPS" />
-          <Heading as="h5">Internship placement system</Heading>
+          <HeadingContainer>
+            <HeadingText>Placement Portal</HeadingText>
+          </HeadingContainer>
         </LeftContainer>
       </NavLink>
       <RightContainer>
-        <DarkModeToggle />
+        <StyledNavLink to="/">Home</StyledNavLink>
         <StyledNavLink to="/FAQ">FAQ</StyledNavLink>
+        <DarkModeToggle />
         <StyledButton>
           <StyledNavLink to="/login">Login</StyledNavLink>
         </StyledButton>

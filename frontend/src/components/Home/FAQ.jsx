@@ -1,19 +1,18 @@
 import styled from "styled-components";
 import Header from "./Header";
-// import Footer from "./Footer";
+import Footer from "./Footer";
 import Rule from "./Rule";
 
 const StyledAppLayout = styled.div`
-  border-bottom: 7px solid #cf711f;
   display: grid;
   min-height: 100vh;
-  grid-template-rows: auto 1fr auto; /* Header, Main, Footer */
-  background-color: var(--color-grey-50);
+  grid-template-rows: auto 1fr auto;
+  background-color: var(--color-grey-100);
 `;
 
 // Styled components for the Rule component
 const RuleContainer = styled.div`
-  padding-bottom: 40px;
+  padding: 0 20px 30px 20px;
 `;
 
 function FAQ() {
@@ -23,7 +22,7 @@ function FAQ() {
       <RuleContainer>
         <Rule />
       </RuleContainer>
-      {/* <Footer /> */}
+      <Footer />
     </StyledAppLayout>
   );
 }

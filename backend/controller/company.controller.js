@@ -27,6 +27,7 @@ async function createCompany(req, res, next) {
       password: req.body.password,
     });
 
+    // Return success response
     return res.status(200).json({
       status: true,
       message: "Company created successfully",

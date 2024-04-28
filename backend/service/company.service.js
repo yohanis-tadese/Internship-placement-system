@@ -1,11 +1,7 @@
 // Import necessary dependencies
 const { query } = require("../config/db.config");
 const bcrypt = require("bcrypt");
-
-// Function to hash the password using bcrypt
-const hashPassword = async (password) => {
-  return await bcrypt.hash(password, 10);
-};
+// const { sendEmail } = require("../sendEmail");
 
 // Function to check if the company exists in the database
 async function checkIfCompanyExists(username) {
@@ -54,6 +50,13 @@ async function createCompany(company) {
       hashedPassword,
     ]);
     const companyId = result.insertId;
+
+    // await sendEmail(
+    //   company.company_name,
+    //   company.contact_email,
+    //   username,
+    //   company.password
+    // );
 
     return companyId;
   } catch (error) {

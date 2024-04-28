@@ -1,12 +1,7 @@
 // Import necessary dependencies
 const { query } = require("../config/db.config");
 const bcrypt = require("bcrypt");
-const { get } = require("../router/student.routes");
-
-// Function to hash the password using bcrypt
-const hashPassword = async (password) => {
-  return await bcrypt.hash(password, 10);
-};
+// const { sendEmail } = require("../sendEmail");
 
 // Function to check if the student exists in the database
 async function checkIfStudentExists(username) {
@@ -60,6 +55,13 @@ async function createStudent(student) {
     ]);
     const studentId = result.insertId;
 
+    // await sendEmail(
+    //   student.first_name,
+    //   student.contact_email,
+    //   username,
+    //   student.password
+    // );
+
     return studentId;
   } catch (error) {
     console.error("Error creating student:", error);
@@ -70,7 +72,7 @@ async function createStudent(student) {
 async function getStudent(studentId) {
   try {
     const sql = `
-      SELECT * 
+      SELECT *
       FROM students
       WHERE student_id = ?
     `;
@@ -265,7 +267,7 @@ async function deleteStudent(studentId) {
 async function getStudentsByDepartment(departmentType) {
   try {
     const sql = `
-      SELECT * 
+      SELECT *
       FROM students
       WHERE department_id = ?
     `;
@@ -319,26 +321,26 @@ async function acceptStudentApplyForm({
 async function getAllApplyStudents() {
   try {
     const sql = `
-      SELECT 
+      SELECT
         sa.apply_id,
-        s.student_id, 
-        CONCAT(s.first_name, ' ', s.last_name) AS student_name, 
+        s.student_id,
+        CONCAT(s.first_name, ' ', s.last_name) AS student_name,
         sa.disability,
         sa.gender,
         s.gpa,
         GROUP_CONCAT(DISTINCT sp.company_id ORDER BY sp.preference_order) AS preferences,
         p.company_name
-      FROM 
+      FROM
         students s
-      INNER JOIN 
+      INNER JOIN
         student_apply_form sa ON s.student_id = sa.student_id
-      LEFT JOIN 
+      LEFT JOIN
         student_preferences sp ON sa.apply_id = sp.apply_id
-      LEFT JOIN 
+      LEFT JOIN
         placement_results pr ON s.student_id = pr.student_id
-      LEFT JOIN 
+      LEFT JOIN
         companies p ON pr.company_id = p.company_id
-      GROUP BY 
+      GROUP BY
         sa.apply_id;
     `;
     const students = await query(sql);
@@ -353,25 +355,25 @@ async function getApplyStudentsById(id) {
   try {
     // Query to retrieve apply students by ID
     const sql = `
-      SELECT 
+      SELECT
       sa.apply_id,
-      s.student_id, 
-      CONCAT(s.first_name, ' ', s.last_name) AS student_name, 
+      s.student_id,
+      CONCAT(s.first_name, ' ', s.last_name) AS student_name,
       sa.disability,
       sa.gender,
       s.gpa,
       GROUP_CONCAT(DISTINCT sp.company_id ORDER BY sp.preference_order) AS preferences
-    FROM 
+    FROM
         students s
-    INNER JOIN 
+    INNER JOIN
         student_apply_form sa ON s.student_id = sa.student_id
-    LEFT JOIN 
+    LEFT JOIN
         student_preferences sp ON sa.apply_id = sp.apply_id
-    LEFT JOIN 
+    LEFT JOIN
         placement_results pr ON s.student_id = pr.student_id
-    WHERE 
+    WHERE
         s.student_id = ?
-    GROUP BY 
+    GROUP BY
         sa.apply_id;
 
     `;
@@ -461,17 +463,20 @@ async function deleteAllPlacementResults() {
 module.exports = {
   checkIfStudentExists,
   createStudent,
-  getStudent,
-  getAllStudents,
-  updateStudent,
-  getStudentsByDepartment,
-  deleteStudent,
   acceptStudentApplyForm,
-  updateStudentApplyForm,
-  updateStudentProfile,
+
+  getStudent,
   getAllApplyStudents,
   getApplyStudentsById,
-  deleteAllPlacementResults,
+  getStudentsByDepartment,
+  getAllStudents,
   getStudentPhoto,
+
+  updateStudent,
+  updateStudentApplyForm,
+  updateStudentProfile,
+
+  deleteStudent,
+  deleteAllPlacementResults,
   changePassword,
 };

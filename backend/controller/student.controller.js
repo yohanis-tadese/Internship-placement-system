@@ -413,19 +413,22 @@ async function deleteAllPlacementResults(req, res, next) {
 
 module.exports = {
   createStudent,
+  acceptStudentApplyForm,
+
   getStudents,
   getAllStudents,
-  updateStudent,
-  deleteStudent,
-  changePassword,
   getStudentTypes,
   getStudentsByDepartment,
-  acceptStudentApplyForm,
   getAllApplyStudents,
   getApplyStudentsById,
-  updateStudentApplyForm,
-  deleteAllPlacementResults,
+  getStudentPhoto,
+
+  updateStudent,
   UplodeStudentPhoto,
   updateStudentProfile,
-  getStudentPhoto,
+  updateStudentApplyForm,
+
+  deleteStudent,
+  deleteAllPlacementResults,
+  changePassword,
 };

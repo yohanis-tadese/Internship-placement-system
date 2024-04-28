@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import placementService from "../../../services/placement.service";
 import { useAuth } from "../../../context/AuthContext";
@@ -123,16 +123,19 @@ const PlacementResults = () => {
         ) : (
           <Container>
             {placementResults.length === 0 ? (
-              <Title
+              <h2
                 style={{
-                  fontSize: "20px",
-                  background: "#E67E22",
-                  color: "black",
+                  marginTop: "40px",
+                  background: "var(--color-grey-300)",
+                  textAlign: "center",
+                  padding: "5px",
+                  alignItems: "center",
+                  borderRadius: "6px",
                 }}
               >
-                Placement results will be available soon. please check back
-                later.
-              </Title>
+                We are currently processing placement results. Please check back
+                later for updates.
+              </h2>
             ) : (
               <PlacementList>
                 <Title> Wellcome to see your placement Results</Title>

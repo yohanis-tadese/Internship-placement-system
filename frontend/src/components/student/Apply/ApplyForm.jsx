@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import companyService from "../../../services/company.service";
 import studentService from "../../../services/student.service";
@@ -133,7 +133,7 @@ const StudentPlacementForm = () => {
     const selectedCompanyId = e.target.value;
 
     // Check if the selected company is already selected in other dropdowns
-    const isCompanySelected = studentPreferences.some(
+    studentPreferences.some(
       (preference, index) =>
         index !== preferenceIndex && preference === selectedCompanyId
     );

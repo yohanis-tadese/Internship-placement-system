@@ -1,8 +1,7 @@
-import React from "react";
 import styled from "styled-components";
 
 const DialogContainer = styled.div`
-  background-color: #ef7b15;
+  background-color: #7dc400;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px;
@@ -23,7 +22,7 @@ const ButtonGroup = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 10px 20px;
+  padding: 6px 13px;
   background-color: ${(props) => (props.primary ? "#007bff" : "#FF0000")};
   color: #fff;
   border: none;

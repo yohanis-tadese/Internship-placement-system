@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { HiOutlineChevronDown, HiOutlineChevronUp } from "react-icons/hi";
 import { faqData } from "./FAQData";
 
 // Styled components for FAQ
 const FAQContainer = styled.div`
-  margin-top: 100px;
+  margin-top: 85px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,7 +15,7 @@ const FAQItem = styled.div`
   width: 100%;
   max-width: 700px;
   background-color: var(--color-grey-200);
-  padding: 20px;
+  padding: 12px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: 4px 2px 4px rgba(0, 0, 0, 0.1);
